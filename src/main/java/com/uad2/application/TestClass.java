@@ -20,7 +20,9 @@ public class TestClass {
         List<Member> memberList = memberRepository.findAll();
         logger.info("info ID : {}", "foo");
         logger.debug("debug ID : {}", "foo");
-        System.out.println("!23");
+        memberList.forEach((member) -> {
+            System.out.println(member.toString());
+        });
         return "test";
     }
 }
