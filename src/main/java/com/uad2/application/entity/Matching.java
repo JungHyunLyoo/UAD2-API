@@ -1,5 +1,8 @@
 package com.uad2.application.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -7,7 +10,7 @@ import java.util.Date;
 public class Matching {
     @Id
     @Column
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String seq;
 
     @Column(nullable = false, name = "matching_date")
@@ -28,23 +31,13 @@ public class Matching {
     @Column(name = "max_cnt", length = 255)
     private String maxCnt;
 
-
+    @CreationTimestamp
     @Column(nullable = false, name = "created_at")
     private Date createdAt;
 
+    @UpdateTimestamp
     @Column(nullable = false, name = "updated_at")
     private Date updatedAt;
-
-
-    @PrePersist
-    void createdAt() {
-        this.createdAt = this.updatedAt = new Date();
-    }
-
-    @PreUpdate
-    void updatedAt() {
-        this.updatedAt = new Date();
-    }
 
     public String getSeq() {
         return seq;
@@ -72,14 +65,6 @@ public class Matching {
 
     public String getMaxCnt() {
         return maxCnt;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
     }
 
     @Override

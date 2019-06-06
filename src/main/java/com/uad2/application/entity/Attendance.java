@@ -3,11 +3,14 @@ package com.uad2.application.entity;
 import javax.persistence.*;
 import java.util.Date;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 @Entity
 public class Attendance {
     @Id
     @Column
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int seq;
 
     @Column(name = "member_seq", nullable = false)
@@ -19,23 +22,14 @@ public class Attendance {
     @Column(name = "available_date")
     private Date availableDate;
 
-
+    @CreationTimestamp
     @Column(nullable = false, name = "created_at")
     private Date createdAt;
 
+    @UpdateTimestamp
     @Column(nullable = false, name = "updated_at")
     private Date updatedAt;
 
-
-    @PrePersist
-    void createdAt() {
-        this.createdAt = this.updatedAt = new Date();
-    }
-
-    @PreUpdate
-    void updatedAt() {
-        this.updatedAt = new Date();
-    }
 
     public int getSeq() {
         return seq;

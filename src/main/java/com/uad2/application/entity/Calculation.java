@@ -1,5 +1,8 @@
 package com.uad2.application.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -7,7 +10,7 @@ import java.util.Date;
 public class Calculation {
     @Id
     @Column
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int seq;
 
     @Column(name = "matching_seq", nullable = false)
@@ -29,22 +32,14 @@ public class Calculation {
     private int attendCnt;
 
 
+    @CreationTimestamp
     @Column(nullable = false, name = "create_at")
     private Date createdAt;
 
+    @UpdateTimestamp
     @Column(nullable = false, name = "update_at")
     private Date updatedAt;
 
-
-    @PrePersist
-    void createdAt() {
-        this.createdAt = this.updatedAt = new Date();
-    }
-
-    @PreUpdate
-    void updatedAt() {
-        this.updatedAt = new Date();
-    }
 
 
     public int getSeq() {
