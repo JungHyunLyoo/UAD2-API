@@ -1,13 +1,17 @@
 package com.uad2.application.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.*;
 import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 public class Member {
     @Id
     @Column
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int seq;
 
     @Column(nullable = false, length = 20)
@@ -50,22 +54,70 @@ public class Member {
     @Column(name = "is_benefit")
     private boolean isBenefit;
 
+    @CreationTimestamp
     @Column(nullable = false, name = "created_at")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(nullable = false, name = "updated_at")
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
-
-    @PrePersist
-    void createdAt() {
-        this.createdAt = this.updatedAt = new Date();
+    public void setSeq(int seq) {
+        this.seq = seq;
     }
 
-    @PreUpdate
-    void updatedAt() {
-        this.updatedAt = new Date();
+    public void setId(String id) {
+        this.id = id;
     }
+
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setStudentId(int studentId) {
+        this.studentId = studentId;
+    }
+
+    public void setBirthDay(Date birthDay) {
+        this.birthDay = birthDay;
+    }
+
+    public void setAttdCnt(int attdCnt) {
+        this.attdCnt = attdCnt;
+    }
+
+    public void setProfileImg(String profileImg) {
+        this.profileImg = profileImg;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public void setSessionLimit(Date sessionLimit) {
+        this.sessionLimit = sessionLimit;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
+    public void setWorker(boolean worker) {
+        isWorker = worker;
+    }
+
+    public void setBenefit(boolean benefit) {
+        isBenefit = benefit;
+    }
+
 
     public int getSeq() {
         return seq;
@@ -123,13 +175,6 @@ public class Member {
         return isBenefit;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
 
     @Override
     public String toString() {
