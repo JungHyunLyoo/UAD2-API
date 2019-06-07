@@ -1,5 +1,9 @@
 package com.uad2.application.entity;
 
+import com.uad2.application.util.EncryptUtil;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -8,6 +12,9 @@ import java.util.Date;
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
+@ToString
 public class Member {
     @Id
     @Column
@@ -62,139 +69,8 @@ public class Member {
     @Column(nullable = false, name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public void setSeq(int seq) {
-        this.seq = seq;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setPwd(String pwd) {
-        this.pwd = pwd;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public void setStudentId(int studentId) {
-        this.studentId = studentId;
-    }
-
-    public void setBirthDay(Date birthDay) {
-        this.birthDay = birthDay;
-    }
-
-    public void setAttdCnt(int attdCnt) {
-        this.attdCnt = attdCnt;
-    }
-
-    public void setProfileImg(String profileImg) {
-        this.profileImg = profileImg;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public void setSessionLimit(Date sessionLimit) {
-        this.sessionLimit = sessionLimit;
-    }
-
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
-    }
-
-    public void setWorker(boolean worker) {
-        isWorker = worker;
-    }
-
-    public void setBenefit(boolean benefit) {
-        isBenefit = benefit;
-    }
-
-
-    public int getSeq() {
-        return seq;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getPwd() {
-        return pwd;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public int getStudentId() {
-        return studentId;
-    }
-
-    public Date getBirthDay() {
-        return birthDay;
-    }
-
-    public int getAttdCnt() {
-        return attdCnt;
-    }
-
-    public String getProfileImg() {
-        return profileImg;
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public Date getSessionLimit() {
-        return sessionLimit;
-    }
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public boolean isWorker() {
-        return isWorker;
-    }
-
-    public boolean isBenefit() {
-        return isBenefit;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Member{" +
-                "seq=" + seq +
-                ", id='" + id + '\'' +
-                ", pwd='" + pwd + '\'' +
-                ", name='" + name + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", studentId=" + studentId +
-                ", birthDay=" + birthDay +
-                ", attdCnt=" + attdCnt +
-                ", profileImg='" + profileImg + '\'' +
-                ", sessionId='" + sessionId + '\'' +
-                ", sessionLimit=" + sessionLimit +
-                ", isAdmin=" + isAdmin +
-                ", isWorker=" + isWorker +
-                ", isBenefit=" + isBenefit +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+    @PrePersist
+    public void encryptPassword(){
+        this.pwd = EncryptUtil.getEncMD5(pwd);
     }
 }
