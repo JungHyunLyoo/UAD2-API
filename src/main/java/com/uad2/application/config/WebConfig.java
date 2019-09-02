@@ -22,6 +22,8 @@ public class WebConfig {
                 .paths(PathSelectors.ant("/**/api/**"))
                 .build()
                 .apiInfo(apiInfo());
+        //.useDefaultResponseMessages(false)
+        //.globalResponseMessage(RequestMethod.GET, getArrayList());
     }
 
     private ApiInfo apiInfo() {

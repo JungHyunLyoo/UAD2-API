@@ -1,4 +1,4 @@
-package com.uad2.application.controller;
+package com.uad2.application.message;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;

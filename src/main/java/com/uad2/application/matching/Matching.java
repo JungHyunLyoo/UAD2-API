@@ -1,4 +1,4 @@
-package com.uad2.application.entity;
+package com.uad2.application.matching;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -69,7 +69,7 @@ public class Matching {
 
     @Override
     public String toString() {
-        return "Matching{" +
+        return "matching{" +
                 "seq='" + seq + '\'' +
                 ", matchingDate=" + matchingDate +
                 ", matchingTime='" + matchingTime + '\'' +

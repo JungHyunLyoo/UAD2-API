@@ -1,6 +1,6 @@
-package com.uad2.application.entity;
+package com.uad2.application.member.entity;
 
-import com.uad2.application.util.EncryptUtil;
+//import com.uad2.application.util.EncryptUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -71,6 +71,6 @@ public class Member {
 
     @PrePersist
     public void encryptPassword(){
-        this.pwd = EncryptUtil.getEncMD5(pwd);
+        //this.pwd = EncryptUtil.getEncMD5(pwd);
     }
 }

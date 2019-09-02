@@ -1,4 +1,4 @@
-package com.uad2.application.entity;
+package com.uad2.application.attendance;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -57,7 +57,7 @@ public class Attendance {
 
     @Override
     public String toString() {
-        return "Attendance{" +
+        return "attendance{" +
                 "seq=" + seq +
                 ", memberSeq=" + memberSeq +
                 ", availableTime='" + availableTime + '\'' +

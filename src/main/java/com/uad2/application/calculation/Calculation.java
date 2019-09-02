@@ -1,4 +1,4 @@
-package com.uad2.application.entity;
+package com.uad2.application.calculation;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -81,7 +81,7 @@ public class Calculation {
 
     @Override
     public String toString() {
-        return "Calculation{" +
+        return "calculation{" +
                 "seq=" + seq +
                 ", matchingSeq=" + matchingSeq +
                 ", price=" + price +
