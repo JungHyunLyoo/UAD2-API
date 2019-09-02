@@ -1,5 +1,8 @@
 package com.uad2.application.message;
 
+import com.uad2.application.config.PropertiesBundle;
+import com.uad2.application.config.WebConfig;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,24 +17,20 @@ import java.util.Map;
 
 @RestController
 public class MessageController {
+
     @PostMapping("/message/sendMessage")
     public Object sendMessage(
-            @RequestParam String targetPhoneNumber,
-            @RequestParam String message){
-
-        String uId = "SJCE";
-        String uPwd = "sjce1234";
-        String hostPhoneNumber = "01094736496";
+            @RequestParam String targetNumber,
+            @RequestParam String content){
         int reserve = 1;
-
         try {
             Map<String,Object> paramMap = new HashMap<String,Object>();
-            paramMap.put("uID",uId);
-            paramMap.put("uPWD",uPwd);
+            paramMap.put("uID",PropertiesBundle.MESSAGE_UID);
+            paramMap.put("uPWD",PropertiesBundle.MESSAGE_UPWD);
             paramMap.put("reserve",reserve);
-            paramMap.put("phone",hostPhoneNumber);
-            paramMap.put("recv_number",targetPhoneNumber);
-            paramMap.put("msg",message);
+            paramMap.put("phone",PropertiesBundle.MESSAGE_HOST_NUMBER);
+            paramMap.put("recv_number",targetNumber);
+            paramMap.put("msg",content);
 
             StringBuilder postData = new StringBuilder();
             for(Map.Entry<String,Object> param : paramMap.entrySet()) {
@@ -42,10 +41,7 @@ public class MessageController {
             }
             byte[] postDataBytes = postData.toString().getBytes("UTF-8");
 
-
-            URL url = new URL("http://221.139.14.138/API/MT_reserve");
-
-            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+            HttpURLConnection conn = (HttpURLConnection)new URL(PropertiesBundle.MESSAGE_URL).openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
