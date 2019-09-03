@@ -1,7 +1,5 @@
 package com.uad2.application;
 
-import com.uad2.application.domain.Member;
-import com.uad2.application.repository.MemberRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +11,7 @@ import java.util.List;
 @RestController
 public class TestClass {
     static final Logger logger = LoggerFactory.getLogger(TestClass.class);
+    /*
     @Autowired
     private MemberRepository memberRepository;
     @GetMapping("/test")
@@ -24,5 +23,5 @@ public class TestClass {
             System.out.println(member.toString());
         });
         return "test";
-    }
+    }*/
 }
