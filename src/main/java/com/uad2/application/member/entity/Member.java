@@ -1,9 +1,7 @@
 package com.uad2.application.member.entity;
 
 //import com.uad2.application.util.EncryptUtil;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -12,9 +10,11 @@ import java.util.Date;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter
 @ToString
+@Builder
+@AllArgsConstructor @NoArgsConstructor
+@EqualsAndHashCode(of="id")
 public class Member {
     @Id
     @Column
