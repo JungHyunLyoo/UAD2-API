@@ -5,7 +5,12 @@ import com.uad2.application.member.entity.Member;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class MemberController {
@@ -24,11 +29,11 @@ public class MemberController {
     @Autowired
     private MemberRepository memberRepository;
 
+
     @PostMapping("/member")
-    public Object Member(@RequestBody Member member){
+    public ModelAndView Member(@RequestBody Member member){
         //폰번호로 존재 유무 체크
         /*
-
             $pwd=$request->get('pwd');
             $name=$request->get('name');
             $attd_cnt=0;
@@ -51,8 +56,9 @@ public class MemberController {
                 ]
             );
          */
-
         memberRepository.save(member);
-        return "testtest";
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("test","test");
+        return modelAndView;
     }
 }
