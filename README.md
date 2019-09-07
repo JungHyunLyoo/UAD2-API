@@ -46,5 +46,13 @@ UAD's second project
 - git
     - source tree 3.0.8
     - git bash
+    - 커밋 메세지
+        - [무엇을]-어떻게
+    - 커밋 전략
+        1. 각 멤버들이 local develop에 작업 커밋
+        2. 해당 멤버가 origin develop으로 pull request 날림
+        3. 모든 멤버들이 해당 request에 코멘트를 남김
+        4. 모든 멤버들의 확인이 끝나면 pm이 develop에 풀 땡김
+        5. 참고로 master는 개발 완료 후 운영을 시작하면 운영할 예정            
 ####마크다운 사용법
 - https://gist.github.com/ihoneymon/652be052a0727ad59601
