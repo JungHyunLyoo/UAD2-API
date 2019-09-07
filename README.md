@@ -42,6 +42,9 @@ UAD's second project
 - jpa 2.1.5
 #### 협업도구
 - notion
-- 사용 가이드 : https://www.notion.so/Notion-1ad7ccbc41a44298814a4820d4acb14e
+    - 사용 가이드 : https://www.notion.so/Notion-1ad7ccbc41a44298814a4820d4acb14e
+- git
+    - source tree 3.0.8
+    - git bash
 ####마크다운 사용법
 - https://gist.github.com/ihoneymon/652be052a0727ad59601
