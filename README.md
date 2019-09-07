@@ -15,3 +15,30 @@ UAD's second project
         - infra : 11박준호 
         - back(Php Laravel) : 13김시훈
         - front(React) : 13진여준
+
+멤버 구성
+----
+- pm : 11유정현
+- infra : 11박준호 
+- back(Java SpringBoot) : 11김종엽, 11조형근
+- front(React) : 13진여준
+
+개발 환경
+----
+####ide
+- intellij idea <ultimate 2019.1>
+- heidiSQL <9.5.0.5196 (64bit)>
+####spring
+- boot 2.1.5.RELEASE
+- spring 5.1
+- junit 5
+- tomcat 9
+- java 8
+- restdocs 2.0.3
+- jpa 2.1.5
+####DB (only production db)
+- mysql 10.1.41-MariaDB
+- jpa 2.1.5
+####협업도구
+- notion
+- 사용 가이드 : https://www.notion.so/Notion-1ad7ccbc41a44298814a4820d4acb14e 
