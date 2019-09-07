@@ -19,7 +19,7 @@ UAD's second project
 멤버 구성
 ----
 - pm : 11유정현
-- infra : 11박준호 
+- infra : 11김종엽, 11박준호 
 - back(Java SpringBoot) : 11김종엽, 11조형근, 11박준호
 - front(React) : 13진여준
 
