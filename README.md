@@ -20,7 +20,7 @@ UAD's second project
 ----
 - pm : 11유정현
 - infra : 11박준호 
-- back(Java SpringBoot) : 11김종엽, 11조형근
+- back(Java SpringBoot) : 11김종엽, 11조형근, 11박준호
 - front(React) : 13진여준
 
 개발 환경
