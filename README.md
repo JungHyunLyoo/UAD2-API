@@ -37,6 +37,7 @@ UAD's second project
 - restdocs 2.0.3
 - jpa 2.1.5
 #### DB (only production db)
+- host : pjhdev.com
 - mysql 10.1.41-MariaDB
 - jpa 2.1.5
 #### 협업도구
