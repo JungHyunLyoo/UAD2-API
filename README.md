@@ -57,5 +57,5 @@ UAD's second project
         4. 모든 멤버들의 확인이 끝나면 pm이 develop에 풀 땡김
         5. 참고로 master는 개발 완료 후 운영을 시작하면 운영할 예정
                     
-####마크다운 사용법
+#### 마크다운 사용법
 - https://gist.github.com/ihoneymon/652be052a0727ad59601
