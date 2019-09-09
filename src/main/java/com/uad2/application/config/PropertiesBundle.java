@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("/config.properties")
+@PropertySource("classpath:/config.properties")//classpath : test 실행 가능
 public class PropertiesBundle {
 
     public static String MESSAGE_URL;
