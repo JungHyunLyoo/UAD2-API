@@ -1,11 +1,17 @@
 package com.uad2.application.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
+import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -20,6 +26,29 @@ import java.util.List;
 @Configuration
 @EnableSwagger2
 public class WebConfig implements WebMvcConfigurer {
+    @Bean
+    public ModelMapper modelMapper(){
+        return new ModelMapper();
+    }
+    /*
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(userArgumentResolver);
+    }
+
+     */
+    /*
+    @Bean
+    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
+        MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new MemberTimeModule());
+
+        jsonConverter.setObjectMapper(objectMapper);
+
+        return jsonConverter;
+    }*/
 
     @Bean
     public ViewResolver contentNegotiatingViewResolver(ContentNegotiationManager manager){
@@ -30,7 +59,14 @@ public class WebConfig implements WebMvcConfigurer {
         resolver.setViewResolvers(resolvers);
         return resolver;
     }
+/*
+    @Bean
+    public MappingJackson2JsonView jsonView() {
+        return new MappingJackson2JsonView();
+        //return new MappingJacksonJsonView();
+    }
 
+ */
     @Bean
     public Docket api(){
         return new Docket(DocumentationType.SWAGGER_2)
