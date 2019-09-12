@@ -59,7 +59,7 @@ UAD's second project
         5. 참고로 master는 개발 완료 후 운영을 시작하면 운영할 예정
                     
 #### 프로젝트 빌드 및 테스트
-> mvn package -Djasypt.encryptor.password={jasypt.encryptor.password}
+    mvn package -Djasypt.encryptor.password={jasypt.encryptor.password}
 
 #### readme 마크다운 사용법
 - https://gist.github.com/ihoneymon/652be052a0727ad59601
