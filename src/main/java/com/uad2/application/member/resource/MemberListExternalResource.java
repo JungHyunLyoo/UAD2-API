@@ -4,7 +4,6 @@ package com.uad2.application.member.resource;
  * @DATE 2019-09-12
  */
 
-import com.uad2.application.member.entity.Member;
 import com.uad2.application.member.entity.MemberExternalDto;
 import org.springframework.hateoas.ResourceSupport;
 

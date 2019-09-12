@@ -1,8 +1,6 @@
 package com.uad2.application.message;
 
 import com.uad2.application.config.PropertiesBundle;
-import com.uad2.application.config.WebConfig;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

@@ -1,14 +1,14 @@
 package com.uad2.application.member.entity;
 
-//import com.uad2.application.util.EncryptUtil;
+
 import com.uad2.application.utils.EncryptUtil;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Getter @Setter

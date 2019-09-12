@@ -2,8 +2,6 @@ package com.uad2.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uad2.application.common.TestDescription;
-import com.uad2.application.member.entity.Member;
-import com.uad2.application.member.entity.MemberExternalDto;
 import com.uad2.application.member.entity.MemberInsertDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +23,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.uad2.application.api.document.utils.DocumentFormatGenerator.getDateFormat;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;

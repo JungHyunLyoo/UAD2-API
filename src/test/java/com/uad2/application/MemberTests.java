@@ -5,7 +5,6 @@ package com.uad2.application;
  * @DATE 2019-09-09
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Assert;
