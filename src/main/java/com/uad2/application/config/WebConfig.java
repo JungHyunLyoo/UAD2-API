@@ -30,43 +30,7 @@ public class WebConfig implements WebMvcConfigurer {
     public ModelMapper modelMapper(){
         return new ModelMapper();
     }
-    /*
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(userArgumentResolver);
-    }
-
-     */
-    /*
-    @Bean
-    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
-        MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new MemberTimeModule());
-
-        jsonConverter.setObjectMapper(objectMapper);
-
-        return jsonConverter;
-    }*/
-
-    @Bean
-    public ViewResolver contentNegotiatingViewResolver(ContentNegotiationManager manager){
-        ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
-        resolver.setContentNegotiationManager(manager);
-        List<ViewResolver> resolvers = new ArrayList<>();
-        resolvers.add(new JsonViewResolver());
-        resolver.setViewResolvers(resolvers);
-        return resolver;
-    }
-/*
-    @Bean
-    public MappingJackson2JsonView jsonView() {
-        return new MappingJackson2JsonView();
-        //return new MappingJacksonJsonView();
-    }
-
- */
+    
     @Bean
     public Docket api(){
         return new Docket(DocumentationType.SWAGGER_2)
