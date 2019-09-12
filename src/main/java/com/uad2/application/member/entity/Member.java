@@ -1,6 +1,7 @@
 package com.uad2.application.member.entity;
 
 //import com.uad2.application.util.EncryptUtil;
+import com.uad2.application.utils.EncryptUtil;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -52,14 +53,14 @@ public class Member {
     @Column(name = "session_limit")
     private Date sessionLimit;
 
-    @Column(nullable = false, name = "is_admin")
-    private boolean isAdmin;
+    @Column(name = "is_admin", columnDefinition = "int default 0")
+    private int isAdmin;
 
-    @Column(name = "is_worker")
-    private boolean isWorker;
+    @Column(name = "is_worker", columnDefinition = "int default 0")
+    private int isWorker;
 
-    @Column(name = "is_benefit")
-    private boolean isBenefit;
+    @Column(name = "is_benefit", columnDefinition = "int default 0")
+    private int isBenefit;
 
     @CreationTimestamp
     @Column(nullable = false, name = "created_at")
@@ -71,6 +72,6 @@ public class Member {
 
     @PrePersist
     public void encryptPassword(){
-        //this.pwd = EncryptUtil.getEncMD5(pwd);
+        this.pwd = EncryptUtil.encryptMD5(pwd);
     }
 }
