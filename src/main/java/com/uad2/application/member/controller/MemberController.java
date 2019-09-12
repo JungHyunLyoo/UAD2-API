@@ -1,53 +1,27 @@
 package com.uad2.application.member.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uad2.application.member.EventValidator;
-import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
+import com.uad2.application.member.entity.MemberInsertDto;
 import com.uad2.application.member.repository.MemberRepository;
-import lombok.var;
-import org.apache.tomcat.jni.Error;
+import com.uad2.application.utils.MemberResponseUtil;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import org.springframework.data.domain.Pageable;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
-        //(value = "/api")
-//
-//produces : 응답 형태
 @RestController
+@RequestMapping(produces = MediaTypes.HAL_JSON_UTF8_VALUE)
 public class MemberController {
-    //public static $AUTO_LOGIN_TIME = 86400*365;
-    //insertMember
-    //checkId
-    //loginCheck
-    //checkPwd
-    //getMemberFromDB
-    //login
-    //logout
-    //editProfile
-    //uploadProfileImage
     static final Logger logger = LoggerFactory.getLogger(MemberController.class);
 
     @Autowired
@@ -57,37 +31,40 @@ public class MemberController {
     private ModelMapper modelMapper;
 
     @Autowired
-    ObjectMapper objectMapper;
-
-    @Autowired
     EventValidator eventValidator;
 
     @GetMapping(value = "/api/member")
-    public ResponseEntity getAllMember(Pageable pageable, PagedResourcesAssembler<Member> pagedResourcesAssembler){
-        Page<Member> page = memberRepository.findAll(pageable);
-        var pagedResources = pagedResourcesAssembler.toResource(page);
-        return ResponseEntity.ok(pagedResources);
+    public ResponseEntity getAllMember(){
+        List<Member> memberList = memberRepository.findAll();
+        return ResponseEntity.ok(MemberResponseUtil.makeListResponseResource(memberList));
     }
-
-    @GetMapping(value = "/api/member/{name}")
-    public ResponseEntity getMember(@PathVariable String name,Pageable pageable, PagedResourcesAssembler<Member> pagedResourcesAssembler){
-        Member member = memberRepository.findByName(name);
-        return ResponseEntity.ok(member);
+    @GetMapping(value = "/api/member/id/{id}")
+    public ResponseEntity checkMemberById(@PathVariable String id){
+        Member member = memberRepository.findById(id);
+        return ResponseEntity.ok(MemberResponseUtil.makeResponseResource(member));
     }
-
-    @PostMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
-    public ResponseEntity createMember(HttpServletRequest request,
-                                       HttpServletResponse response,
-                                       @RequestBody @Valid MemberDto memberDto,
+    @PostMapping(value = "/api/member")
+    public ResponseEntity createMember(@RequestBody /*@Valid*/ MemberInsertDto memberInsertDto,
                                        Errors errors) throws Exception{
-        eventValidator.validate(memberDto,errors);
+        /*eventValidator.validate(memberExternalDto,errors);
 
         if(errors.hasErrors()){
             return ResponseEntity.badRequest().body(errors);
+        }*/
+        String phoneNumber = memberInsertDto.getPhoneNumber();
+        Member member = memberRepository.findByPhoneNumber(phoneNumber);
+        if(member == null){
+            Member savedMember = memberRepository.save(modelMapper.map(memberInsertDto,Member.class));
+            URI createdUri = linkTo(MemberController.class).slash("id").slash(savedMember.getId()).toUri();
+            return ResponseEntity.created(createdUri).body(MemberResponseUtil.makeResponseResource(savedMember));
         }
-        //폰번호로 존재 유무 체크 필요
-        Member savedMember = memberRepository.save(modelMapper.map(memberDto,Member.class));
-        URI createdUri = linkTo(MemberController.class).slash(savedMember.getSeq()).toUri();
-        return ResponseEntity.created(createdUri).body(savedMember);
+        else{
+            return ResponseEntity.status(202).build();
+        }
     }
 }
+/*
+Pageable pageable, PagedResourcesAssembler<Member> pagedResourcesAssembler
+Page<Member> page = memberRepository.findAll(pageable);
+var pagedResources = pagedResourcesAssembler.toResource(page);
+return ResponseEntity.ok(pagedResources);*/

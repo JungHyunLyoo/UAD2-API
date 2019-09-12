@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MemberRepository extends JpaRepository<Member,Long> {
     Page<Member> findAll(Pageable pageable);
-    Member findByName(String name);
+    Member findById(String id);
+    Member findByPhoneNumber(String phoneNumber);
 }
