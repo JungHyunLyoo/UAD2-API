@@ -2,6 +2,7 @@ package com.uad2.application.member.resource;
 /*
  * @USER JungHyun
  * @DATE 2019-09-12
+ * @DESCRIPTION api 반환용 회원 리스트 HAL 포멧
  */
 
 import com.uad2.application.member.entity.MemberExternalDto;

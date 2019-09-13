@@ -2,6 +2,7 @@ package com.uad2.application.member.entity;
 /*
  * @USER JungHyun
  * @DATE 2019-09-12
+ * @DESCRIPTION 회원 생성용 dto
  */
 
 import lombok.*;

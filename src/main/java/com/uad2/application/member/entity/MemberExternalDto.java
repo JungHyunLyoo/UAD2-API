@@ -11,6 +11,7 @@ import java.util.Date;
 /*
  * @USER JungHyun
  * @DATE 2019-09-09
+ * @DESCRIPTION api 반환용 회원 DTO
  */
 @Data
 @Builder
