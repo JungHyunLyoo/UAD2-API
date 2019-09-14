@@ -10,7 +10,7 @@ import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
 
-public class MemberListExternalResource extends ResourceSupport {//.add로 링크추가 가능
+public class MemberListExternalResource extends ResourceSupport {
     private List<MemberExternalDto> memberExternalDtoList;
 
     public MemberListExternalResource(List<MemberExternalDto> memberExternalDtoList){
