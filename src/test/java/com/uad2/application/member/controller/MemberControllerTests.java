@@ -29,6 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -73,7 +74,7 @@ public class MemberControllerTests {
         result.andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath("memberList").exists())
-                .andDo(document("getAll",//조각 모음 폴더의 이름
+                .andDo(document("getAllMembers",//조각 모음 폴더의 이름
                         links(
                                 linkWithRel("profile").description("restDoc link")
                         ),
@@ -106,7 +107,7 @@ public class MemberControllerTests {
 
     @Test
     @TestDescription("개별 회원 조회")
-    public void getMember() throws Exception {
+    public void getMemberById() throws Exception {
         // request
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/api/member/id/{id}", "dkcmsa")
@@ -116,9 +117,12 @@ public class MemberControllerTests {
         result.andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath("member").exists())
-                .andDo(document("getMember",
+                .andDo(document("getMemberById",
                         pathParameters(
                                 parameterWithName("id").description("아이디")
+                        ),
+                        links(
+                                linkWithRel("profile").description("restDoc link")
                         ),
                         responseFields(
                                 subsectionWithPath("member").description("회원 데이터"),
@@ -134,8 +138,21 @@ public class MemberControllerTests {
                         .collect(Collectors.toList())
         )*/
     }
-
     @Test
+    @TestDescription("개별 회원 조회")
+    public void getMemberById_emptyIdParameter() throws Exception {
+        // request
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/api/member/id/{id}", "")
+        );
+
+        // result
+        result.andExpect(status().isNotFound())
+                .andDo(print())
+                .andDo(document("getMemberById_emptyIdParameter"));
+    }
+    @Test
+    @Transactional
     @TestDescription("정상 실행")
     public void createMember() throws Exception {
         MemberInsertDto member = MemberInsertDto.builder()
@@ -145,7 +162,7 @@ public class MemberControllerTests {
                 .birthDay(new Date())
                 .studentId(11)
                 .isWorker(0)
-                .phoneNumber("010947364961234")
+                .phoneNumber("01234567890")
                 .build();
 
         // request
@@ -175,7 +192,7 @@ public class MemberControllerTests {
                                 subsectionWithPath("member").description("회원 데이터"),
                                 subsectionWithPath("_links").description("링크")
                         )
-                        /*,
+/*
                         responseFields(//relaxedResponseFields( 정확한 문서를 만들지 못 한다는 단점이 있음
                                 getResponseFileds()
                                         .stream()
