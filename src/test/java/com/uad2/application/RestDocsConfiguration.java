@@ -9,6 +9,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 /*
  * @USER JungHyun
  * @DATE 2019-09-12
+ * @DESCRIPTION restdocs 환경 설정
  */
 @TestConfiguration
 public class RestDocsConfiguration  {

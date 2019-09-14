@@ -9,9 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uad2.application.RestDocsConfiguration;
 import com.uad2.application.common.TestDescription;
 import com.uad2.application.member.entity.MemberInsertDto;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +36,10 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 
 //@RunWith(JUnitParamsRunner.class)
@@ -67,7 +60,8 @@ public class MemberControllerTests {
     public void getAllMembers() throws Exception {
         // request
         ResultActions result = mockMvc.perform(
-                get("/api/member")
+                RestDocumentationRequestBuilders.get("/api/member")
+                        .accept(MediaTypes.HAL_JSON)
         );
 
         // result
@@ -106,11 +100,12 @@ public class MemberControllerTests {
     }
 
     @Test
-    @TestDescription("개별 회원 조회")
+    @TestDescription("멤버 개별 조회 by id")
     public void getMemberById() throws Exception {
         // request
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/api/member/id/{id}", "dkcmsa")
+                        .accept(MediaTypes.HAL_JSON)
         );
 
         // result
@@ -139,21 +134,25 @@ public class MemberControllerTests {
         )*/
     }
     @Test
-    @TestDescription("개별 회원 조회")
-    public void getMemberById_emptyIdParameter() throws Exception {
+    @TestDescription("개별 회원 조회 에러(매개변수 미기입)")
+    public void getMemberById_badRequest_emptyParameter() throws Exception {
         // request
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/api/member/id/{id}", "")
+                        .accept(MediaTypes.HAL_JSON)
         );
 
         // result
         result.andExpect(status().isNotFound())
                 .andDo(print())
-                .andDo(document("getMemberById_emptyIdParameter"));
+                .andDo(document("getMemberById_badRequest_emptyParameter",
+                        pathParameters(
+                                parameterWithName("id").description("아이디")
+                        )));
     }
     @Test
     @Transactional
-    @TestDescription("정상 실행")
+    @TestDescription("회원 데이터 생성")
     public void createMember() throws Exception {
         MemberInsertDto member = MemberInsertDto.builder()
                 .id("testId")
@@ -166,10 +165,11 @@ public class MemberControllerTests {
                 .build();
 
         // request
-        ResultActions result = mockMvc.perform(post("/api/member")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .accept(MediaTypes.HAL_JSON)
-                .content(objectMapper.writeValueAsString(member))
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.post("/api/member")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaTypes.HAL_JSON)
+                        .content(objectMapper.writeValueAsString(member))
         );
 
         // result

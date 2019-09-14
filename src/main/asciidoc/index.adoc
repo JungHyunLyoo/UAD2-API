@@ -22,8 +22,8 @@ UAD2 스프링 API 서버
 |===
 | 환경 | 도메인
 
-| 운영
-| `https://pjhdev.com`
+| 운영(version 1)
+| `https://유아들.kr`
 |===
 
 [[overview-http-verbs]]
@@ -70,32 +70,46 @@ UAD2 스프링 API 서버
 [[API]]
 == API
 
-[[getAll]]
+[[getAllMembers]]
 === 멤버 전체 조회
 
 ==== Request HTTP
-include::{snippets}/sample/getAll/http-request.adoc[]
+include::{snippets}/sample/getAllMembers/http-request.adoc[]
 
 ==== Response
-include::{snippets}/sample/getAll/response-fields.adoc[]
+include::{snippets}/sample/getAllMembers/response-fields.adoc[]
 
 ==== Response paging link
-include::{snippets}/sample/getAll/links.adoc[]
+include::{snippets}/sample/getAllMembers/links.adoc[]
 
-[[getMember]]
-=== 멤버 개별 조회
+[[getMemberById]]
+=== 멤버 개별 조회 by id
 
 ==== Request HTTP
-include::{snippets}/sample/getMember/http-request.adoc[]
+include::{snippets}/sample/getMemberById/http-request.adoc[]
 
 ==== Request path parameters
-include::{snippets}/sample/getMember/path-parameters.adoc[]
+include::{snippets}/sample/getMemberById/path-parameters.adoc[]
 
 ==== Response Body
-include::{snippets}/sample/getMember/response-body.adoc[]
+include::{snippets}/sample/getMemberById/response-body.adoc[]
 
 ==== Response
-include::{snippets}/sample/getMember/response-fields.adoc[]
+include::{snippets}/sample/getMemberById/response-fields.adoc[]
+
+
+[[getMemberById_badRequest_emptyParameter]]
+=== 개별 회원 조회 에러(매개변수 미기입)
+
+==== Request HTTP
+include::{snippets}/sample/getMemberById_badRequest_emptyParameter/http-request.adoc[]
+
+==== Request path parameters
+include::{snippets}/sample/getMemberById_badRequest_emptyParameter/path-parameters.adoc[]
+
+==== Response Body
+include::{snippets}/sample/getMemberById_badRequest_emptyParameter/response-body.adoc[]
+
 
 [[createMember]]
 === 멤버 생성
