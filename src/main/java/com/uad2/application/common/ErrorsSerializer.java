@@ -24,6 +24,7 @@ public class ErrorsSerializer extends JsonSerializer<Errors> {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("field",e.getField());
                 jsonGenerator.writeStringField("objectName",e.getObjectName());
+                jsonGenerator.writeStringField("defaultMessage",e.getDefaultMessage());
                 Object rejectedValue = e.getRejectedValue();
                 if(rejectedValue != null){
                     jsonGenerator.writeStringField("rejectedValue",rejectedValue.toString());
