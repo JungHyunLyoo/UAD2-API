@@ -1,6 +1,6 @@
 package com.uad2.application.member.controller;
 
-import com.uad2.application.member.EventValidator;
+import com.uad2.application.member.MemberValidator;
 import com.uad2.application.member.entity.Member;
 import com.uad2.application.member.entity.MemberInsertDto;
 import com.uad2.application.member.repository.MemberRepository;
@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,6 @@ import java.util.List;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RestController
-@RequestMapping(produces = MediaTypes.HAL_JSON_UTF8_VALUE)
 public class MemberController {
     static final Logger logger = LoggerFactory.getLogger(MemberController.class);
 
@@ -31,26 +31,24 @@ public class MemberController {
     private ModelMapper modelMapper;
 
     @Autowired
-    EventValidator eventValidator;
+    MemberValidator memberValidator;
 
-    @GetMapping(value = "/api/member")
+    @GetMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity getAllMember(){
         List<Member> memberList = memberRepository.findAll();
         return ResponseEntity.ok(MemberResponseUtil.makeListResponseResource(memberList));
     }
-    @GetMapping(value = "/api/member/id/{id}")
-    public ResponseEntity checkMemberById(@PathVariable String id){
+    @GetMapping(value = "/api/member/id/{id}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
+    public ResponseEntity getMemberById(@PathVariable String id){
         Member member = memberRepository.findById(id);
         return ResponseEntity.ok(MemberResponseUtil.makeResponseResource(member));
     }
-    @PostMapping(value = "/api/member")
-    public ResponseEntity createMember(@RequestBody /*@Valid*/ MemberInsertDto memberInsertDto,
-                                       Errors errors) throws Exception{
-        /*eventValidator.validate(memberExternalDto,errors);
-
+    @PostMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
+    public ResponseEntity createMember(@RequestBody MemberInsertDto memberInsertDto, Errors errors) throws Exception{
+        memberValidator.createMemberValidate(memberInsertDto,errors);
         if(errors.hasErrors()){
             return ResponseEntity.badRequest().body(errors);
-        }*/
+        }
         String phoneNumber = memberInsertDto.getPhoneNumber();
         Member member = memberRepository.findByPhoneNumber(phoneNumber);
         if(member == null){
