@@ -5,25 +5,16 @@ package com.uad2.application.member.controller;
  * @DATE 2019-09-09
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uad2.application.RestDocsConfiguration;
+import com.uad2.application.common.BaseControllerTest;
 import com.uad2.application.common.TestDescription;
 import com.uad2.application.member.entity.MemberInsertDto;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.transaction.Transactional;
@@ -43,18 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 //@RunWith(JUnitParamsRunner.class)
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs(outputDir = "target/generated-snippets/sample")
-@Import(RestDocsConfiguration.class)
-public class MemberControllerTests {
-    @Autowired
-    MockMvc mockMvc;// 웹서버를 띄우진 않지만 디스패처서블릿을 사용
-
-    @Autowired
-    ObjectMapper objectMapper;//mappingJackson이 있으면 자동 등록
-
+public class MemberControllerTests extends BaseControllerTest {
     @Test
     @TestDescription("전체 회원 조회")
     public void getAllMembers() throws Exception {
