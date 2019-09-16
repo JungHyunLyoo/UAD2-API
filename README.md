@@ -61,7 +61,11 @@ UAD's second project
 프로젝트 빌드 및 테스트
 ----
     mvn package -Djasypt.encryptor.password={jasypt.encryptor.password}
-
+                    
+프로젝트 실행(내장 tomcat 실행)
+----
+    mvn spring-boot:run -Djasypt.encryptor.password={jasypt.encryptor.password}
+ 
 readme 마크다운 사용법
 ----
 - https://gist.github.com/ihoneymon/652be052a0727ad59601
