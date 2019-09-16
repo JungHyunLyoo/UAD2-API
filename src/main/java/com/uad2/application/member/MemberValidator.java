@@ -14,15 +14,6 @@ public class MemberValidator {
         String id = memberInsertDto.getId();
         if(id == null || "".equals(id)){
             errors.rejectValue("id","wrongValue", "id is empty");
-            System.out.println("getFieldErrors()");
-            System.out.println(errors.getFieldErrors());
-        }
-    }
-    public void checkMemberByIdValidate(String id,Errors errors){
-        if(id == null || "".equals(id)){
-            errors.rejectValue("id","wrongValue", "id is empty");
-            System.out.println("getFieldErrors()");
-            System.out.println(errors.getFieldErrors());
         }
     }
 }

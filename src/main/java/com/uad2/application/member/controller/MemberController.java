@@ -4,6 +4,7 @@ import com.uad2.application.member.MemberValidator;
 import com.uad2.application.member.entity.Member;
 import com.uad2.application.member.entity.MemberInsertDto;
 import com.uad2.application.member.repository.MemberRepository;
+import com.uad2.application.member.service.MemberService;
 import com.uad2.application.utils.MemberResponseUtil;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -11,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,15 +23,18 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RestController
 public class MemberController {
     static final Logger logger = LoggerFactory.getLogger(MemberController.class);
-
-    @Autowired
-    private MemberRepository memberRepository;
-
     @Autowired
     private ModelMapper modelMapper;
 
     @Autowired
+    private MemberRepository memberRepository;
+
+
+    @Autowired
     MemberValidator memberValidator;
+
+    @Autowired
+    MemberService memberService;
 
     @GetMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity getAllMember(){
@@ -49,12 +52,10 @@ public class MemberController {
         if(errors.hasErrors()){
             return ResponseEntity.badRequest().body(errors);
         }
-        String phoneNumber = memberInsertDto.getPhoneNumber();
-        Member member = memberRepository.findByPhoneNumber(phoneNumber);
-        if(member == null){
-            Member savedMember = memberRepository.save(modelMapper.map(memberInsertDto,Member.class));
-            URI createdUri = linkTo(MemberController.class).slash("id").slash(savedMember.getId()).toUri();
-            return ResponseEntity.created(createdUri).body(MemberResponseUtil.makeResponseResource(savedMember));
+        Member savedMember = memberService.createMember(memberInsertDto);
+        if(savedMember != null){
+            URI createdUri = linkTo(MemberController.class).slash("id").slash(memberInsertDto.getId()).toUri();
+            return ResponseEntity.created(createdUri).body(MemberResponseUtil.makeResponseResource(modelMapper.map(savedMember, Member.class)));
         }
         else{
             return ResponseEntity.status(202).build();
