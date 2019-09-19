@@ -1,19 +1,11 @@
 package com.uad2.application.member.service;
 
-import com.uad2.application.member.controller.MemberController;
+import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
-import com.uad2.application.member.entity.MemberInsertDto;
 import com.uad2.application.member.repository.MemberRepository;
-import com.uad2.application.utils.MemberResponseUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import javax.xml.ws.Response;
-import java.net.URI;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /*
  * @USER JungHyun
@@ -26,13 +18,13 @@ public class MemberService {
 
     @Autowired
     private ModelMapper modelMapper;
-    public Member createMember(MemberInsertDto memberInsertDto){
-        String phoneNumber = memberInsertDto.getPhoneNumber();
+
+    public Member createMember(MemberDto.Request request) {
+        String phoneNumber = request.getPhoneNumber();
         Member member = memberRepository.findByPhoneNumber(phoneNumber);
-        if(member == null){
-            return memberRepository.save(modelMapper.map(memberInsertDto,Member.class));
-        }
-        else{
+        if (member == null) {
+            return memberRepository.save(modelMapper.map(request, Member.class));
+        } else {
             return null;
         }
     }
