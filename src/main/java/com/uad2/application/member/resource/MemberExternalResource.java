@@ -21,7 +21,7 @@ public class MemberExternalResource extends ResourceSupport {//.add로 링크추
      * @param response 회원 Response 커맨드 객체
      * @return MemberExternalResource 인스턴스를 반환한다.
      */
-    public static MemberExternalResource from(MemberDto.Response response) {
+    public static MemberExternalResource createResourceFrom(MemberDto.Response response) {
         return new MemberExternalResource(response);
     }
 

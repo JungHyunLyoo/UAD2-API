@@ -19,11 +19,11 @@ public class MemberService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public Member createMember(MemberDto.Request request) {
-        String phoneNumber = request.getPhoneNumber();
+    public Member createMember(MemberDto.Request requestMember) {
+        String phoneNumber = requestMember.getPhoneNumber();
         Member member = memberRepository.findByPhoneNumber(phoneNumber);
         if (member == null) {
-            return memberRepository.save(modelMapper.map(request, Member.class));
+            return memberRepository.save(modelMapper.map(requestMember, Member.class));
         } else {
             return null;
         }

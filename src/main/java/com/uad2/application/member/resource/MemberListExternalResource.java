@@ -23,7 +23,7 @@ public class MemberListExternalResource extends ResourceSupport {
      * @param responseList 회원 Response List 커맨드 객체
      * @return MemberListExternalResource 인스턴스를 반환한다.
      */
-    public static MemberListExternalResource from(List<MemberDto.Response> responseList) {
+    public static MemberListExternalResource createResourceFrom(List<MemberDto.Response> responseList) {
         return new MemberListExternalResource(responseList);
     }
 

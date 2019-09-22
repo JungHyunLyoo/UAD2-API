@@ -57,14 +57,14 @@ public class MemberController {
      * 회원 생성 API
      */
     @PostMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
-    public ResponseEntity createMember(@RequestBody MemberDto.Request request, Errors errors) throws Exception {
-        memberValidator.createMemberValidate(request, errors);
+    public ResponseEntity createMember(@RequestBody MemberDto.Request requestMember, Errors errors) throws Exception {
+        memberValidator.createMemberValidate(requestMember, errors);
         if (errors.hasErrors()) {
             return ResponseEntity.badRequest().body(errors);
         }
-        Member savedMember = memberService.createMember(request);
+        Member savedMember = memberService.createMember(requestMember);
         if (savedMember != null) {
-            URI createdUri = linkTo(MemberController.class).slash("id").slash(request.getId()).toUri();
+            URI createdUri = linkTo(MemberController.class).slash("id").slash(requestMember.getId()).toUri();
             return ResponseEntity.created(createdUri).body(MemberResponseUtil.makeResponseResource(modelMapper.map(savedMember, Member.class)));
         } else {
             return ResponseEntity.status(202).build();

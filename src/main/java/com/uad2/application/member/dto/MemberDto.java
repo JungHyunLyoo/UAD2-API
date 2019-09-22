@@ -32,7 +32,6 @@ public class MemberDto {
     }
 
     @Getter
-    @Setter
     public static class Response {
         private String id;
 

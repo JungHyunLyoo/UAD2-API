@@ -27,7 +27,7 @@ public class MemberResponseUtil {
      */
     public static MemberExternalResource makeResponseResource(Member member) {
         MemberDto.Response response = modelMapper.map(member, MemberDto.Response.class);
-        MemberExternalResource memberExternalResource = MemberExternalResource.from(response);
+        MemberExternalResource memberExternalResource = MemberExternalResource.createResourceFrom(response);
         memberExternalResource.add(new Link("/docs/index.html").withRel("profile"));
         return memberExternalResource;
     }
@@ -42,7 +42,7 @@ public class MemberResponseUtil {
         List<MemberDto.Response> responseList = memberList.stream()
                 .map(member -> modelMapper.map(member, MemberDto.Response.class))
                 .collect(Collectors.toList());
-        MemberListExternalResource memberListExternalResource = MemberListExternalResource.from(responseList);
+        MemberListExternalResource memberListExternalResource = MemberListExternalResource.createResourceFrom(responseList);
         memberListExternalResource.add(new Link("/docs/index.html").withRel("profile"));
         return memberListExternalResource;
     }
