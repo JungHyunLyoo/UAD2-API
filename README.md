@@ -45,7 +45,13 @@ UAD's second project
 - jpa 2.1.5
 #### 협업도구
 - notion
+    - repository : https://www.notion.so/0dcf5ff7bda446b68f3bfacd9cc47880?v=e624d0e95ace45b6b29805434e2a1be7
+    - 작업 과정
+        1. pm은 칸반보드의 todo 리스트에 업무를 할당함
+        2. 각 작업자는 in Progress에 할당받은 업무를 이동시킴. 그리고 property에 종료 날짜를 기록함
+        3. 종료 기한을 못지키면 5천원 기부행
     - 사용 가이드 : https://www.notion.so/Notion-1ad7ccbc41a44298814a4820d4acb14e
+    
 - git
     - source tree 3.0.8
     - git bash
