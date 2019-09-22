@@ -13,7 +13,6 @@ public class MemberValidator {
     public void createMemberValidate(MemberInsertDto memberInsertDto, Errors errors){
         String id = memberInsertDto.getId();
         if(id == null || "".equals(id)){
-            
             errors.rejectValue("id","wrongValue", "id is empty");
         }
     }
