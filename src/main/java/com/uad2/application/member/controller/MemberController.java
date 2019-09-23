@@ -1,8 +1,8 @@
 package com.uad2.application.member.controller;
 
 import com.uad2.application.member.MemberValidator;
+import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
-import com.uad2.application.member.entity.MemberInsertDto;
 import com.uad2.application.member.repository.MemberRepository;
 import com.uad2.application.member.service.MemberService;
 import com.uad2.application.utils.MemberResponseUtil;
@@ -29,35 +29,44 @@ public class MemberController {
     @Autowired
     private MemberRepository memberRepository;
 
-
     @Autowired
     MemberValidator memberValidator;
 
     @Autowired
     MemberService memberService;
 
+    /**
+     * 회원 전체 조회 API
+     */
     @GetMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
-    public ResponseEntity getAllMember(){
+    public ResponseEntity getAllMember() {
         List<Member> memberList = memberRepository.findAll();
         return ResponseEntity.ok(MemberResponseUtil.makeListResponseResource(memberList));
     }
+
+    /**
+     * 회원 id 조회 API
+     */
     @GetMapping(value = "/api/member/id/{id}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
-    public ResponseEntity getMemberById(@PathVariable String id){
+    public ResponseEntity getMemberById(@PathVariable String id) {
         Member member = memberRepository.findById(id);
         return ResponseEntity.ok(MemberResponseUtil.makeResponseResource(member));
     }
+
+    /**
+     * 회원 생성 API
+     */
     @PostMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
-    public ResponseEntity createMember(@RequestBody MemberInsertDto memberInsertDto, Errors errors) throws Exception{
-        memberValidator.createMemberValidate(memberInsertDto,errors);
-        if(errors.hasErrors()){
+    public ResponseEntity createMember(@RequestBody MemberDto.Request requestMember, Errors errors) throws Exception {
+        memberValidator.createMemberValidate(requestMember, errors);
+        if (errors.hasErrors()) {
             return ResponseEntity.badRequest().body(errors);
         }
-        Member savedMember = memberService.createMember(memberInsertDto);
-        if(savedMember != null){
-            URI createdUri = linkTo(MemberController.class).slash("id").slash(memberInsertDto.getId()).toUri();
+        Member savedMember = memberService.createMember(requestMember);
+        if (savedMember != null) {
+            URI createdUri = linkTo(MemberController.class).slash("id").slash(requestMember.getId()).toUri();
             return ResponseEntity.created(createdUri).body(MemberResponseUtil.makeResponseResource(modelMapper.map(savedMember, Member.class)));
-        }
-        else{
+        } else {
             return ResponseEntity.status(202).build();
         }
     }
