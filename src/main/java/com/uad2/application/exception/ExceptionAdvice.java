@@ -15,6 +15,9 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class ExceptionAdvice {
+    //등록한 익셉션이 발생하면, 해당 ExceptionHandler에
+    //매핑되어 알맞은 에러 처리 가능
+
     @ExceptionHandler(value = { RuntimeException.class })
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String,String> runtimeException(RuntimeException e) {
@@ -24,6 +27,7 @@ public class ExceptionAdvice {
         return returnMap;
     }
 
+    //커스텀 익셉션
     @ExceptionHandler(value = { TestException.class })
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String,String> testException(TestException e) {

@@ -28,17 +28,4 @@ public class PropertiesBundle {
     public void setMessageHostNumber(String messageHostNumber){
         PropertiesBundle.MESSAGE_HOST_NUMBER = messageHostNumber;
     }
-    /*
-    message.uId=SJCE
-    message.uPwd=sjce1234
-    message.hostPhoneNumber=01094736496
-     */
-    /*
-    @Value("${uId}")
-    public static String uId;
-    @Value("${uPwd}")
-    public static String uPwd;
-    @Value("${hostPhoneNumber}")
-    public static String hostPhoneNumber;
-     */
 }

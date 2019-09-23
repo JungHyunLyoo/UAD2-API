@@ -23,7 +23,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RestController
 public class MemberController {
     static final Logger logger = LoggerFactory.getLogger(MemberController.class);
-    @Autowired
+    @Autowired//bean등록 된 클래스들을 가져다 쓸 수 있게 함.
     private ModelMapper modelMapper;
 
     @Autowired
@@ -37,6 +37,8 @@ public class MemberController {
 
     /**
      * 회원 전체 조회 API
+     * GetMapping : get 요청을 받아 해당 메소드와 매핑
+     * produces : return 하는 형식
      */
     @GetMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity getAllMember() {
