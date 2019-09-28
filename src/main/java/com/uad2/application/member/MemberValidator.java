@@ -4,17 +4,16 @@ package com.uad2.application.member;
  * @DATE 2019-09-09
  */
 
+import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.dto.MemberDto;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.Errors;
 
 @Component
 public class MemberValidator {
-    public void createMemberValidate(MemberDto.Request requestMember, Errors errors){
+    public void validateCreateMember(MemberDto.Request requestMember) throws ClientException {
         String id = requestMember.getId();
-        if(id == null || "".equals(id)){
-            
-            errors.rejectValue("id","wrongValue", "id is empty");
+        if(id == null || id.isEmpty()){
+            throw new ClientException("id fail");
         }
     }
 }

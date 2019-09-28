@@ -28,9 +28,9 @@ public class ExceptionAdvice {
     }
 
     //커스텀 익셉션
-    @ExceptionHandler(value = { TestException.class })
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String,String> testException(TestException e) {
+    @ExceptionHandler(value = { ClientException.class })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String,String> clientException(ClientException e) {
         Map<String,String> returnMap = new HashMap<>();
         returnMap.put("error",e.toString());
         returnMap.put("message",e.getMessage());
