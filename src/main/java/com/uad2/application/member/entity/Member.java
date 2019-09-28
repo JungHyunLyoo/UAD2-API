@@ -40,7 +40,7 @@ public class Member {
     @Column(name = "birth_day")
     private Date birthDay;
 
-    @Column(name = "attd_cnt")
+    @Column(name = "attd_cnt", columnDefinition = "int default 0")
     private int attdCnt;
 
     @Column(name = "profile_img",length = 30)
