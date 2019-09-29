@@ -1,5 +1,6 @@
 package com.uad2.application.member.service;
 
+import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
 import com.uad2.application.member.repository.MemberRepository;
@@ -19,14 +20,18 @@ public class MemberService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public Member createMember(MemberDto.Request requestMember) {
+
+
+
+    public Member createMember(MemberDto.Request requestMember) throws ClientException{
         String phoneNumber = requestMember.getPhoneNumber();
         Member member = memberRepository.findByPhoneNumber(phoneNumber);
-        if (member == null) {
-            return memberRepository.save(modelMapper.map(requestMember, Member.class));
-        } else {
-            return null;
+        if(member != null){
+            throw new ClientException("The phone number is already exist");
         }
+        return memberRepository.save(modelMapper.map(requestMember, Member.class));
     }
+
+
 
 }
