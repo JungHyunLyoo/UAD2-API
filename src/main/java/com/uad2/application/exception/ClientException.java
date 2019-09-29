@@ -5,8 +5,8 @@ package com.uad2.application.exception;
  * @DESCRIPTION
  */
 
-public class TestException extends RuntimeException{
-    public TestException(String msg){
+public class ClientException extends RuntimeException{
+    public ClientException(String msg){
         super(msg);
     }
 }

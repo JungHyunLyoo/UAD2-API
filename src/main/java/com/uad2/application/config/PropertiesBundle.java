@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("classpath:/config.properties")//classpath : test 실행 가능
+@PropertySource("classpath:/application.properties")
 public class PropertiesBundle {
 
     public static String MESSAGE_URL;
@@ -28,17 +28,4 @@ public class PropertiesBundle {
     public void setMessageHostNumber(String messageHostNumber){
         PropertiesBundle.MESSAGE_HOST_NUMBER = messageHostNumber;
     }
-    /*
-    message.uId=SJCE
-    message.uPwd=sjce1234
-    message.hostPhoneNumber=01094736496
-     */
-    /*
-    @Value("${uId}")
-    public static String uId;
-    @Value("${uPwd}")
-    public static String uPwd;
-    @Value("${hostPhoneNumber}")
-    public static String hostPhoneNumber;
-     */
 }

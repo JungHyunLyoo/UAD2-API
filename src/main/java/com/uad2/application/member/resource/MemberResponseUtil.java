@@ -1,4 +1,4 @@
-package com.uad2.application.utils;
+package com.uad2.application.member.resource;
 /*
  * @USER JungHyun
  * @DATE 2019-09-12

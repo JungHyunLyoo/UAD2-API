@@ -4,17 +4,26 @@ package com.uad2.application.member;
  * @DATE 2019-09-09
  */
 
+import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.dto.MemberDto;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.Errors;
+
+import java.lang.reflect.Field;
 
 @Component
 public class MemberValidator {
-    public void createMemberValidate(MemberDto.Request requestMember, Errors errors){
-        String id = requestMember.getId();
-        if(id == null || "".equals(id)){
-            
-            errors.rejectValue("id","wrongValue", "id is empty");
+    public void validateCreateMember(MemberDto.Request requestMember) {
+        for (Field declaredField : requestMember.getClass().getDeclaredFields()) {
+            //private 필드에 접근 허용
+            declaredField.setAccessible(true);
+            try {
+                Object value = declaredField.get(requestMember);
+                if(value == null || value.toString().isEmpty()){
+                    throw new ClientException(declaredField.getName() + " is empty");
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("validateCreateMember error");
+            }
         }
     }
 }
