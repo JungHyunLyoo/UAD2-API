@@ -1,4 +1,4 @@
-package com.uad2.application.attendance;
+package com.uad2.application.attendance.entity;
 
 import javax.persistence.*;
 import java.util.Date;
