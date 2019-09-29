@@ -1,10 +1,12 @@
 package com.uad2.application.member.controller;
 
+import com.uad2.application.exception.MemberException;
 import com.uad2.application.member.MemberValidator;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
 import com.uad2.application.member.repository.MemberRepository;
 import com.uad2.application.member.service.MemberService;
+import com.uad2.application.utils.EncryptUtil;
 import com.uad2.application.utils.MemberResponseUtil;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -69,6 +71,25 @@ public class MemberController {
         } else {
             return ResponseEntity.status(202).build();
         }
+    }
+
+    /**
+     * 비밀번호 체크 - 프로필 수정 검증용
+     */
+    @PostMapping(value = "/api/member/checkPwd", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
+    public ResponseEntity checkPwd(@RequestBody MemberDto.Request requestMember, Errors errors) throws Exception {
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().body(errors);
+        }
+
+        Member member = memberRepository.findById(requestMember.getId());
+
+        // check password equals
+        if (!member.getPwd().equals(EncryptUtil.encryptMD5(requestMember.getPwd()))) {
+            throw new MemberException("Password not matched");
+        }
+
+        return ResponseEntity.ok().build();
     }
 }
 /*
