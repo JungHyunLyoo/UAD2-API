@@ -4,15 +4,15 @@ import com.uad2.application.member.MemberValidator;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
 import com.uad2.application.member.repository.MemberRepository;
+import com.uad2.application.member.resource.MemberExternalResource;
 import com.uad2.application.member.service.MemberService;
-import com.uad2.application.utils.MemberResponseUtil;
+import com.uad2.application.member.resource.MemberResponseUtil;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -59,18 +59,12 @@ public class MemberController {
      * 회원 생성 API
      */
     @PostMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
-    public ResponseEntity createMember(@RequestBody MemberDto.Request requestMember, Errors errors) throws Exception {
-        memberValidator.createMemberValidate(requestMember, errors);
-        if (errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(errors);
-        }
+    public ResponseEntity createMember(@RequestBody MemberDto.Request requestMember) {
+        memberValidator.validateCreateMember(requestMember);
         Member savedMember = memberService.createMember(requestMember);
-        if (savedMember != null) {
-            URI createdUri = linkTo(MemberController.class).slash("id").slash(requestMember.getId()).toUri();
-            return ResponseEntity.created(createdUri).body(MemberResponseUtil.makeResponseResource(modelMapper.map(savedMember, Member.class)));
-        } else {
-            return ResponseEntity.status(202).build();
-        }
+        URI createdUri = linkTo(MemberController.class).slash("id").slash(requestMember.getId()).toUri();
+        MemberExternalResource resource = MemberResponseUtil.makeResponseResource(modelMapper.map(savedMember, Member.class));
+        return ResponseEntity.created(createdUri).body(resource);
     }
 }
 /*
