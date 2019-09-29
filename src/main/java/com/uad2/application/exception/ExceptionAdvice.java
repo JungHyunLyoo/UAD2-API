@@ -21,19 +21,20 @@ public class ExceptionAdvice {
     @ExceptionHandler(value = { RuntimeException.class })
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String,String> runtimeException(RuntimeException e) {
-        Map<String,String> returnMap = new HashMap<>();
-        returnMap.put("error",e.toString());
-        returnMap.put("message",e.getMessage());
-        return returnMap;
+        return getDefaultErrorMessage(e.toString(),e.getMessage());
     }
 
     //커스텀 익셉션
     @ExceptionHandler(value = { ClientException.class })
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public Map<String,String> clientException(ClientException e) {
+        return getDefaultErrorMessage(e.toString(),e.getMessage());
+    }
+
+    private Map<String,String> getDefaultErrorMessage(String error,String message){
         Map<String,String> returnMap = new HashMap<>();
-        returnMap.put("error",e.toString());
-        returnMap.put("message",e.getMessage());
+        returnMap.put("error",error);
+        returnMap.put("message",message);
         return returnMap;
     }
 }
