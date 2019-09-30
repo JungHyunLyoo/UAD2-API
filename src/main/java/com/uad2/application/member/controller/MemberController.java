@@ -76,6 +76,11 @@ public class MemberController {
     public ResponseEntity checkPwd(@RequestBody MemberDto.Request requestMember) {
         Member member = memberRepository.findById(requestMember.getId());
 
+        // check member exist
+        if (member == null) {
+            throw new MemberException("Member is not exist");
+        }
+
         // check password equals
         if (!member.getPwd().equals(EncryptUtil.encryptMD5(requestMember.getPwd()))) {
             throw new MemberException("Password not matched");
