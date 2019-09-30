@@ -18,23 +18,31 @@ public class ExceptionAdvice {
     //등록한 익셉션이 발생하면, 해당 ExceptionHandler에
     //매핑되어 알맞은 에러 처리 가능
 
+    // default error form
+    private Map<String,String> getErrorForm(RuntimeException e) {
+        Map<String,String> returnMap = new HashMap<>();
+        returnMap.put("error",e.toString());
+        returnMap.put("message",e.getMessage());
+        return returnMap;
+    }
+
     @ExceptionHandler(value = { RuntimeException.class })
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String,String> runtimeException(RuntimeException e) {
-        return getDefaultErrorMessage(e.toString(),e.getMessage());
+        return getErrorForm(e);
     }
 
     //커스텀 익셉션
     @ExceptionHandler(value = { ClientException.class })
     @ResponseStatus(HttpStatus.ACCEPTED)
     public Map<String,String> clientException(ClientException e) {
-        return getDefaultErrorMessage(e.toString(),e.getMessage());
+        return getErrorForm(e);
     }
 
-    private Map<String,String> getDefaultErrorMessage(String error,String message){
-        Map<String,String> returnMap = new HashMap<>();
-        returnMap.put("error",error);
-        returnMap.put("message",message);
-        return returnMap;
+    // MemberController 에러
+    @ExceptionHandler(value = { MemberException.class })
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String,String> memberException(ClientException e) {
+        return getErrorForm(e);
     }
 }
