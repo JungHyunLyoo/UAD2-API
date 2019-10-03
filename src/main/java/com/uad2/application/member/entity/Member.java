@@ -34,13 +34,13 @@ public class Member {
     @Column(name = "phone_number" ,length = 15, unique = true)
     private String phoneNumber;
 
-    @Column(name = "student_id")
+    @Column(name = "student_id", nullable = false)
     private int studentId;
 
     @Column(name = "birth_day")
     private Date birthDay;
 
-    @Column(name = "attd_cnt", columnDefinition = "int default 0")
+    @Column(name = "attd_cnt", nullable = false, columnDefinition = "int default 0")
     private int attdCnt;
 
     @Column(name = "profile_img",length = 30)
@@ -53,13 +53,13 @@ public class Member {
     @Column(name = "session_limit")
     private Date sessionLimit;
 
-    @Column(name = "is_admin", columnDefinition = "int default 0")
+    @Column(name = "is_admin", nullable = false, columnDefinition = "int default 0")
     private int isAdmin;
 
-    @Column(name = "is_worker", columnDefinition = "int default 0")
+    @Column(name = "is_worker", nullable = false, columnDefinition = "int default 0")
     private int isWorker;
 
-    @Column(name = "is_benefit", columnDefinition = "int default 0")
+    @Column(name = "is_benefit", nullable = false, columnDefinition = "int default 0")
     private int isBenefit;
 
     @CreationTimestamp
