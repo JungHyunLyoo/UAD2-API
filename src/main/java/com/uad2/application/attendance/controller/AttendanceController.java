@@ -16,4 +16,10 @@ public class AttendanceController {
     @Autowired
     private AttendanceRepository attendanceRepository;
 
+    @GetMapping(value = "/api/attendance/memberSeq/{memberSeq}/date/{date}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
+    public ResponseEntity getAttendance(@PathVariable String memberSeq,
+                                        @PathVariable String date){
+        return null;
+    }
+
 }

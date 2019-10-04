@@ -1,4 +1,4 @@
-package com.uad2.application.calculation;
+package com.uad2.application.calculation.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;

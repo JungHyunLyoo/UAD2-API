@@ -1,4 +1,4 @@
-package com.uad2.application.matching;
+package com.uad2.application.matching.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
