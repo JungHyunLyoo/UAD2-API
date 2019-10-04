@@ -32,6 +32,19 @@ public class MemberDto {
     }
 
     @Getter
+    @Setter
+    public static class EditRequest {
+        private String pwd;
+
+        private Date birthDay;
+
+        private int studentId;
+
+        private String phoneNumber;
+    }
+
+    @Getter
+    @Setter
     public static class Response {
         private String id;
 

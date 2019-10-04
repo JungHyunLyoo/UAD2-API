@@ -6,7 +6,7 @@ package com.uad2.application.exception;
  */
 
 public class MemberException extends RuntimeException{
-    public MemberException(String msg){
+    public MemberException(String msg) {
         super(msg);
     }
 }
