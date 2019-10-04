@@ -5,11 +5,8 @@ package com.uad2.application.member.resource;
  * @DESCRIPTION 회원 API 반환 유틸
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
-import com.uad2.application.member.resource.MemberExternalResource;
-import com.uad2.application.member.resource.MemberListExternalResource;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.Link;
 

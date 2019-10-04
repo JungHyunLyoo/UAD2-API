@@ -43,8 +43,7 @@ public class MemberController {
      */
     @GetMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity getAllMember() {
-        List<Member> memberList = memberRepository.findAll();
-        return ResponseEntity.ok(MemberResponseUtil.makeListResponseResource(memberList));
+        return ResponseEntity.ok(MemberResponseUtil.makeListResponseResource(memberService.getAllMember()));
     }
 
     /**
@@ -52,8 +51,7 @@ public class MemberController {
      */
     @GetMapping(value = "/api/member/id/{id}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity getMemberById(@PathVariable String id) {
-        Member member = memberRepository.findById(id);
-        return ResponseEntity.ok(MemberResponseUtil.makeResponseResource(member));
+        return ResponseEntity.ok(MemberResponseUtil.makeResponseResource(memberService.getMemberById(id)));
     }
 
     /**

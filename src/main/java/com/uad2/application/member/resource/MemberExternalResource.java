@@ -7,6 +7,7 @@ package com.uad2.application.member.resource;
 
 import com.uad2.application.member.dto.MemberDto;
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.stereotype.Controller;
 
 public class MemberExternalResource extends ResourceSupport {//.add로 링크추가 가능
     private MemberDto.Response response;
