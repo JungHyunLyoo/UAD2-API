@@ -1,13 +1,11 @@
 package com.uad2.application.member.controller;
 
-import com.uad2.application.exception.MemberException;
 import com.uad2.application.member.MemberValidator;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
 import com.uad2.application.member.repository.MemberRepository;
 import com.uad2.application.member.resource.MemberExternalResource;
 import com.uad2.application.member.service.MemberService;
-import com.uad2.application.utils.EncryptUtil;
 import com.uad2.application.member.resource.MemberResponseUtil;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -36,6 +34,7 @@ public class MemberController {
 
     @Autowired
     MemberService memberService;
+
 
     /**
      * 회원 전체 조회 API
@@ -74,17 +73,17 @@ public class MemberController {
      */
     @PostMapping(value = "/api/member/checkPwd", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity checkPwd(@RequestBody MemberDto.Request requestMember) {
-        Member member = memberRepository.findById(requestMember.getId());
+        memberService.checkPwd(requestMember);
 
-        // check member exist
-        if (member == null) {
-            throw new MemberException("Member is not exist");
-        }
+        return ResponseEntity.ok().build();
+    }
 
-        // check password equals
-        if (!member.getPwd().equals(EncryptUtil.encryptMD5(requestMember.getPwd()))) {
-            throw new MemberException("Password not matched");
-        }
+    /**
+     * 아이디 중복 체크 - 회원가입시 별도 체크용
+     */
+    @GetMapping(value = "/api/member/checkId/{id}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
+    public ResponseEntity checkId(@PathVariable String id) {
+        memberService.checkId(id);
 
         return ResponseEntity.ok().build();
     }

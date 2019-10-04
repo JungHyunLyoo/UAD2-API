@@ -7,6 +7,9 @@ import com.uad2.application.member.repository.MemberRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.uad2.application.utils.EncryptUtil;
+
+import java.util.Optional;
 
 /*
  * @USER JungHyun
@@ -20,18 +23,30 @@ public class MemberService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private MemberFindService memberFindService;
 
 
+    public Member createMember(MemberDto.Request requestMember) throws ClientException {
+        memberFindService.isExistByPhoneNumber(requestMember.getPhoneNumber());
 
-    public Member createMember(MemberDto.Request requestMember) throws ClientException{
-        String phoneNumber = requestMember.getPhoneNumber();
-        Member member = memberRepository.findByPhoneNumber(phoneNumber);
-        if(member != null){
-            throw new ClientException("The phone number is already exist");
-        }
         return memberRepository.save(modelMapper.map(requestMember, Member.class));
     }
 
+    public void checkPwd(MemberDto.Request requestMember) throws ClientException {
+        Member member = memberFindService.findById(requestMember.getId());
 
+        // check password equals
+        if (!member.getPwd().equals(EncryptUtil.encryptMD5(requestMember.getPwd()))) {
+            throw new ClientException("Password not matched");
+        }
+    }
 
+    public void checkId(String id) throws ClientException {
+        memberFindService.isExistById(id);
+    }
+
+    /*public void editProfile(MemberDto.EditRequest requestMember) throws ClientException {
+        this.checkPwd(requestMember);
+    }*/
 }

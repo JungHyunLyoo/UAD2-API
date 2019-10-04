@@ -38,11 +38,4 @@ public class ExceptionAdvice {
     public Map<String,String> clientException(ClientException e) {
         return getErrorForm(e);
     }
-
-    // MemberController 에러
-    @ExceptionHandler(value = { MemberException.class })
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String,String> memberException(ClientException e) {
-        return getErrorForm(e);
-    }
 }
