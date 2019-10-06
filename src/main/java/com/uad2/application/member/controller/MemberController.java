@@ -1,5 +1,6 @@
 package com.uad2.application.member.controller;
 
+import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.MemberValidator;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
@@ -9,10 +10,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
@@ -34,7 +41,9 @@ public class MemberController {
      */
     @GetMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity getAllMember() {
-        return ResponseEntity.ok(MemberResponseUtil.makeListResponseResource(memberService.getAllMember()));
+        List<Member> memberList = Optional.ofNullable(memberService.getAllMember())
+                .orElseThrow(() -> new ClientException("Member is not exist"));
+        return ResponseEntity.ok(MemberResponseUtil.makeListResponseResource(memberList));
     }
 
     /**
@@ -42,7 +51,9 @@ public class MemberController {
      */
     @GetMapping(value = "/api/member/id/{id}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity getMemberById(@PathVariable String id) {
-        return ResponseEntity.ok(MemberResponseUtil.makeResponseResource(memberService.getMemberById(id)));
+        Member member = Optional.ofNullable(memberService.getMemberById(id))
+                .orElseThrow(() -> new ClientException("Member is not exist"));
+        return ResponseEntity.ok(MemberResponseUtil.makeResponseResource(member));
     }
 
     /**
@@ -51,6 +62,12 @@ public class MemberController {
     @PostMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity createMember(@RequestBody MemberDto.Request requestMember) {
         memberValidator.validateCreateMember(requestMember);
+
+        String phoneNumber = requestMember.getPhoneNumber();
+        if(!ObjectUtils.isEmpty(memberService.findByPhoneNumber(phoneNumber))){
+            throw new ClientException(String.format("PhoneNumber(%s) already exist", phoneNumber));
+        }
+
         Member savedMember = memberService.createMember(requestMember);
         URI createdUri = linkTo(MemberController.class).slash("id").slash(requestMember.getId()).toUri();
         return ResponseEntity.created(createdUri).body(MemberResponseUtil.makeResponseResource(savedMember));
@@ -59,21 +76,21 @@ public class MemberController {
     /**
      * 비밀번호 체크 - 프로필 수정 검증용
      */
-    @PostMapping(value = "/api/member/checkPwd", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
+    @PostMapping(value = "/api/member/checkPwd", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity checkPwd(@RequestBody MemberDto.Request requestMember) {
-        memberService.checkPwd(requestMember);
-
-        return ResponseEntity.ok().build();
+        Map<String,Object> returnMap = new HashMap<>();
+        returnMap.put("isSamePwd",memberService.isSamePwd(requestMember));
+        return ResponseEntity.ok().body(returnMap);
     }
 
     /**
      * 아이디 중복 체크 - 회원가입시 별도 체크용
      */
-    @GetMapping(value = "/api/member/checkId/{id}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
+    @GetMapping(value = "/api/member/checkId/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity checkId(@PathVariable String id) {
-        memberService.checkId(id);
-
-        return ResponseEntity.ok().build();
+        Map<String,Object> returnMap = new HashMap<>();
+        returnMap.put("alreadyExistId",memberService.isExistMemberById(id));
+        return ResponseEntity.ok().body(returnMap);
     }
 }
 /*
