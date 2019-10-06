@@ -46,11 +46,6 @@ public class MemberService {
         }
     }
 
-    public boolean isExistMemberById(String id) throws ClientException {
-        Member member = memberRepository.findById(id);
-        return !ObjectUtils.isEmpty(member);
-    }
-
     public Member findByPhoneNumber(String phoneNumber) {
         return memberRepository.findByPhoneNumber(phoneNumber);
     }

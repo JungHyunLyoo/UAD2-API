@@ -89,7 +89,7 @@ public class MemberController {
     @GetMapping(value = "/api/member/checkId/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity checkId(@PathVariable String id) {
         Map<String,Object> returnMap = new HashMap<>();
-        returnMap.put("alreadyExistId",memberService.isExistMemberById(id));
+        returnMap.put("alreadyExistId",memberService.getMemberById(id) != null);
         return ResponseEntity.ok().body(returnMap);
     }
 }
