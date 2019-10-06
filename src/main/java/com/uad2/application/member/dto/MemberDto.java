@@ -29,6 +29,8 @@ public class MemberDto {
         private int isWorker;
 
         private String phoneNumber;
+
+        private boolean isAutoLogin;
     }
 
     @Getter
