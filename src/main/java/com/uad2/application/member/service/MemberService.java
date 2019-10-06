@@ -20,7 +20,6 @@ import java.util.List;
 public class MemberService {
     @Autowired
     private MemberRepository memberRepository;
-
     @Autowired
     private ModelMapper modelMapper;
 
