@@ -37,6 +37,9 @@ public class MemberResponseUtil {
      * @RESOURCE : HAL(반환 데이터에 관련 하이퍼링크를 제공하는 방식)을 적용한 반환 형식
      */
     public static MemberListExternalResource makeListResponseResource(List<Member> memberList) {
+        if(memberList == null){
+            throw new RuntimeException("MemberList is null");
+        }
         List<MemberDto.Response> responseList = memberList.stream()
                 .map(member -> modelMapper.map(member, MemberDto.Response.class))
                 .collect(Collectors.toList());

@@ -3,11 +3,8 @@ package com.uad2.application.member.controller;
 import com.uad2.application.member.MemberValidator;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
-import com.uad2.application.member.repository.MemberRepository;
-import com.uad2.application.member.resource.MemberExternalResource;
 import com.uad2.application.member.service.MemberService;
 import com.uad2.application.member.resource.MemberResponseUtil;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,18 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RestController
 public class MemberController {
     static final Logger logger = LoggerFactory.getLogger(MemberController.class);
-    @Autowired//bean등록 된 클래스들을 가져다 쓸 수 있게 함.
-    private ModelMapper modelMapper;
-
-    @Autowired
-    private MemberRepository memberRepository;
 
     @Autowired
     MemberValidator memberValidator;
@@ -62,8 +53,7 @@ public class MemberController {
         memberValidator.validateCreateMember(requestMember);
         Member savedMember = memberService.createMember(requestMember);
         URI createdUri = linkTo(MemberController.class).slash("id").slash(requestMember.getId()).toUri();
-        MemberExternalResource resource = MemberResponseUtil.makeResponseResource(modelMapper.map(savedMember, Member.class));
-        return ResponseEntity.created(createdUri).body(resource);
+        return ResponseEntity.created(createdUri).body(MemberResponseUtil.makeResponseResource(savedMember));
     }
 
     /**

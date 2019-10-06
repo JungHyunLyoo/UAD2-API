@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.uad2.application.utils.EncryptUtil;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,17 +26,21 @@ public class MemberService {
     private ModelMapper modelMapper;
 
     public List<Member> getAllMember(){
-        return memberRepository.findAll();
-    }
-
-    public Member createMember(MemberDto.Request requestMember) {
-        this.isExistByPhoneNumber(requestMember.getPhoneNumber());
-        return memberRepository.save(modelMapper.map(requestMember, Member.class));
+        return Optional.ofNullable(memberRepository.findAll())
+                .orElseThrow(() -> new ClientException("No member is exist"));
     }
 
     public Member getMemberById(String id) {
         return Optional.ofNullable(memberRepository.findById(id))
                 .orElseThrow(() -> new ClientException(String.format("Member(%s) is not exist", id)));
+    }
+
+    public Member createMember(MemberDto.Request requestMember) {
+        String phoneNumber = requestMember.getPhoneNumber();
+        if(ObjectUtils.isEmpty(memberRepository.findByPhoneNumber(phoneNumber))){
+            throw new ClientException(String.format("PhoneNumber(%s) already exist", phoneNumber));
+        }
+        return memberRepository.save(modelMapper.map(requestMember, Member.class));
     }
 
     public void checkPwd(MemberDto.Request requestMember) throws ClientException {
@@ -53,11 +58,6 @@ public class MemberService {
     public Member findByPhoneNumber(String phoneNumber) {
         return Optional.ofNullable(memberRepository.findByPhoneNumber(phoneNumber))
                 .orElseThrow(() -> new ClientException(String.format("Member(%s) is not exist", phoneNumber)));
-    }
-
-    public void isExistByPhoneNumber(String phoneNumber) {
-        Optional.ofNullable(memberRepository.findByPhoneNumber(phoneNumber))
-                .ifPresent(member -> { throw new ClientException(String.format("PhoneNumber(%s) already exist", phoneNumber)); });
     }
     /*
     public void editProfile(MemberDto.EditRequest requestMember) throws ClientException {
