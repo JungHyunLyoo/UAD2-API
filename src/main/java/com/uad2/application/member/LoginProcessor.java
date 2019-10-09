@@ -6,12 +6,14 @@ package com.uad2.application.member;
  * @DESCRIPTION 로그인 처리기 (자동 로그인, 일반 로그인)
  */
 
+import com.uad2.application.common.CookieName;
 import com.uad2.application.exception.ClientException;
-import com.uad2.application.member.dto.LoginDto;
+import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
 import com.uad2.application.member.service.MemberService;
 import com.uad2.application.utils.CookieUtil;
 import com.uad2.application.utils.EncryptUtil;
+import com.uad2.application.utils.SessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,8 +24,6 @@ import java.util.Optional;
 import java.util.TimeZone;
 
 import static com.uad2.application.member.SessionValidator.isSessionExpired;
-import static com.uad2.application.utils.CookieUtil.setCookie;
-import static com.uad2.application.utils.SessionUtil.setSession;
 
 @Component
 public class LoginProcessor {
@@ -34,7 +34,7 @@ public class LoginProcessor {
     /**
      * 일반 로그인 처리 메소드
      */
-    public void login(HttpSession session, HttpServletResponse response, LoginDto requestLogin) {
+    public void login(HttpSession session, HttpServletResponse response, MemberDto.Request requestLogin) {
         Member member = this.isAccountValid(requestLogin.getId(), requestLogin.getPwd());
         this.updateSessionInfo(session, member);
         this.updateCookieInfo(response, member, session.getId(), requestLogin.getIsAutoLogin());
@@ -64,7 +64,7 @@ public class LoginProcessor {
     }
 
     /**
-     * 쿠키에 담긴 session_id로 해당 Member의 세션이 유효한지 확인한다.
+     * 쿠키에 담긴 session_id로 해당 회원의 세션이 유효한지 확인한다.
      */
     private Member isSessionValid(String sessionId, String id) {
         Member member = Optional.ofNullable(memberService.getMemberByIdAndSessionId(id, sessionId))
@@ -76,32 +76,32 @@ public class LoginProcessor {
 
         return member;
     }
+
     /**
      * 세션 정보를 업데이트 한다..
      */
     public void updateSessionInfo(HttpSession session, Member member) {
         // 세션 설정
-        setSession(session, "member", member);
+        SessionUtil.setSession(session, "member", member);
 
         // 회원 DB의 세션 정보 업데이트
         this.updateSessionInfoInRepository(member, session.getId(), session.getMaxInactiveInterval());
     }
 
     /**
-     * is_auto true인 경우 쿠키 정보를 추가한다.
+     * 자동 로그인 true인 경우 쿠키 정보를 추가한다.
      */
     private void updateCookieInfo(HttpServletResponse response, Member member, String sessionId, boolean isAutoLogin) {
-       if (isAutoLogin) {
-           // 쿠키 정보 추가
-           final int TRUE = 1;
-           response.addCookie(setCookie(CookieUtil.CookieName.ID, member.getId()));
-           response.addCookie(setCookie(CookieUtil.CookieName.NAME, member.getName()));
-           response.addCookie(setCookie(CookieUtil.CookieName.PHONE_NUM, member.getPhoneNumber()));
-           response.addCookie(setCookie(CookieUtil.CookieName.IS_WORKER, Integer.toString(member.getIsWorker())));
-           response.addCookie(setCookie(CookieUtil.CookieName.SESSION_ID, sessionId));
-           response.addCookie(setCookie(CookieUtil.CookieName.IS_ADMIN, Integer.toString(member.getIsAdmin())));
-           response.addCookie(setCookie(CookieUtil.CookieName.IS_AUTO_LOGIN, Integer.toString(TRUE)));
-       }
+        if (isAutoLogin) {
+            // 쿠키 정보 추가
+            response.addCookie(CookieUtil.setCookie(CookieName.ID, member.getId()));
+            response.addCookie(CookieUtil.setCookie(CookieName.NAME, member.getName()));
+            response.addCookie(CookieUtil.setCookie(CookieName.PHONE_NUM, member.getPhoneNumber()));
+            response.addCookie(CookieUtil.setCookie(CookieName.IS_WORKER, Integer.toString(member.getIsWorker())));
+            response.addCookie(CookieUtil.setCookie(CookieName.SESSION_ID, sessionId));
+            response.addCookie(CookieUtil.setCookie(CookieName.IS_ADMIN, Integer.toString(member.getIsAdmin())));
+            response.addCookie(CookieUtil.setCookie(CookieName.IS_AUTO_LOGIN, Boolean.toString(true)));
+        }
     }
 
     /**

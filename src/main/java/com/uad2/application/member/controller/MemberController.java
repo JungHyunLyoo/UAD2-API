@@ -1,11 +1,11 @@
 package com.uad2.application.member.controller;
 
 import com.uad2.application.common.Auth;
+import com.uad2.application.common.CookieName;
 import com.uad2.application.common.Role;
 import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.LoginProcessor;
 import com.uad2.application.member.MemberValidator;
-import com.uad2.application.member.dto.LoginDto;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
 import com.uad2.application.member.resource.MemberResponseUtil;
@@ -24,12 +24,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 import java.net.URI;
 import java.util.*;
 
-import static com.uad2.application.utils.CookieUtil.getCookie;
-import static com.uad2.application.utils.CookieUtil.removeAllCookies;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RestController
@@ -114,7 +111,7 @@ public class MemberController {
     public ResponseEntity login(
             HttpSession session,
             HttpServletResponse response,
-            @RequestBody @Valid LoginDto requestLogin) {
+            @RequestBody MemberDto.Request requestLogin) {
         loginProcessor.login(session, response, requestLogin);
 
         return ResponseEntity.ok().build();
@@ -130,8 +127,8 @@ public class MemberController {
         // 쿠키 삭제
         Cookie[] cookies = request.getCookies();
         if (Objects.nonNull(cookies)
-                && Objects.nonNull(getCookie(Arrays.asList(cookies), CookieUtil.CookieName.SESSION_ID))) {
-            for (Cookie cookie : removeAllCookies(Arrays.asList(request.getCookies()))) {
+                && Objects.nonNull(CookieUtil.getCookie(Arrays.asList(cookies), CookieName.SESSION_ID))) {
+            for (Cookie cookie : CookieUtil.removeAllCookies(Arrays.asList(request.getCookies()))) {
                 response.addCookie(cookie);
             }
         }

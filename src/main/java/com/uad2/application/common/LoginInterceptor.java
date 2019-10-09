@@ -1,7 +1,7 @@
 package com.uad2.application.common;
 
 /*
- * @USER owen
+ * @USER Jongyeob Kim
  * @DATE 2019-10-05
  * @DESCRIPTION 로그인 인터셉터. 자동 로그인/일반 로그인을 처리한다.
  */
@@ -22,8 +22,6 @@ import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static com.uad2.application.utils.CookieUtil.getCookie;
-
 @Component
 public class LoginInterceptor extends HandlerInterceptorAdapter {
 
@@ -42,9 +40,9 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
 
-        Cookie sessionIdInCookie = getCookie(Arrays.asList(request.getCookies()), CookieUtil.CookieName.SESSION_ID);
-        Cookie idInCookie = getCookie(Arrays.asList(request.getCookies()), CookieUtil.CookieName.ID);
-        Cookie isAutoLoginInCookie = getCookie(Arrays.asList(request.getCookies()), CookieUtil.CookieName.IS_AUTO_LOGIN);
+        Cookie sessionIdInCookie = CookieUtil.getCookie(Arrays.asList(request.getCookies()), CookieName.SESSION_ID);
+        Cookie idInCookie = CookieUtil.getCookie(Arrays.asList(request.getCookies()), CookieName.ID);
+        Cookie isAutoLoginInCookie = CookieUtil.getCookie(Arrays.asList(request.getCookies()), CookieName.IS_AUTO_LOGIN);
 
         // 자동 로그인 처리를 위한 null 체크
         if (Objects.nonNull(sessionIdInCookie) && Objects.nonNull(idInCookie) && Objects.nonNull(isAutoLoginInCookie)) {

@@ -6,11 +6,10 @@ package com.uad2.application.member.controller;
  */
 
 import com.uad2.application.common.BaseControllerTest;
+import com.uad2.application.common.CookieName;
 import com.uad2.application.common.TestDescription;
-import com.uad2.application.member.dto.LoginDto;
+import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
-import com.uad2.application.member.entity.MemberInsertDto;
-import com.uad2.application.utils.CookieUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.hateoas.MediaTypes;
@@ -164,7 +163,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("회원 데이터 생성")
     public void createMember() throws Exception {
-        MemberInsertDto member = MemberInsertDto.builder()
+        MemberDto.Request member = MemberDto.Request.builder()
                 .id("test")
                 .pwd("test")
                 .name("test")
@@ -196,13 +195,15 @@ public class MemberControllerTests extends BaseControllerTest {
                                 fieldWithPath("birthDay").type(JsonFieldType.STRING).description("생일"),
                                 fieldWithPath("studentId").type(JsonFieldType.NUMBER).description("학번"),
                                 fieldWithPath("isWorker").type(JsonFieldType.NUMBER).description("직장인 여부"),
-                                fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("핸드폰 번호")
+                                fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("핸드폰 번호"),
+                                fieldWithPath("isAutoLogin").type(JsonFieldType.BOOLEAN).description("자동 로그인 flag").optional()
                         ),
                         responseFields(
                                 subsectionWithPath("member").description("회원 데이터"),
                                 subsectionWithPath("_links").description("링크")
                         )
-                ));
+                ))
+        ;
     }
 
     @Test
@@ -248,7 +249,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("일반 로그인 테스트 (자동 로그인 true)")
     public void loginMember_general_isAutoLogin_true() throws Exception {
-        LoginDto login = LoginDto.builder()
+        MemberDto.Request login = MemberDto.Request.builder()
                 .id("testUser")
                 .pwd("testUser")
                 .isAutoLogin(true)
@@ -263,20 +264,20 @@ public class MemberControllerTests extends BaseControllerTest {
 
         result.andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(cookie().exists(CookieUtil.CookieName.ID.getName()))
-                .andExpect(cookie().exists(CookieUtil.CookieName.NAME.getName()))
-                .andExpect(cookie().exists(CookieUtil.CookieName.PHONE_NUM.getName()))
-                .andExpect(cookie().exists(CookieUtil.CookieName.IS_WORKER.getName()))
-                .andExpect(cookie().exists(CookieUtil.CookieName.SESSION_ID.getName()))
-                .andExpect(cookie().exists(CookieUtil.CookieName.IS_ADMIN.getName()))
-                .andExpect(cookie().exists(CookieUtil.CookieName.IS_AUTO_LOGIN.getName()));
+                .andExpect(cookie().exists(CookieName.ID.getName()))
+                .andExpect(cookie().exists(CookieName.NAME.getName()))
+                .andExpect(cookie().exists(CookieName.PHONE_NUM.getName()))
+                .andExpect(cookie().exists(CookieName.IS_WORKER.getName()))
+                .andExpect(cookie().exists(CookieName.SESSION_ID.getName()))
+                .andExpect(cookie().exists(CookieName.IS_ADMIN.getName()))
+                .andExpect(cookie().exists(CookieName.IS_AUTO_LOGIN.getName()));
     }
 
     @Test
     @Transactional
     @TestDescription("일반 로그인 테스트 (자동 로그인 false)")
     public void loginMember_general_isAutoLogin_false() throws Exception {
-        LoginDto login = LoginDto.builder()
+        MemberDto.Request login = MemberDto.Request.builder()
                 .id("testUser")
                 .pwd("testUser")
                 .isAutoLogin(false)
@@ -291,26 +292,26 @@ public class MemberControllerTests extends BaseControllerTest {
 
         result.andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(cookie().doesNotExist(CookieUtil.CookieName.ID.getName()))
-                .andExpect(cookie().doesNotExist(CookieUtil.CookieName.NAME.getName()))
-                .andExpect(cookie().doesNotExist(CookieUtil.CookieName.PHONE_NUM.getName()))
-                .andExpect(cookie().doesNotExist(CookieUtil.CookieName.IS_WORKER.getName()))
-                .andExpect(cookie().doesNotExist(CookieUtil.CookieName.SESSION_ID.getName()))
-                .andExpect(cookie().doesNotExist(CookieUtil.CookieName.IS_ADMIN.getName()))
-                .andExpect(cookie().doesNotExist(CookieUtil.CookieName.IS_AUTO_LOGIN.getName()));
+                .andExpect(cookie().doesNotExist(CookieName.ID.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.NAME.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.PHONE_NUM.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.IS_WORKER.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.SESSION_ID.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.IS_ADMIN.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.IS_AUTO_LOGIN.getName()));
     }
 
     @Test
     @Transactional
     @TestDescription("자동 로그인 테스트")
     public void loginMember_auto() throws Exception {
-        MockCookie id = new MockCookie(CookieUtil.CookieName.ID.getName(), userMember.getId());
-        MockCookie name = new MockCookie(CookieUtil.CookieName.NAME.getName(), userMember.getName());
-        MockCookie phoneNum = new MockCookie(CookieUtil.CookieName.PHONE_NUM.getName(), userMember.getPhoneNumber());
-        MockCookie isWorker = new MockCookie(CookieUtil.CookieName.IS_WORKER.getName(), Integer.toString(userMember.getIsWorker()));
-        MockCookie sessionId = new MockCookie(CookieUtil.CookieName.SESSION_ID.getName(), Integer.toString(1));
-        MockCookie isAdmin = new MockCookie(CookieUtil.CookieName.IS_ADMIN.getName(), Integer.toString(userMember.getIsAdmin()));
-        MockCookie isAutoLogin = new MockCookie(CookieUtil.CookieName.IS_AUTO_LOGIN.getName(), Boolean.toString(true));
+        MockCookie id = new MockCookie(CookieName.ID.getName(), userMember.getId());
+        MockCookie name = new MockCookie(CookieName.NAME.getName(), userMember.getName());
+        MockCookie phoneNum = new MockCookie(CookieName.PHONE_NUM.getName(), userMember.getPhoneNumber());
+        MockCookie isWorker = new MockCookie(CookieName.IS_WORKER.getName(), Integer.toString(userMember.getIsWorker()));
+        MockCookie sessionId = new MockCookie(CookieName.SESSION_ID.getName(), Integer.toString(1));
+        MockCookie isAdmin = new MockCookie(CookieName.IS_ADMIN.getName(), Integer.toString(userMember.getIsAdmin()));
+        MockCookie isAutoLogin = new MockCookie(CookieName.IS_AUTO_LOGIN.getName(), Boolean.toString(true));
 
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.post("/api/member/login")
@@ -325,13 +326,13 @@ public class MemberControllerTests extends BaseControllerTest {
 
         result.andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(cookie().exists(CookieUtil.CookieName.ID.getName()))
-                .andExpect(cookie().exists(CookieUtil.CookieName.NAME.getName()))
-                .andExpect(cookie().exists(CookieUtil.CookieName.PHONE_NUM.getName()))
-                .andExpect(cookie().exists(CookieUtil.CookieName.IS_WORKER.getName()))
-                .andExpect(cookie().exists(CookieUtil.CookieName.SESSION_ID.getName()))
-                .andExpect(cookie().exists(CookieUtil.CookieName.IS_ADMIN.getName()))
-                .andExpect(cookie().exists(CookieUtil.CookieName.IS_AUTO_LOGIN.getName()));
+                .andExpect(cookie().exists(CookieName.ID.getName()))
+                .andExpect(cookie().exists(CookieName.NAME.getName()))
+                .andExpect(cookie().exists(CookieName.PHONE_NUM.getName()))
+                .andExpect(cookie().exists(CookieName.IS_WORKER.getName()))
+                .andExpect(cookie().exists(CookieName.SESSION_ID.getName()))
+                .andExpect(cookie().exists(CookieName.IS_ADMIN.getName()))
+                .andExpect(cookie().exists(CookieName.IS_AUTO_LOGIN.getName()));
     }
 
     /*
