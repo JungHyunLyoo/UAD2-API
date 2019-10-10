@@ -21,7 +21,6 @@ import java.util.List;
 public class MemberService {
     @Autowired
     private MemberRepository memberRepository;
-
     @Autowired
     private ModelMapper modelMapper;
 
@@ -56,11 +55,6 @@ public class MemberService {
         }catch (RuntimeException e){
             throw new RuntimeException("Error when getting pwd");
         }
-    }
-
-    public boolean isExistMemberById(String id) throws ClientException {
-        Member member = memberRepository.findById(id);
-        return !ObjectUtils.isEmpty(member);
     }
 
     public Member findByPhoneNumber(String phoneNumber) {
