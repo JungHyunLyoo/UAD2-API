@@ -18,7 +18,7 @@ public class MemberValidator {
             declaredField.setAccessible(true);
             try {
                 Object value = declaredField.get(requestMember);
-                if(!declaredField.getName().equals("isAutoLogin") && (value == null || value.toString().isEmpty())){
+                if(value == null || value.toString().isEmpty()){
                     throw new ClientException(declaredField.getName() + " is empty");
                 }
             } catch (IllegalAccessException e) {

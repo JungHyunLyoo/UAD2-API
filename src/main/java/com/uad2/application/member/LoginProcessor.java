@@ -34,10 +34,10 @@ public class LoginProcessor {
     /**
      * 일반 로그인 처리 메소드
      */
-    public void login(HttpSession session, HttpServletResponse response, MemberDto.Request requestLogin) {
+    public void login(HttpSession session, HttpServletResponse response, MemberDto.LoginRequest requestLogin) {
         Member member = this.isAccountValid(requestLogin.getId(), requestLogin.getPwd());
         this.updateSessionInfo(session, member);
-        this.updateCookieInfo(response, member, session.getId(), requestLogin.getIsAutoLogin());
+        this.updateCookieInfo(response, member, session.getId(), requestLogin.isAutoLogin());
     }
 
     /**

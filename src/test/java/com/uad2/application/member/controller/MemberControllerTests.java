@@ -249,7 +249,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("일반 로그인 테스트 (자동 로그인 true)")
     public void loginMember_general_isAutoLogin_true() throws Exception {
-        MemberDto.Request login = MemberDto.Request.builder()
+        MemberDto.LoginRequest login = MemberDto.LoginRequest.builder()
                 .id("testUser")
                 .pwd("testUser")
                 .isAutoLogin(true)
@@ -277,7 +277,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("일반 로그인 테스트 (자동 로그인 false)")
     public void loginMember_general_isAutoLogin_false() throws Exception {
-        MemberDto.Request login = MemberDto.Request.builder()
+        MemberDto.LoginRequest login = MemberDto.LoginRequest.builder()
                 .id("testUser")
                 .pwd("testUser")
                 .isAutoLogin(false)

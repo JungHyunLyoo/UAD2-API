@@ -31,8 +31,17 @@ public class MemberDto {
         private int isWorker;
 
         private String phoneNumber;
+    }
 
-        private Boolean isAutoLogin;
+    @Getter
+    @Setter
+    @Builder
+    public static class LoginRequest {
+        private String id;
+
+        private String pwd;
+
+        private boolean isAutoLogin;
     }
 
     @Getter

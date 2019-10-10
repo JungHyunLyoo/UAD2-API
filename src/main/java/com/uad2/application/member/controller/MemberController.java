@@ -111,7 +111,7 @@ public class MemberController {
     public ResponseEntity login(
             HttpSession session,
             HttpServletResponse response,
-            @RequestBody MemberDto.Request requestLogin) {
+            @RequestBody MemberDto.LoginRequest requestLogin) {
         loginProcessor.login(session, response, requestLogin);
 
         return ResponseEntity.ok().build();
