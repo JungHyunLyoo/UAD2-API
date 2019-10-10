@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.uad2.application.utils.EncryptUtil;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Date;
 import java.util.List;
 
 /*
@@ -32,8 +33,18 @@ public class MemberService {
         return memberRepository.findById(id);
     }
 
+    public Member getMemberByIdAndSessionId(String id, String sessionId) {
+        return memberRepository.findByIdAndSessionId(id, sessionId);
+    }
+
     public Member createMember(MemberDto.Request requestMember) {
         return memberRepository.save(modelMapper.map(requestMember, Member.class));
+    }
+
+    public Member updateSessionInfo(Member member, String sessionId, Date sessionLimit) {
+        member.updateSessionInfo(sessionId, sessionLimit);
+
+        return memberRepository.save(member);
     }
 
     public boolean isSamePwd(MemberDto.Request requestMember) {

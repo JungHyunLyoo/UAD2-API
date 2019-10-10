@@ -1,11 +1,16 @@
 package com.uad2.application.member.controller;
 
+import com.uad2.application.common.Auth;
+import com.uad2.application.common.CookieName;
+import com.uad2.application.common.Role;
 import com.uad2.application.exception.ClientException;
+import com.uad2.application.member.LoginProcessor;
 import com.uad2.application.member.MemberValidator;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
-import com.uad2.application.member.service.MemberService;
 import com.uad2.application.member.resource.MemberResponseUtil;
+import com.uad2.application.member.service.MemberService;
+import com.uad2.application.utils.CookieUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +20,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
@@ -33,12 +39,15 @@ public class MemberController {
     @Autowired
     MemberService memberService;
 
+    @Autowired
+    LoginProcessor loginProcessor;
 
     /**
      * 회원 전체 조회 API
      * GetMapping : get 요청을 받아 해당 메소드와 매핑
      * produces : return 하는 형식
      */
+    @Auth(role = Role.ADMIN)
     @GetMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity getAllMember() {
         List<Member> memberList = Optional.ofNullable(memberService.getAllMember())
@@ -49,6 +58,7 @@ public class MemberController {
     /**
      * 회원 id 조회 API
      */
+    @Auth(role = Role.USER)
     @GetMapping(value = "/api/member/id/{id}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity getMemberById(@PathVariable String id) {
         Member member = Optional.ofNullable(memberService.getMemberById(id))
@@ -64,7 +74,7 @@ public class MemberController {
         memberValidator.validateCreateMember(requestMember);
 
         String phoneNumber = requestMember.getPhoneNumber();
-        if(!ObjectUtils.isEmpty(memberService.findByPhoneNumber(phoneNumber))){
+        if (!ObjectUtils.isEmpty(memberService.findByPhoneNumber(phoneNumber))) {
             throw new ClientException(String.format("PhoneNumber(%s) already exist", phoneNumber));
         }
 
@@ -76,10 +86,11 @@ public class MemberController {
     /**
      * 비밀번호 체크 - 프로필 수정 검증용
      */
+    @Auth(role = Role.USER)
     @PostMapping(value = "/api/member/checkPwd", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity checkPwd(@RequestBody MemberDto.Request requestMember) {
-        Map<String,Object> returnMap = new HashMap<>();
-        returnMap.put("isSamePwd",memberService.isSamePwd(requestMember));
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("isSamePwd", memberService.isSamePwd(requestMember));
         return ResponseEntity.ok().body(returnMap);
     }
 
@@ -88,11 +99,45 @@ public class MemberController {
      */
     @GetMapping(value = "/api/member/checkId/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity checkId(@PathVariable String id) {
-        Map<String,Object> returnMap = new HashMap<>();
-        returnMap.put("alreadyExistId",memberService.isExistMemberById(id));
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("alreadyExistId", memberService.isExistMemberById(id));
         return ResponseEntity.ok().body(returnMap);
     }
+
+    /**
+     * 로그인 API
+     */
+    @PostMapping("/api/member/login")
+    public ResponseEntity login(
+            HttpSession session,
+            HttpServletResponse response,
+            @RequestBody MemberDto.Request requestLogin) {
+        loginProcessor.login(session, response, requestLogin);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 로그아웃 API
+     */
+    @GetMapping("/api/member/logout")
+    public ResponseEntity logout(HttpServletRequest request, HttpServletResponse response) {
+        request.getSession().invalidate();
+
+        // 쿠키 삭제
+        Cookie[] cookies = request.getCookies();
+        if (Objects.nonNull(cookies)
+                && Objects.nonNull(CookieUtil.getCookie(Arrays.asList(cookies), CookieName.SESSION_ID))) {
+            for (Cookie cookie : CookieUtil.removeAllCookies(Arrays.asList(request.getCookies()))) {
+                response.addCookie(cookie);
+            }
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
 }
+
 /*
 Pageable pageable, PagedResourcesAssembler<Member> pagedResourcesAssembler
 Page<Member> page = memberRepository.findAll(pageable);
