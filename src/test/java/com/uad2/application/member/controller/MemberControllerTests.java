@@ -249,7 +249,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("일반 로그인 테스트 (자동 로그인 true)")
     public void loginMember_general_isAutoLogin_true() throws Exception {
-        MemberDto.LoginRequest login = MemberDto.LoginRequest.builder()
+        MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
                 .id("testUser")
                 .pwd("testUser")
                 .isAutoLogin(true)
@@ -259,7 +259,7 @@ public class MemberControllerTests extends BaseControllerTest {
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.post("/api/member/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(login))
+                        .content(objectMapper.writeValueAsString(loginRequest))
         );
 
         result.andExpect(status().isOk())
@@ -277,7 +277,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("일반 로그인 테스트 (자동 로그인 false)")
     public void loginMember_general_isAutoLogin_false() throws Exception {
-        MemberDto.LoginRequest login = MemberDto.LoginRequest.builder()
+        MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
                 .id("testUser")
                 .pwd("testUser")
                 .isAutoLogin(false)
@@ -287,7 +287,7 @@ public class MemberControllerTests extends BaseControllerTest {
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.post("/api/member/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(login))
+                        .content(objectMapper.writeValueAsString(loginRequest))
         );
 
         result.andExpect(status().isOk())
