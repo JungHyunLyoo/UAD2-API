@@ -7,8 +7,9 @@ package com.uad2.application.common.interceptor;
  */
 
 import com.uad2.application.common.enumData.CookieName;
-import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.LoginProcessor;
+import com.uad2.application.member.entity.Member;
+import com.uad2.application.member.service.MemberService;
 import com.uad2.application.utils.CookieUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +20,8 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.Arrays;
-import java.util.Objects;
+import java.util.List;
 
 @Component
 public class LoginInterceptor extends HandlerInterceptorAdapter {
@@ -31,35 +31,36 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     private LoginProcessor loginProcessor;
 
+    @Autowired
+    private MemberService memberService;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         logger.info("-----Login interceptor-----");
-        HttpSession session = request.getSession();
-
-        // 쿠키 정보 담겨있는 경우 자동 로그인 로직을 탄다.
-        if (Objects.isNull(request.getCookies())) {
-            return true;
+        //쿠키 내 로그인 데이터 없을 경우, 로그인 페이지로 이동
+        if (loginProcessor.isEmptyLoginCookie(request)) {
+            //redirect url은 나중에 확정
+            response.sendRedirect(request.getContextPath() + "/");
+            return false;
         }
-
-        Cookie sessionIdInCookie = CookieUtil.getCookie(Arrays.asList(request.getCookies()), CookieName.SESSION_ID);
-        Cookie idInCookie = CookieUtil.getCookie(Arrays.asList(request.getCookies()), CookieName.ID);
-        Cookie isAutoLoginInCookie = CookieUtil.getCookie(Arrays.asList(request.getCookies()), CookieName.IS_AUTO_LOGIN);
-
-        // 자동 로그인 처리를 위한 null 체크
-        if (Objects.nonNull(sessionIdInCookie) && Objects.nonNull(idInCookie) && Objects.nonNull(isAutoLoginInCookie)) {
-            // 세션 id와 쿠키에 담긴 session_id가 동일하면 이미 로그인 된 경우이다. (세션이 살아있다)
-            if (session.getId().equals(sessionIdInCookie.getValue())) {
-                throw new ClientException("Already logged in");
+        else{
+            //쿠키 내 로그인 데이터 get
+            List<Cookie> cookieList = Arrays.asList(request.getCookies());
+            Cookie sessionIdInCookie = CookieUtil.getCookie(cookieList, CookieName.SESSION_ID);
+            Cookie idInCookie = CookieUtil.getCookie(cookieList, CookieName.ID);
+            //쿠키 내 로그인 데이터로 db 내 로그인 데이터 일치 확인
+            //일치하지 않을 경우, 로그인 페이지로 이동
+            Member member = memberService.getMemberByIdAndSessionId(idInCookie.getValue(),sessionIdInCookie.getValue());
+            if (member != null) {
+                loginProcessor.autoLogin(request.getSession(),response,member);
+                return true;
             }
+            else{
+                response.sendRedirect(request.getContextPath() + "/");
+                return false;
 
-            // 쿠키에 담긴 session_id가 빈 String이 아니면 자동 로그인 로직을 탄다.
-            if (!sessionIdInCookie.getValue().equals("")) {
-                loginProcessor.login(session, response, sessionIdInCookie.getValue(), idInCookie.getValue(), Boolean.valueOf(isAutoLoginInCookie.getValue()));
-                return false;   // 다음 수행을 컨트롤러로 넘기지 않고 반환한다.
             }
         }
-
-        return true; // 다음 수행을 컨트롤러로 넘긴다.
     }
 
 }

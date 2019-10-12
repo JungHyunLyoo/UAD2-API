@@ -61,7 +61,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
         }
 
         // 세션 정보 있는 경우, 회원의 세션 정보를 업데이트 한다.
-        loginProcessor.updateSessionInfo(session, member);
+        //loginProcessor.updateSessionInfo(session, member);
         return true;
     }
 

@@ -112,9 +112,17 @@ public class MemberController {
             HttpSession session,
             HttpServletResponse response,
             @RequestBody MemberDto.LoginRequest loginRequest) {
-        loginProcessor.login(session, response, loginRequest);
-
-        return ResponseEntity.ok().build();
+        Map<String,Object> returnMap = new HashMap<>();
+        int loginResult = loginProcessor.login(session, response, loginRequest);
+        switch (loginResult){
+            case LoginProcessor.INVALID_PWD:
+                returnMap.put("loginResult","invalid pwd");
+                break;
+            case LoginProcessor.LOGIN_SUCCESS:
+                returnMap.put("loginResult","login success");
+                break;
+        }
+        return ResponseEntity.ok().body(returnMap);
     }
 
     /**
