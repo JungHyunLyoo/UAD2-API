@@ -40,10 +40,10 @@ public class MemberService {
         return memberRepository.save(modelMapper.map(requestMember, Member.class));
     }
 
-    public Member updateSessionInfo(Member member, String sessionId, Date sessionLimit) {
-        member.updateSessionInfo(sessionId, sessionLimit);
-
-        return memberRepository.save(member);
+    public void updateSessionInfo(Member member, String sessionId, Date sessionLimit) {
+        member.setSessionId(sessionId);
+        member.setSessionLimit(sessionLimit);
+        memberRepository.save(member);
     }
 
     public boolean isSamePwd(MemberDto.Request requestMember) {
