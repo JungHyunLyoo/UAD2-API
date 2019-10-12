@@ -6,7 +6,7 @@ package com.uad2.application.member.controller;
  */
 
 import com.uad2.application.common.BaseControllerTest;
-import com.uad2.application.common.CookieName;
+import com.uad2.application.common.enumData.CookieName;
 import com.uad2.application.common.TestDescription;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;

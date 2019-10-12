@@ -6,8 +6,8 @@ package com.uad2.application.config;
  * @DESCRIPTION 환경설정
  */
 
-import com.uad2.application.common.CommonInterceptor;
-import com.uad2.application.common.LoginInterceptor;
+import com.uad2.application.common.interceptor.CommonInterceptor;
+import com.uad2.application.common.interceptor.LoginInterceptor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

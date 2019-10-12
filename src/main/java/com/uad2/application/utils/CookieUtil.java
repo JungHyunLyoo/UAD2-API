@@ -6,7 +6,7 @@ package com.uad2.application.utils;
  * @DESCRIPTION 공용 쿠키 유틸리티
  */
 
-import com.uad2.application.common.CookieName;
+import com.uad2.application.common.enumData.CookieName;
 
 import javax.servlet.http.Cookie;
 import java.util.List;

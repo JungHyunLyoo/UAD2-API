@@ -1,4 +1,4 @@
-package com.uad2.application.common;
+package com.uad2.application.common.interceptor;
 
 /*
  * @USER Jongyeob Kim
@@ -6,6 +6,7 @@ package com.uad2.application.common;
  * @DESCRIPTION 로그인 인터셉터. 자동 로그인/일반 로그인을 처리한다.
  */
 
+import com.uad2.application.common.enumData.CookieName;
 import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.LoginProcessor;
 import com.uad2.application.utils.CookieUtil;

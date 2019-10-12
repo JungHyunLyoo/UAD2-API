@@ -1,4 +1,4 @@
-package com.uad2.application.common;
+package com.uad2.application.common.enumData;
 
 /*
  * @USER Jongyeob Kim

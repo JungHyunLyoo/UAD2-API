@@ -1,8 +1,8 @@
 package com.uad2.application.member.controller;
 
-import com.uad2.application.common.Auth;
-import com.uad2.application.common.CookieName;
-import com.uad2.application.common.Role;
+import com.uad2.application.common.annotation.Auth;
+import com.uad2.application.common.enumData.CookieName;
+import com.uad2.application.common.enumData.Role;
 import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.LoginProcessor;
 import com.uad2.application.member.MemberValidator;

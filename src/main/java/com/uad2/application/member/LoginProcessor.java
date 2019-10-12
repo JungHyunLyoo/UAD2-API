@@ -6,7 +6,7 @@ package com.uad2.application.member;
  * @DESCRIPTION 로그인 처리기 (자동 로그인, 일반 로그인)
  */
 
-import com.uad2.application.common.CookieName;
+import com.uad2.application.common.enumData.CookieName;
 import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
