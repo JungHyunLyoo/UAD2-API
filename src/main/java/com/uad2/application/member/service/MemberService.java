@@ -48,10 +48,8 @@ public class MemberService {
 
     public boolean isSamePwd(MemberDto.Request requestMember) {
         try{
-            boolean isSamePwd;
             Member member = memberRepository.findById(requestMember.getId());
-            isSamePwd = member.getPwd().equals(EncryptUtil.encryptMD5(requestMember.getPwd()));
-            return isSamePwd;
+            return member.getPwd().equals(EncryptUtil.encryptMD5(requestMember.getPwd()));
         }catch (RuntimeException e){
             throw new RuntimeException("Error when getting pwd");
         }
