@@ -46,7 +46,7 @@ public class Member {
     @Column(name = "profile_img",length = 30)
     private String profileImg;
 
-    @Column(name = "session_id",length = 30)
+    @Column(name = "session_id",length = 40)
     private String sessionId;
 
 
@@ -73,5 +73,10 @@ public class Member {
     @PrePersist
     public void encryptPassword(){
         this.pwd = EncryptUtil.encryptMD5(pwd);
+    }
+
+    public void updateSessionInfo(String sessionId, Date sessionLimit) {
+        this.sessionId = sessionId;
+        this.sessionLimit = sessionLimit;
     }
 }

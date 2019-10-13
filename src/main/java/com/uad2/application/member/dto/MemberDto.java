@@ -6,6 +6,7 @@ package com.uad2.application.member.dto;
  * @DESCRIPTION 회원 도메인에 대한 request, response 처리하는 커맨드 객체
  */
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +16,7 @@ public class MemberDto {
 
     @Getter
     @Setter
+    @Builder
     public static class Request {   // 프로퍼티 공통 사용여부에 따라 Create, Update로 분리해도 괜찮을 것 같다.
         private String id;
 
@@ -29,6 +31,17 @@ public class MemberDto {
         private int isWorker;
 
         private String phoneNumber;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class LoginRequest {
+        private String id;
+
+        private String pwd;
+
+        private boolean isAutoLogin;
     }
 
     @Getter
