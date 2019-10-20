@@ -14,6 +14,6 @@ public class Application implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         //서버 실행이 완료(?)되고 무조건 실행되는 메소드
-        //콘솔에 찍어봐야하는 테스트 코드가 들어가면 적절
+        //콘솔에 찍어봐야하는 테스트 코드 실행 가능
     }
 }
