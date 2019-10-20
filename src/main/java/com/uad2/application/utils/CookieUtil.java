@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CookieUtil {
+    public static final int ONCE_EXPIRATION = -1;
     public static final int A_DAY_EXPIRATION = 60 * 60 * 24;
     public static final int A_YEAR_EXPIRATION = A_DAY_EXPIRATION * 365;
     /**
@@ -30,7 +31,7 @@ public class CookieUtil {
      * api 하위 URI에서 유효. HTTP 프로토콜에서만 가능
      */
     public static Cookie setCookie(CookieName cookieName, String value) {
-        return setCookie(cookieName,value,A_DAY_EXPIRATION);
+        return setCookie(cookieName,value,ONCE_EXPIRATION);
     }
 
 
@@ -42,7 +43,7 @@ public class CookieUtil {
         Cookie cookie = new Cookie(cookieName.getName(), value);
         cookie.setMaxAge(expirationPeriod);
         cookie.setPath("/api");
-        cookie.setHttpOnly(true);
+        cookie.setHttpOnly(false);
         return cookie;
     }
 
