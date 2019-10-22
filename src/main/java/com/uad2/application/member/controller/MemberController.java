@@ -89,6 +89,7 @@ public class MemberController {
     @Auth(role = Role.USER)
     @PostMapping(value = "/api/member/checkPwd", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity checkPwd(@RequestBody MemberDto.Request requestMember) {
+        memberValidator.validateCheckPwd(requestMember);
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("isSamePwd", memberService.isSamePwd(requestMember));
         return ResponseEntity.ok().body(returnMap);
