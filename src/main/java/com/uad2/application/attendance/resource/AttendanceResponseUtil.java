@@ -23,7 +23,7 @@ public class AttendanceResponseUtil {
      * @RESOURCE : HAL(반환 데이터에 관련 하이퍼링크를 제공하는 방식)을 적용한 반환 형식
      */
     public static AttendanceExternalResource makeResponseResource(Attendance attendance) {
-        AttendanceDto.Response response = modelMapper.map(attendance, AttendanceDto.Response.class);
+        AttendanceDto.Response response = attendance == null ? null : modelMapper.map(attendance, AttendanceDto.Response.class);
         AttendanceExternalResource attendanceExternalResource = AttendanceExternalResource.createResourceFrom(response);
         attendanceExternalResource.add(new Link("/docs/index.html").withRel("profile"));
         return attendanceExternalResource;
@@ -36,7 +36,7 @@ public class AttendanceResponseUtil {
      * @RESOURCE : HAL(반환 데이터에 관련 하이퍼링크를 제공하는 방식)을 적용한 반환 형식
      */
     public static AttendanceListExternalResource makeListResponseResource(List<Attendance> attendanceList) {
-        List<AttendanceDto.Response> responseList = attendanceList.stream()
+        List<AttendanceDto.Response> responseList = attendanceList == null ? null : attendanceList.stream()
                 .map(attendance -> modelMapper.map(attendance, AttendanceDto.Response.class))
                 .collect(Collectors.toList());
         AttendanceListExternalResource memberListExternalResource = AttendanceListExternalResource.createResourceFrom(responseList);
