@@ -9,20 +9,28 @@ import javax.servlet.http.HttpSession;
 
 public class SessionUtil {
 
-    private static final int A_DAY_EXPIRATION = 60 * 60 * 24;
+    public static final int A_DAY_EXPIRATION = 60 * 60 * 24;
 
     /**
      * 세션 설정
      */
-    public static void setSession(HttpSession session, String name, Object object) {
-        setSession(session,name,object,A_DAY_EXPIRATION);
+    public static void setAttribute(HttpSession session, String name, Object object) {
+        setAttribute(session,name,object,A_DAY_EXPIRATION);
     }
 
     /**
      * 세션 설정
      */
-    public static void setSession(HttpSession session, String name, Object object,int expiredTime) {
+    public static void setAttribute(HttpSession session, String name, Object object,int expiredTime) {
         session.setAttribute(name, object);
         session.setMaxInactiveInterval(expiredTime);
+    }
+
+    public static Object getAttribute(HttpSession session, String name){
+        return session.getAttribute(name);
+    }
+
+    public static void removeAttribute(HttpSession session, String name){
+        session.removeAttribute(name);
     }
 }

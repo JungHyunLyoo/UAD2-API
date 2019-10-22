@@ -102,37 +102,22 @@ public class MemberController {
     @PostMapping("/api/member/login")
     public ResponseEntity login(
             HttpSession session,
+            HttpServletRequest request,
             HttpServletResponse response,
             @RequestBody MemberDto.LoginRequest loginRequest) {
-        Map<String,Object> returnMap = new HashMap<>();
-        int loginResult = loginProcessor.login(session, response, loginRequest);
-        switch (loginResult){
-            case LoginProcessor.INVALID_PWD:
-                returnMap.put("loginResult","invalid pwd");
-                break;
-            case LoginProcessor.LOGIN_SUCCESS:
-                returnMap.put("loginResult","login success");
-                break;
-        }
-        return ResponseEntity.ok().body(returnMap);
+        loginProcessor.login(request,response,session,loginRequest);
+        return ResponseEntity.ok().build();
     }
 
     /**
      * 로그아웃 API
      */
     @GetMapping("/api/member/logout")
-    public ResponseEntity logout(HttpServletRequest request, HttpServletResponse response) {
-        request.getSession().invalidate();
-
-        // 쿠키 삭제
-        Cookie[] cookies = request.getCookies();
-        if (Objects.nonNull(cookies)
-                && Objects.nonNull(CookieUtil.getCookie(Arrays.asList(cookies), CookieName.SESSION_ID))) {
-            for (Cookie cookie : CookieUtil.removeAllCookies(Arrays.asList(request.getCookies()))) {
-                response.addCookie(cookie);
-            }
-        }
-
+    public ResponseEntity logout(
+            HttpSession session,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+        loginProcessor.logout(request,response,session);
         return ResponseEntity.ok().build();
     }
 

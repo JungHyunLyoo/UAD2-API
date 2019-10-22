@@ -7,8 +7,9 @@ package com.uad2.application.common.interceptor;
  */
 
 import com.uad2.application.common.annotation.Auth;
-import com.uad2.application.exception.ClientException;
+import com.uad2.application.common.enumData.Role;
 import com.uad2.application.member.LoginProcessor;
+import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Objects;
-import java.util.Optional;
 
-import static com.uad2.application.member.SessionValidator.isSessionExpired;
 
 @Component
 public class CommonInterceptor extends HandlerInterceptorAdapter {
@@ -51,17 +50,27 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 
         HttpSession session = request.getSession();
 
-        // 세션 정보가 없는 경우, 로그인을 요청한다.
-        Member member = (Member) Optional.ofNullable(session.getAttribute("member"))
-                .orElseThrow(() -> new ClientException("Login session is not exist"));
-
-        // 세션 만료시점 검증
-        if (isSessionExpired(member)) {
-            throw new ClientException("Session has expired");
+        // 세션 정보가 없을 경우
+        Member member = (Member)session.getAttribute("member");
+        if(Objects.isNull(member)){
+            //로그인 페이지로 이동 필요
+            response.sendRedirect(request.getContextPath() + "/");
+            return false;
+        }
+        //api 열람 권한이 없을 경우
+        if(auth.role() == Role.ADMIN && member.getIsAdmin() == 0){
+            //어떻게 처리할지 미정
+            response.sendRedirect(request.getContextPath() + "/");
+            return false;
         }
 
-        // 세션 정보 있는 경우, 회원의 세션 정보를 업데이트 한다.
-        //loginProcessor.updateSessionInfo(session, member);
+        //정상적인 로그인 상태일 경우, 로그인 로직을 재실행 시켜 로그인 상태를 매번 업데이트 해준다.
+        MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
+                                                .id(member.getId())
+                                                .pwd(member.getPwd())
+                                                .isAutoLogin(Objects.nonNull(member.getSessionId()))
+                                                .build();
+        loginProcessor.login(request,response,session,loginRequest);
         return true;
     }
 
