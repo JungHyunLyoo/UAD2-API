@@ -7,7 +7,6 @@ package com.uad2.application.config;
  */
 
 import com.uad2.application.common.interceptor.CommonInterceptor;
-import com.uad2.application.common.interceptor.LoginInterceptor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +20,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Autowired
     private CommonInterceptor commonInterceptor;
 
-    @Autowired
-    private LoginInterceptor loginInterceptor;
 
     @Bean
     public ModelMapper modelMapper() {
@@ -35,13 +32,8 @@ public class WebConfig implements WebMvcConfigurer {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        /*
-        registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/api/member/login");  // 로그인 인터셉터에서 로그인 URI 처리
-         */
         registry.addInterceptor(commonInterceptor)
                 .excludePathPatterns("/api/member/login");  // 핸들러 인터셉터에서 로그인 URI 제외
-
         WebMvcConfigurer.super.addInterceptors(registry);
     }
 

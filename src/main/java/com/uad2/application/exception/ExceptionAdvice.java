@@ -20,6 +20,7 @@ public class ExceptionAdvice {
 
     // default error form
     private Map<String,String> getErrorForm(RuntimeException e) {
+        e.printStackTrace();
         Map<String,String> returnMap = new HashMap<>();
         returnMap.put("error",e.toString());
         returnMap.put("message",e.getMessage());

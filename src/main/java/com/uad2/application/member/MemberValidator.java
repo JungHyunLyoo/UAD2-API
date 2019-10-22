@@ -9,6 +9,7 @@ import com.uad2.application.member.dto.MemberDto;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 
 @Component
 public class MemberValidator {
@@ -24,6 +25,15 @@ public class MemberValidator {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("validateCreateMember error");
             }
+        }
+    }
+
+    public void validateCheckPwd(MemberDto.Request requestMember) {
+        if(Objects.isNull(requestMember.getId())){
+            throw new ClientException("Id is empty");
+        }
+        else if(Objects.isNull(requestMember.getPwd())){
+            throw new ClientException("Pwd is empty");
         }
     }
 }
