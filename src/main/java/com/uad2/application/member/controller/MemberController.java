@@ -97,16 +97,6 @@ public class MemberController {
     }
 
     /**
-     * 아이디 중복 체크 - 회원가입시 별도 체크용
-     */
-    @GetMapping(value = "/api/member/checkId/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity checkId(@PathVariable String id) {
-        Map<String,Object> returnMap = new HashMap<>();
-        returnMap.put("alreadyExistId",memberService.getMemberById(id) != null);
-        return ResponseEntity.ok().body(returnMap);
-    }
-
-    /**
      * 로그인 API
      */
     @PostMapping("/api/member/login")
