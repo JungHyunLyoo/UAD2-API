@@ -109,6 +109,15 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/api/member/autoLogin")
+    public ResponseEntity autoLogin(
+            HttpSession session,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+        loginProcessor.login(request,response,session,null);
+        return ResponseEntity.ok().build();
+    }
+
     /**
      * 로그아웃 API
      */
