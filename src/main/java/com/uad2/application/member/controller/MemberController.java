@@ -42,6 +42,12 @@ public class MemberController {
     @Autowired
     LoginProcessor loginProcessor;
 
+    @GetMapping(value = "/")
+    public ResponseEntity index(){
+        return ResponseEntity.ok().body("index");
+    }
+
+
     /**
      * 회원 전체 조회 API
      * GetMapping : get 요청을 받아 해당 메소드와 매핑
