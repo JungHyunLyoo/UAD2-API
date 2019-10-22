@@ -1,8 +1,8 @@
 package com.uad2.application.member.controller;
 
-import com.uad2.application.common.Auth;
-import com.uad2.application.common.CookieName;
-import com.uad2.application.common.Role;
+import com.uad2.application.common.annotation.Auth;
+import com.uad2.application.common.enumData.CookieName;
+import com.uad2.application.common.enumData.Role;
 import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.LoginProcessor;
 import com.uad2.application.member.MemberValidator;
@@ -111,10 +111,18 @@ public class MemberController {
     public ResponseEntity login(
             HttpSession session,
             HttpServletResponse response,
-            @RequestBody MemberDto.LoginRequest requestLogin) {
-        loginProcessor.login(session, response, requestLogin);
-
-        return ResponseEntity.ok().build();
+            @RequestBody MemberDto.LoginRequest loginRequest) {
+        Map<String,Object> returnMap = new HashMap<>();
+        int loginResult = loginProcessor.login(session, response, loginRequest);
+        switch (loginResult){
+            case LoginProcessor.INVALID_PWD:
+                returnMap.put("loginResult","invalid pwd");
+                break;
+            case LoginProcessor.LOGIN_SUCCESS:
+                returnMap.put("loginResult","login success");
+                break;
+        }
+        return ResponseEntity.ok().body(returnMap);
     }
 
     /**

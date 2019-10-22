@@ -1,4 +1,4 @@
-package com.uad2.application.common;
+package com.uad2.application.common.interceptor;
 
 /*
  * @USER Jongyeob Kim
@@ -6,6 +6,7 @@ package com.uad2.application.common;
  * @DESCRIPTION 컨트롤러에 대한 인터셉터. 로그인 세션 정보를 확인한다.
  */
 
+import com.uad2.application.common.annotation.Auth;
 import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.LoginProcessor;
 import com.uad2.application.member.entity.Member;
@@ -60,7 +61,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
         }
 
         // 세션 정보 있는 경우, 회원의 세션 정보를 업데이트 한다.
-        loginProcessor.updateSessionInfo(session, member);
+        //loginProcessor.updateSessionInfo(session, member);
         return true;
     }
 

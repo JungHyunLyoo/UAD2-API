@@ -74,9 +74,4 @@ public class Member {
     public void encryptPassword(){
         this.pwd = EncryptUtil.encryptMD5(pwd);
     }
-
-    public void updateSessionInfo(String sessionId, Date sessionLimit) {
-        this.sessionId = sessionId;
-        this.sessionLimit = sessionLimit;
-    }
 }
