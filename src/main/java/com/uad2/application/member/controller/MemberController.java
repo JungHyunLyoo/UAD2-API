@@ -56,8 +56,7 @@ public class MemberController {
     @Auth(role = Role.ADMIN)
     @GetMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity getAllMember() {
-        List<Member> memberList = Optional.ofNullable(memberService.getAllMember())
-                .orElseThrow(() -> new ClientException("Member is not exist"));
+        List<Member> memberList = memberService.getAllMember();
         return ResponseEntity.ok(MemberResponseUtil.makeListResponseResource(memberList));
     }
 
@@ -67,8 +66,7 @@ public class MemberController {
     @Auth(role = Role.USER)
     @GetMapping(value = "/api/member/id/{id}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity getMemberById(@PathVariable String id) {
-        Member member = Optional.ofNullable(memberService.getMemberById(id))
-                .orElseThrow(() -> new ClientException("Member is not exist"));
+        Member member = memberService.getMemberById(id);
         return ResponseEntity.ok(MemberResponseUtil.makeResponseResource(member));
     }
 
