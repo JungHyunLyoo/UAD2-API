@@ -6,10 +6,11 @@ package com.uad2.application.member.controller;
  */
 
 import com.uad2.application.common.BaseControllerTest;
-import com.uad2.application.common.CookieName;
+import com.uad2.application.common.enumData.CookieName;
 import com.uad2.application.common.TestDescription;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
+import com.uad2.application.utils.CookieUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.hateoas.MediaTypes;
@@ -36,8 +37,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
-//@RunWith(JUnitParamsRunner.class)
 public class MemberControllerTests extends BaseControllerTest {
 
     private MockHttpSession session;
@@ -79,6 +78,7 @@ public class MemberControllerTests extends BaseControllerTest {
                 .build();
     }
 
+
     @Test
     @Transactional
     @TestDescription("전체 회원 조회")
@@ -107,6 +107,39 @@ public class MemberControllerTests extends BaseControllerTest {
                 ));
     }
 
+
+    @Test
+    @Transactional
+    @TestDescription("전체 회원 조회 에러(일반 유저 로그인)")
+    public void getAllMembers_badRequest_noAuth() throws Exception {
+        session.setAttribute("member", userMember);
+
+        // request
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/api/member")
+                        .session(session)
+                        .accept(MediaTypes.HAL_JSON)
+        );
+
+        // result
+        result.andExpect(status().isFound())
+                .andDo(print());
+    }
+    @Test
+    @Transactional
+    @TestDescription("전체 회원 조회 에러(로그인 x)")
+    public void getAllMembers_badRequest_noLogin() throws Exception {
+        // request
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/api/member")
+                        .accept(MediaTypes.HAL_JSON)
+        );
+
+        // result
+        result.andExpect(status().isFound())
+                .andDo(print());
+    }
+
     @Test
     @Transactional
     @TestDescription("멤버 개별 조회 by id")
@@ -114,7 +147,7 @@ public class MemberControllerTests extends BaseControllerTest {
         session.setAttribute("member", userMember);
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.get("/api/member/id/{id}", "dkcmsa")
+                RestDocumentationRequestBuilders.get("/api/member/id/{id}", "testUser")
                         .session(session)
                         .accept(MediaTypes.HAL_JSON)
         );
@@ -139,6 +172,52 @@ public class MemberControllerTests extends BaseControllerTest {
 
     @Test
     @Transactional
+    @TestDescription("멤버 개별 조회(해당 아이디로 데이터 x) by id")
+    public void getMemberById_emptyResult() throws Exception {
+        session.setAttribute("member", userMember);
+        // request
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/api/member/id/{id}", "testUser123")
+                        .session(session)
+                        .accept(MediaTypes.HAL_JSON)
+        );
+
+        // result
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("member").doesNotExist())
+                .andDo(document("getMemberById",
+                        pathParameters(
+                                parameterWithName("id").description("아이디")
+                        ),
+                        links(
+                                linkWithRel("profile").description("restDoc link")
+                        ),
+                        responseFields(
+                                subsectionWithPath("member").description("회원 데이터"),
+                                subsectionWithPath("_links").description("링크")
+                        )
+                ));
+    }
+
+
+    @Test
+    @Transactional
+    @TestDescription("멤버 개별 조회 by id 에러(로그인 x)")
+    public void getMemberById_badRequest_noLogin() throws Exception {
+        // request
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/api/member/id/{id}", "testUser")
+                        .accept(MediaTypes.HAL_JSON)
+        );
+
+        // result
+        result.andExpect(status().isFound())
+                .andDo(print());
+    }
+
+    @Test
+    @Transactional
     @TestDescription("개별 회원 조회 에러(매개변수 미기입)")
     public void getMemberById_badRequest_emptyParameter() throws Exception {
         session.setAttribute("member", userMember);
@@ -158,6 +237,7 @@ public class MemberControllerTests extends BaseControllerTest {
                                 parameterWithName("id").description("아이디")
                         )));
     }
+
 
     @Test
     @Transactional
@@ -207,30 +287,30 @@ public class MemberControllerTests extends BaseControllerTest {
     }
 
     @Test
-    public void createMember_badRequest() throws Exception {
-        /*
-        Member member = Member.builder()
-                .id("testId")
-                .pwd("testPwd")
-                .name("testName").build();
+    @Transactional
+    @TestDescription("회원 데이터 생성 에러(필수 파라미터 부재)")
+    public void createMember_badRequest_emptyRequest() throws Exception {
+        MemberDto.Request member = MemberDto.Request.builder()
+                .pwd("test")
+                .name("test")
+                .birthDay(new Date())
+                .studentId(11)
+                .isWorker(0)
+                .phoneNumber("01234567890")
+                .build();
 
-        mockMvc.perform(post("/api/member")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .accept(MediaTypes.HAL_JSON)
-                .content(objectMapper.writeValueAsString(member)))
+        // request
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.post("/api/member")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaTypes.HAL_JSON)
+                        .content(objectMapper.writeValueAsString(member))
+        );
+
+        result.andExpect(status().isAccepted())
                 .andDo(print())
-                .andExpect(status().isBadRequest());*/
-    }
-
-    @Test
-    public void createMember_badRequest_emptyInput() throws Exception {/*
-        MemberExternalDto memberExternalDto = MemberExternalDto.builder().build();
-
-        mockMvc.perform(post("/api/member")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(objectMapper.writeValueAsBytes(memberExternalDto)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());*/
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("message").value("id is empty"));
     }
 
     @Test
@@ -247,9 +327,94 @@ public class MemberControllerTests extends BaseControllerTest {
 
     @Test
     @Transactional
-    @TestDescription("일반 로그인 테스트 (자동 로그인 true)")
-    public void loginMember_general_isAutoLogin_true() throws Exception {
-        MemberDto.LoginRequest login = MemberDto.LoginRequest.builder()
+    @TestDescription("일반 로그인 (자동 로그인 false)")
+    public void loginMember_general_isAutoLogin_false() throws Exception {
+        MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
+                .id("testUser")
+                .pwd("testUser")
+                .isAutoLogin(false)
+                .build();
+
+        // request
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.post("/api/member/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest))
+        );
+
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(cookie().exists(CookieName.ID.getName()))
+                .andExpect(cookie().exists(CookieName.NAME.getName()))
+                .andExpect(cookie().exists(CookieName.PHONE_NUM.getName()))
+                .andExpect(cookie().exists(CookieName.IS_WORKER.getName()))
+                .andExpect(cookie().exists(CookieName.SESSION_ID.getName()))
+                .andExpect(cookie().exists(CookieName.IS_ADMIN.getName()));
+    }
+
+    @Test
+    @Transactional
+    @TestDescription("일반 로그인 아이디 오류(자동 로그인 false)")
+    public void loginMember_general_isAutoLogin_false_badRequest_invalidId() throws Exception {
+        MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
+                .id("testUser123")
+                .pwd("testUser")
+                .isAutoLogin(false)
+                .build();
+
+        // request
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.post("/api/member/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest))
+        );
+
+        result.andExpect(status().isAccepted())
+                .andDo(print())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("message").value("Id is not exist"))
+                .andExpect(cookie().doesNotExist(CookieName.ID.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.NAME.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.PHONE_NUM.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.IS_WORKER.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.SESSION_ID.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.IS_ADMIN.getName()));
+    }
+
+    @Test
+    @Transactional
+    @TestDescription("일반 로그인 비밀번호 오류(자동 로그인 false)")
+    public void loginMember_general_isAutoLogin_false_badRequest_invalidPwd() throws Exception {
+        MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
+                .id("testUser")
+                .pwd("wrongPwd")
+                .isAutoLogin(false)
+                .build();
+
+        // request
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.post("/api/member/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest))
+        );
+
+        result.andExpect(status().isAccepted())
+                .andDo(print())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("message").value("Pwd is not correct"))
+                .andExpect(cookie().doesNotExist(CookieName.ID.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.NAME.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.PHONE_NUM.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.IS_WORKER.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.SESSION_ID.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.IS_ADMIN.getName()));
+    }
+
+    @Test
+    @Transactional
+    @TestDescription("자동 로그인")
+    public void loginMember_autoLogin_true() throws Exception {
+        MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
                 .id("testUser")
                 .pwd("testUser")
                 .isAutoLogin(true)
@@ -259,7 +424,7 @@ public class MemberControllerTests extends BaseControllerTest {
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.post("/api/member/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(login))
+                        .content(objectMapper.writeValueAsString(loginRequest))
         );
 
         result.andExpect(status().isOk())
@@ -270,51 +435,87 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andExpect(cookie().exists(CookieName.IS_WORKER.getName()))
                 .andExpect(cookie().exists(CookieName.SESSION_ID.getName()))
                 .andExpect(cookie().exists(CookieName.IS_ADMIN.getName()))
-                .andExpect(cookie().exists(CookieName.IS_AUTO_LOGIN.getName()));
+                .andExpect(cookie().maxAge(CookieName.ID.getName(), CookieUtil.A_YEAR_EXPIRATION))
+                .andExpect(cookie().maxAge(CookieName.NAME.getName(), CookieUtil.A_YEAR_EXPIRATION))
+                .andExpect(cookie().maxAge(CookieName.PHONE_NUM.getName(), CookieUtil.A_YEAR_EXPIRATION))
+                .andExpect(cookie().maxAge(CookieName.IS_WORKER.getName(), CookieUtil.A_YEAR_EXPIRATION))
+                .andExpect(cookie().maxAge(CookieName.SESSION_ID.getName(), CookieUtil.A_YEAR_EXPIRATION))
+                .andExpect(cookie().maxAge(CookieName.IS_ADMIN.getName(), CookieUtil.A_YEAR_EXPIRATION));
     }
 
     @Test
     @Transactional
-    @TestDescription("일반 로그인 테스트 (자동 로그인 false)")
-    public void loginMember_general_isAutoLogin_false() throws Exception {
-        MemberDto.LoginRequest login = MemberDto.LoginRequest.builder()
-                .id("testUser")
+    @TestDescription("자동 로그인 아이디 오류")
+    public void loginMember_autoLogin_true_badRequest_invalidId() throws Exception {
+        MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
+                .id("invalidId")
                 .pwd("testUser")
-                .isAutoLogin(false)
+                .isAutoLogin(true)
                 .build();
 
         // request
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.post("/api/member/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(login))
+                        .content(objectMapper.writeValueAsString(loginRequest))
         );
 
-        result.andExpect(status().isOk())
+        result.andExpect(status().isAccepted())
                 .andDo(print())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("message").value("Id is not exist"))
                 .andExpect(cookie().doesNotExist(CookieName.ID.getName()))
                 .andExpect(cookie().doesNotExist(CookieName.NAME.getName()))
                 .andExpect(cookie().doesNotExist(CookieName.PHONE_NUM.getName()))
                 .andExpect(cookie().doesNotExist(CookieName.IS_WORKER.getName()))
                 .andExpect(cookie().doesNotExist(CookieName.SESSION_ID.getName()))
-                .andExpect(cookie().doesNotExist(CookieName.IS_ADMIN.getName()))
-                .andExpect(cookie().doesNotExist(CookieName.IS_AUTO_LOGIN.getName()));
+                .andExpect(cookie().doesNotExist(CookieName.IS_ADMIN.getName()));
+    }
+
+    @Test
+    @Transactional
+    @TestDescription("자동 로그인 비밀번호 오류")
+    public void loginMember_autoLogin_true_badRequest_invalidPwd() throws Exception {
+        MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
+                .id("testUser")
+                .pwd("invalidPwd")
+                .isAutoLogin(true)
+                .build();
+
+        // request
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.post("/api/member/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest))
+        );
+
+        result.andExpect(status().isAccepted())
+                .andDo(print())
+                .andExpect(jsonPath("message").exists())
+                .andExpect(jsonPath("message").value("Pwd is not correct"))
+                .andExpect(cookie().doesNotExist(CookieName.ID.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.NAME.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.PHONE_NUM.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.IS_WORKER.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.SESSION_ID.getName()))
+                .andExpect(cookie().doesNotExist(CookieName.IS_ADMIN.getName()));
     }
 
     @Test
     @Transactional
     @TestDescription("자동 로그인 테스트")
     public void loginMember_auto() throws Exception {
+        /*
         MockCookie id = new MockCookie(CookieName.ID.getName(), userMember.getId());
         MockCookie name = new MockCookie(CookieName.NAME.getName(), userMember.getName());
         MockCookie phoneNum = new MockCookie(CookieName.PHONE_NUM.getName(), userMember.getPhoneNumber());
         MockCookie isWorker = new MockCookie(CookieName.IS_WORKER.getName(), Integer.toString(userMember.getIsWorker()));
         MockCookie sessionId = new MockCookie(CookieName.SESSION_ID.getName(), Integer.toString(1));
         MockCookie isAdmin = new MockCookie(CookieName.IS_ADMIN.getName(), Integer.toString(userMember.getIsAdmin()));
-        MockCookie isAutoLogin = new MockCookie(CookieName.IS_AUTO_LOGIN.getName(), Boolean.toString(true));
+        MockCookie isAutoLogin = new MockCookie(CookieName.IS_AUTO_LOGIN.getName(), "true");
 
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.post("/api/member/login")
+                RestDocumentationRequestBuilders.post("/api/member/autoLogin")
                         .cookie(id)
                         .cookie(name)
                         .cookie(phoneNum)
@@ -333,8 +534,9 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andExpect(cookie().exists(CookieName.SESSION_ID.getName()))
                 .andExpect(cookie().exists(CookieName.IS_ADMIN.getName()))
                 .andExpect(cookie().exists(CookieName.IS_AUTO_LOGIN.getName()));
-    }
+*/
 
+    }
     /*
     private Object[] paramsForTestFree(){
         return new Object[]{

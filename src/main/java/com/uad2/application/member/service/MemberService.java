@@ -40,18 +40,16 @@ public class MemberService {
         return memberRepository.save(modelMapper.map(requestMember, Member.class));
     }
 
-    public Member updateSessionInfo(Member member, String sessionId, Date sessionLimit) {
-        member.updateSessionInfo(sessionId, sessionLimit);
-
-        return memberRepository.save(member);
+    public void updateSessionInfo(Member member, String sessionId, Date sessionLimit) {
+        member.setSessionId(sessionId);
+        member.setSessionLimit(sessionLimit);
+        memberRepository.save(member);
     }
 
     public boolean isSamePwd(MemberDto.Request requestMember) {
         try{
-            boolean isSamePwd;
             Member member = memberRepository.findById(requestMember.getId());
-            isSamePwd = member.getPwd().equals(EncryptUtil.encryptMD5(requestMember.getPwd()));
-            return isSamePwd;
+            return member.getPwd().equals(EncryptUtil.encryptMD5(requestMember.getPwd()));
         }catch (RuntimeException e){
             throw new RuntimeException("Error when getting pwd");
         }

@@ -6,7 +6,7 @@ package com.uad2.application.member;
  * @DESCRIPTION 로그인 처리기 (자동 로그인, 일반 로그인)
  */
 
-import com.uad2.application.common.CookieName;
+import com.uad2.application.common.enumData.CookieName;
 import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
@@ -14,19 +14,20 @@ import com.uad2.application.member.service.MemberService;
 import com.uad2.application.utils.CookieUtil;
 import com.uad2.application.utils.EncryptUtil;
 import com.uad2.application.utils.SessionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Calendar;
-import java.util.Optional;
-import java.util.TimeZone;
-
-import static com.uad2.application.member.SessionValidator.isSessionExpired;
+import java.util.*;
 
 @Component
 public class LoginProcessor {
+    private Logger logger = LoggerFactory.getLogger(LoginProcessor.class);
 
     @Autowired
     private MemberService memberService;
@@ -34,83 +35,142 @@ public class LoginProcessor {
     /**
      * 일반 로그인 처리 메소드
      */
-    public void login(HttpSession session, HttpServletResponse response, MemberDto.LoginRequest requestLogin) {
-        Member member = this.isAccountValid(requestLogin.getId(), requestLogin.getPwd());
-        this.updateSessionInfo(session, member);
-        this.updateCookieInfo(response, member, session.getId(), requestLogin.isAutoLogin());
+    public void login(HttpServletRequest request,
+                     HttpServletResponse response,
+                     HttpSession session,
+                     MemberDto.LoginRequest loginRequest) {
+        if (isEmptyLoginCookie(request)) {
+            //쿠키 로그인 데이터가 없는 요청일 경우 (이전에 로그인 한 시도가 없는 경우)
+            Member member = Optional.ofNullable(memberService.getMemberById(loginRequest.getId()))
+                    .orElseThrow(() -> new ClientException("Id is not exist"));
+
+            if(Objects.nonNull(member.getPwd()) &&
+                    !member.getPwd().equals(EncryptUtil.encryptMD5(loginRequest.getPwd()))){
+                throw new ClientException("Pwd is not correct");
+            }
+
+            if(loginRequest.isAutoLogin()){
+                this.autoLogin(session,response,member);
+            }
+            else {
+                this.onceLogin(session,response,member);
+            }
+        }
+        else{
+            //쿠키 로그인 데이터가 있는 요청일 경우 (이전에 로그인 했을 때, 자동로그인으로 로그인)
+            List<Cookie> cookieList = Arrays.asList(request.getCookies());
+            boolean isAutoLogin = Boolean.parseBoolean(
+                            Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue())
+                            .orElse("false")
+                    );
+            //자동로그인으로 쿠키가 저장되어 있을 경우만 실행
+            //1회성 로그인으로 쿠키가 저장되어 있을 경우에는 아무 로직도 실행하지 않는다.
+            if(isAutoLogin){
+                //쿠키 내 로그인 데이터로 db 내 로그인 데이터 일치 확인
+                String idInCookie = Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.ID).getValue())
+                        .orElseThrow(() -> new ClientException("Id in cookie is empty"));
+                String sessionIdInCookie = Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.SESSION_ID).getValue())
+                        .orElseThrow(() -> new ClientException("SessionId in cookie is empty"));
+
+                //쿠키 내 로그인 데이터가 db 내 로그인 데이터와 일치하지 않을 경우
+                Member member = memberService.getMemberByIdAndSessionId(idInCookie,sessionIdInCookie);
+                boolean isSameCookieAndDB = Objects.nonNull(member) && this.isValidSessionLimit(member);
+                if( !isSameCookieAndDB ){
+                    removeLoginCookie(response);
+                    SessionUtil.removeAttribute(session,"member");
+                    throw new ClientException("Member session is not exist");
+                }
+                this.autoLogin(session,response,member);
+            }
+        }
+    }
+
+    public void logout(HttpServletRequest request,
+                       HttpServletResponse response,
+                       HttpSession session){
+        //세션 제거
+        SessionUtil.removeAttribute(session,"member");
+        //쿠키 내 로그인 데이터와 db 내 로그인 데이터 일치 체크
+        //일치하면 쿠키,db 내 로그인 데이터 삭제
+        //일치하지 않으면 쿠키 내 로그인 데이터만 삭제
+        List<Cookie> cookieList = request.getCookies() != null ?
+                Arrays.asList(request.getCookies()) : null;
+        if(Objects.nonNull(cookieList)){
+            String sessionIdInCookie = Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.SESSION_ID))
+                                        .map(Cookie::getValue)
+                                        .orElse(null);
+            String idInCookie = Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.ID))
+                                        .map(Cookie::getValue)
+                                        .orElse(null);
+            Member member = memberService.getMemberByIdAndSessionId(sessionIdInCookie,idInCookie);
+            if(Objects.nonNull(member)){
+                memberService.updateSessionInfo(member,null,null);
+            }
+            removeLoginCookie(response);
+        }
     }
 
     /**
      * 자동 로그인 처리 메소드
      */
-    public void login(HttpSession session, HttpServletResponse response, String sessionIdInCookie, String id, boolean isAutoLogin) {
-        Member member = this.isSessionValid(sessionIdInCookie, id);
-        this.updateSessionInfo(session, member);
-        this.updateCookieInfo(response, member, session.getId(), isAutoLogin);
+    private void autoLogin(HttpSession session, HttpServletResponse response,Member member) {
+        //세션 저장 및 자동 로그인 처리
+        String sessionId = session.getId();
+        this.setLoginCookie(response, member, sessionId, CookieUtil.A_YEAR_EXPIRATION);
+        this.setLoginInDB(member,sessionId);
+        SessionUtil.setAttribute(session, "member", member);
     }
 
     /**
-     * 입력된 로그인 정보와 실제 계정 정보 유효한지 확인한다.
+     * 1회성 로그인 처리 메소드
      */
-    private Member isAccountValid(String id, String pwd) {
-        Member member = Optional.ofNullable(memberService.getMemberById(id))
-                .orElseThrow(() -> new ClientException("Member is not exist"));
-
-        if (!member.getPwd().equals(EncryptUtil.encryptMD5(pwd))) {
-            throw new ClientException("Password is not matched");
-        }
-
-        return member;
+    private void onceLogin(HttpSession session, HttpServletResponse response,Member member) {
+        String sessionId = session.getId();
+        this.setLoginCookie(response, member, sessionId, CookieUtil.ONCE_EXPIRATION);
+        SessionUtil.setAttribute(session, "member", member);
     }
 
-    /**
-     * 쿠키에 담긴 session_id로 해당 회원의 세션이 유효한지 확인한다.
-     */
-    private Member isSessionValid(String sessionId, String id) {
-        Member member = Optional.ofNullable(memberService.getMemberByIdAndSessionId(id, sessionId))
-                .orElseThrow(() -> new ClientException("Member is not exist"));
-
-        if (isSessionExpired(member)) {
-            throw new ClientException("Session has expired");
-        }
-
-        return member;
-    }
-
-    /**
-     * 세션 정보를 업데이트 한다..
-     */
-    public void updateSessionInfo(HttpSession session, Member member) {
-        // 세션 설정
-        SessionUtil.setSession(session, "member", member);
-
-        // 회원 DB의 세션 정보 업데이트
-        this.updateSessionInfoInRepository(member, session.getId(), session.getMaxInactiveInterval());
-    }
-
-    /**
-     * 자동 로그인 true인 경우 쿠키 정보를 추가한다.
-     */
-    private void updateCookieInfo(HttpServletResponse response, Member member, String sessionId, boolean isAutoLogin) {
-        if (isAutoLogin) {
-            // 쿠키 정보 추가
-            response.addCookie(CookieUtil.setCookie(CookieName.ID, member.getId()));
-            response.addCookie(CookieUtil.setCookie(CookieName.NAME, member.getName()));
-            response.addCookie(CookieUtil.setCookie(CookieName.PHONE_NUM, member.getPhoneNumber()));
-            response.addCookie(CookieUtil.setCookie(CookieName.IS_WORKER, Integer.toString(member.getIsWorker())));
-            response.addCookie(CookieUtil.setCookie(CookieName.SESSION_ID, sessionId));
-            response.addCookie(CookieUtil.setCookie(CookieName.IS_ADMIN, Integer.toString(member.getIsAdmin())));
-            response.addCookie(CookieUtil.setCookie(CookieName.IS_AUTO_LOGIN, Boolean.toString(true)));
-        }
-    }
-
-    /**
-     * 회원의 DB 세션 정보를 업데이트 한다.
-     */
-    private void updateSessionInfoInRepository(Member member, String sessionId, int expiredTime) {
+    private void setLoginInDB(Member member, String sessionId) {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        calendar.add(Calendar.SECOND, expiredTime);
+        calendar.add(Calendar.YEAR, 1);
         memberService.updateSessionInfo(member, sessionId, calendar.getTime());
     }
 
+    private void setLoginCookie(HttpServletResponse response, Member member, String sessionId,int cookieExpiration) {
+        response.addCookie(CookieUtil.setCookie(CookieName.ID, member.getId(), cookieExpiration));
+        response.addCookie(CookieUtil.setCookie(CookieName.NAME, member.getName(), cookieExpiration));
+        response.addCookie(CookieUtil.setCookie(CookieName.PHONE_NUM, member.getPhoneNumber(), cookieExpiration));
+        response.addCookie(CookieUtil.setCookie(CookieName.IS_WORKER, Integer.toString(member.getIsWorker()), cookieExpiration));
+        response.addCookie(CookieUtil.setCookie(CookieName.SESSION_ID, sessionId, cookieExpiration));
+        response.addCookie(CookieUtil.setCookie(CookieName.IS_ADMIN, Integer.toString(member.getIsAdmin()), cookieExpiration));
+        response.addCookie(CookieUtil.setCookie(CookieName.IS_AUTO_LOGIN, "true", cookieExpiration));
+    }
+
+    private void removeLoginCookie(HttpServletResponse response){
+        response.addCookie(CookieUtil.setCookie(CookieName.ID, null, 0));
+        response.addCookie(CookieUtil.setCookie(CookieName.NAME, null, 0));
+        response.addCookie(CookieUtil.setCookie(CookieName.PHONE_NUM, null, 0));
+        response.addCookie(CookieUtil.setCookie(CookieName.IS_WORKER, null, 0));
+        response.addCookie(CookieUtil.setCookie(CookieName.SESSION_ID, null, 0));
+        response.addCookie(CookieUtil.setCookie(CookieName.IS_ADMIN, null, 0));
+        response.addCookie(CookieUtil.setCookie(CookieName.IS_AUTO_LOGIN, null, 0));
+    }
+
+    private boolean isEmptyLoginCookie(HttpServletRequest request){
+        Cookie[] cookieArray = request.getCookies();
+        return !(cookieArray != null &&
+                 CookieUtil.getCookie(Arrays.asList(cookieArray),CookieName.ID) != null &&
+                 CookieUtil.getCookie(Arrays.asList(cookieArray),CookieName.NAME) != null &&
+                 CookieUtil.getCookie(Arrays.asList(cookieArray),CookieName.PHONE_NUM) != null &&
+                 CookieUtil.getCookie(Arrays.asList(cookieArray),CookieName.IS_WORKER) != null &&
+                 CookieUtil.getCookie(Arrays.asList(cookieArray),CookieName.SESSION_ID) != null &&
+                 CookieUtil.getCookie(Arrays.asList(cookieArray),CookieName.IS_ADMIN) != null &&
+                 CookieUtil.getCookie(Arrays.asList(cookieArray),CookieName.IS_AUTO_LOGIN) != null);
+    }
+
+    private  boolean isValidSessionLimit(Member member) {
+        // 저장되어 있는 세션의 만료시점이 현재 시간보다 이전인 경우, 유효하지 않은 세션으로 간주한다.
+        return member.getSessionLimit() != null
+                && member.getSessionLimit().after(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime());
+    }
 }
