@@ -1,23 +1,13 @@
 package com.uad2.application.matching.entity;
 
-import javax.persistence.*;
-import java.util.Date;
-
-import com.uad2.application.member.entity.Member;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-@Entity
-@Getter @Setter
-@ToString
-public class Matching {
-    @OneToMany(targetEntity = Member.class)
-    @JoinColumn(name="member_seq")
-    private Member member;
+import javax.persistence.*;
+import java.util.Date;
 
+@Entity
+public class Matching {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,4 +38,47 @@ public class Matching {
     @UpdateTimestamp
     @Column(nullable = false, name = "updated_at")
     private Date updatedAt;
+
+    public String getSeq() {
+        return seq;
+    }
+
+    public Date getMatchingDate() {
+        return matchingDate;
+    }
+
+    public String getMatchingTime() {
+        return matchingTime;
+    }
+
+    public String getMatchingPlace() {
+        return matchingPlace;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public String getAttendMember() {
+        return attendMember;
+    }
+
+    public String getMaxCnt() {
+        return maxCnt;
+    }
+
+    @Override
+    public String toString() {
+        return "matching{" +
+                "seq='" + seq + '\'' +
+                ", matchingDate=" + matchingDate +
+                ", matchingTime='" + matchingTime + '\'' +
+                ", matchingPlace='" + matchingPlace + '\'' +
+                ", content='" + content + '\'' +
+                ", attendMember='" + attendMember + '\'' +
+                ", maxCnt='" + maxCnt + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 }
