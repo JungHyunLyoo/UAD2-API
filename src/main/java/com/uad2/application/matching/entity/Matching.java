@@ -2,7 +2,6 @@ package com.uad2.application.matching.entity;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 import com.uad2.application.member.entity.Member;
 import lombok.Getter;
@@ -15,14 +14,14 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Getter @Setter
 @ToString
 public class Matching {
+    @OneToMany(targetEntity = Member.class)
+    @JoinColumn(name="member_seq")
+    private Member member;
+
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String seq;
-
-    @OneToMany(targetEntity = Member.class)
-    @JoinColumn(name="member_seq")
-    private List<Member> member;
 
     @Column(nullable = false, name = "matching_date")
     private Date matchingDate;
