@@ -26,6 +26,4 @@ public class AttendanceController {
         List<Attendance> attendanceList = attendanceService.getAttendanceList(memberSeq,date);
         return ResponseEntity.ok().body(AttendanceResponseUtil.makeListResponseResource(attendanceList));
     }
-
-
 }
