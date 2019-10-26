@@ -3,26 +3,22 @@ package com.uad2.application.calculation.service;/*
  * @DATE 2019-10-25
  */
 
+import com.uad2.application.calculation.dto.CalculationDto;
 import com.uad2.application.calculation.entity.Calculation;
 import com.uad2.application.calculation.repository.CalculationRepository;
+import com.uad2.application.matching.entity.Matching;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
-
 @Service
-public class CalculationService implements CalculationServiceInterface {
+public class CalculationService {
 
     @Autowired
     private CalculationRepository calculationRepository;
 
-    @Override
-    public Calculation getCalculationByCalculationDate(Date date) {
-        return calculationRepository.findByCalculationDate(date);
-    }
-
-    @Override
-    public void updateCalculation(Calculation calculation) {
-        calculationRepository.save(calculation);
+    public Calculation saveCalculation(CalculationDto.Request requestCalculation, Matching matching) {
+        Calculation calculation = (new ModelMapper()).map(requestCalculation, Calculation.class);
+        calculation.setMatchingSeq(matching);
+        return calculationRepository.save(calculation);
     }
 }

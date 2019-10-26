@@ -2,10 +2,9 @@ package com.uad2.application.matching.controller;
 
 import com.uad2.application.attendance.entity.Attendance;
 import com.uad2.application.attendance.service.AttendanceService;
+import com.uad2.application.calculation.dto.CalculationDto;
 import com.uad2.application.calculation.entity.Calculation;
 import com.uad2.application.calculation.service.CalculationService;
-import com.uad2.application.common.annotation.Auth;
-import com.uad2.application.common.enumData.Role;
 import com.uad2.application.exception.ClientException;
 import com.uad2.application.matching.entity.Matching;
 import com.uad2.application.matching.dto.MatchingDto;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class MatchingController {
@@ -67,13 +65,13 @@ public class MatchingController {
             Matching updatedMatching = matchingService.updateMatching(matching);
 
 
-            // 정산정보 이미 있다면 가져와 업데이트, 없다면 새로 생성
-            Calculation calculation = Optional.ofNullable(calculationService.getCalculationByCalculationDate(requestMatching.getMatchingDate())).orElse(new Calculation());
-            calculation.setContent(requestMatching.getMatchingPlace());
-            calculation.setPrice(requestMatching.getPrice());
-            calculation.setMatchingSeq(matching.getSeq());
-            calculation.setCalculationDate(requestMatching.getMatchingDate());
-            calculationService.updateCalculation(calculation);
+
+
+            CalculationDto.Request requestCalulation = CalculationDto.Request.builder()
+                                                        .content(requestMatching.getMatchingPlace())
+                                                        .price(requestMatching.getPrice())
+                                                        .calculationDate(requestMatching.getMatchingDate()).build();
+            Calculation calculation = calculationService.saveCalculation(requestCalulation,updatedMatching);
 
             return ResponseEntity.ok(updatedMatching);
         } else {
