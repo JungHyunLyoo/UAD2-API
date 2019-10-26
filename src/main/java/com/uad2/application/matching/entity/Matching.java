@@ -16,13 +16,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 @ToString
 public class Matching {
     @Id
-    @Column
+    @Column 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String seq;
-
-    @OneToMany(targetEntity = Member.class)
-    @JoinColumn(name="member_seq")
-    private List<Member> member;
 
     @Column(nullable = false, name = "matching_date")
     private Date matchingDate;
