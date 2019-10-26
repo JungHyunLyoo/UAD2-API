@@ -42,7 +42,7 @@ public class Matching {
     private String maxCnt;
 
     @CreationTimestamp
-    @Column(nullable = false, name = "created_at")
+    @Column(nullable = false, name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
