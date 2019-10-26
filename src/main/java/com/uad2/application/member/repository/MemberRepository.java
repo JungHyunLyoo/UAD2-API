@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 
 /*
  * @USER JungHyun
@@ -16,4 +18,5 @@ public interface MemberRepository extends JpaRepository<Member,Long> {
     Member findById(String id);
     Member findByPhoneNumber(String phoneNumber);
     Member findByIdAndSessionId(String id, String sessionId);
+    List<Member> findAllBySeqIn(int[] seqList);
 }
