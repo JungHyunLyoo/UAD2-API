@@ -15,6 +15,8 @@ public class MatchingDto {
     @Setter
     @Builder
     public static class Request {
+        private int seq;
+
         private Date matchingDate;
 
         private String matchingTime;
@@ -26,5 +28,7 @@ public class MatchingDto {
         private String attendMember;
 
         private String maxCnt;
+
+        private int price;
     }
 }

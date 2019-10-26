@@ -1,6 +1,7 @@
 package com.uad2.application.matching.entity;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -10,15 +11,17 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Getter @Setter
 @ToString
+@DynamicUpdate
 public class Matching {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String seq;
+    private int seq;
 
     @OneToMany(targetEntity = Member.class)
     @JoinColumn(name="member_seq")
@@ -44,9 +47,9 @@ public class Matching {
 
     @CreationTimestamp
     @Column(nullable = false, name = "created_at")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(nullable = false, name = "updated_at")
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 }

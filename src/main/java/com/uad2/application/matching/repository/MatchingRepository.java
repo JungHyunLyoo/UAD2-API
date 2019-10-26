@@ -9,5 +9,6 @@ import java.util.Date;
 
 public interface MatchingRepository extends JpaRepository<Matching,Long> {
     Page<Matching> findAll(Pageable pageable);
+
     Matching findByMatchingDate(Date date);
 }
