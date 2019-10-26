@@ -19,13 +19,9 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 public class Matching {
     @Id
-    @Column
+    @Column 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int seq;
-
-    @OneToMany(targetEntity = Member.class)
-    @JoinColumn(name="member_seq")
-    private List<Member> member;
 
     @Column(nullable = false, name = "matching_date")
     private Date matchingDate;

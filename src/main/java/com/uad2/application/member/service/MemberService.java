@@ -58,6 +58,10 @@ public class MemberService {
     public Member findByPhoneNumber(String phoneNumber) {
         return memberRepository.findByPhoneNumber(phoneNumber);
     }
+
+    public List<Member> findBySeqList(int[] seqList){
+        return memberRepository.findAllBySeqIn(seqList);
+    }
     /*
     public void editProfile(MemberDto.EditRequest requestMember) throws ClientException {
         this.checkPwd(requestMember);
