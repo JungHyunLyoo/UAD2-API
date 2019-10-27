@@ -63,6 +63,8 @@ public class LoginProcessor {
                     Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue())
                             .orElse("false")
             );
+            Member member = Optional.ofNullable(memberService.getMemberById(loginRequest.getId()))
+                    .orElseThrow(() -> new ClientException("Id is not exist"));
             //자동로그인으로 쿠키가 저장되어 있을 경우만 실행
             //1회성 로그인으로 쿠키가 저장되어 있을 경우에는 아무 로직도 실행하지 않는다.
             if(isAutoLogin){
@@ -71,9 +73,10 @@ public class LoginProcessor {
                     SessionUtil.removeAttribute(session,"member");
                     throw new ClientException("Member session is not exist");
                 }
-                Member member = Optional.ofNullable(memberService.getMemberById(loginRequest.getId()))
-                        .orElseThrow(() -> new ClientException("Id is not exist"));
                 this.autoLogin(session,response,member);
+            }
+            else{
+                this.onceLogin(session,response,member);
             }
         }
     }
