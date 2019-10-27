@@ -57,7 +57,7 @@ public class MemberControllerTests extends BaseControllerTest {
                 .pwd("testAdmin")
                 .name("testAdmin")
                 .phoneNumber("01000000001")
-                .sessionId(session.getId())
+                .sessionId(null)
                 .sessionLimit(calendar.getTime())
                 .isAdmin(1)
                 .createdAt(LocalDateTime.now())
@@ -70,7 +70,7 @@ public class MemberControllerTests extends BaseControllerTest {
                 .pwd("testUser")
                 .name("testUser")
                 .phoneNumber("01000000000")
-                .sessionId(session.getId())
+                .sessionId("1B3F16603664677C2ABE377C71ABF196")
                 .sessionLimit(calendar.getTime())
                 .isAdmin(0)
                 .createdAt(LocalDateTime.now())
@@ -83,12 +83,24 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("전체 회원 조회")
     public void getAllMembers() throws Exception {
-        session.setAttribute("member", adminMember);
+        MockCookie id = new MockCookie(CookieName.ID.getName(), adminMember.getId());
+        MockCookie name = new MockCookie(CookieName.NAME.getName(), adminMember.getName());
+        MockCookie phoneNum = new MockCookie(CookieName.PHONE_NUM.getName(), adminMember.getPhoneNumber());
+        MockCookie isWorker = new MockCookie(CookieName.IS_WORKER.getName(), Integer.toString(adminMember.getIsWorker()));
+        MockCookie sessionId = new MockCookie(CookieName.SESSION_ID.getName(), adminMember.getSessionId());
+        MockCookie isAdmin = new MockCookie(CookieName.IS_ADMIN.getName(), Integer.toString(adminMember.getIsAdmin()));
+        MockCookie isAutoLogin = new MockCookie(CookieName.IS_AUTO_LOGIN.getName(), "false");
 
         // request
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/api/member")
-                        .session(session)
+                        .cookie(id)
+                        .cookie(name)
+                        .cookie(phoneNum)
+                        .cookie(isWorker)
+                        .cookie(sessionId)
+                        .cookie(isAdmin)
+                        .cookie(isAutoLogin)
                         .accept(MediaTypes.HAL_JSON)
         );
 
@@ -112,23 +124,35 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("전체 회원 조회 에러(일반 유저 로그인)")
     public void getAllMembers_badRequest_noAuth() throws Exception {
-        session.setAttribute("member", userMember);
-
+        MockCookie id = new MockCookie(CookieName.ID.getName(), userMember.getId());
+        MockCookie name = new MockCookie(CookieName.NAME.getName(), userMember.getName());
+        MockCookie phoneNum = new MockCookie(CookieName.PHONE_NUM.getName(), userMember.getPhoneNumber());
+        MockCookie isWorker = new MockCookie(CookieName.IS_WORKER.getName(), Integer.toString(userMember.getIsWorker()));
+        MockCookie sessionId = new MockCookie(CookieName.SESSION_ID.getName(), userMember.getSessionId());
+        MockCookie isAdmin = new MockCookie(CookieName.IS_ADMIN.getName(), Integer.toString(userMember.getIsAdmin()));
+        MockCookie isAutoLogin = new MockCookie(CookieName.IS_AUTO_LOGIN.getName(), "false");
         // request
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/api/member")
-                        .session(session)
+                        .cookie(id)
+                        .cookie(name)
+                        .cookie(phoneNum)
+                        .cookie(isWorker)
+                        .cookie(sessionId)
+                        .cookie(isAdmin)
+                        .cookie(isAutoLogin)
                         .accept(MediaTypes.HAL_JSON)
         );
 
         // result
-        result.andExpect(status().isFound())
+        result.andExpect(status().isAccepted())
                 .andDo(print());
     }
     @Test
     @Transactional
     @TestDescription("전체 회원 조회 에러(로그인 x)")
     public void getAllMembers_badRequest_noLogin() throws Exception {
+
         // request
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/api/member")
@@ -136,7 +160,7 @@ public class MemberControllerTests extends BaseControllerTest {
         );
 
         // result
-        result.andExpect(status().isFound())
+        result.andExpect(status().isAccepted())
                 .andDo(print());
     }
 
@@ -144,11 +168,24 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("멤버 개별 조회 by id")
     public void getMemberById() throws Exception {
-        session.setAttribute("member", userMember);
+        MockCookie id = new MockCookie(CookieName.ID.getName(), userMember.getId());
+        MockCookie name = new MockCookie(CookieName.NAME.getName(), userMember.getName());
+        MockCookie phoneNum = new MockCookie(CookieName.PHONE_NUM.getName(), userMember.getPhoneNumber());
+        MockCookie isWorker = new MockCookie(CookieName.IS_WORKER.getName(), Integer.toString(userMember.getIsWorker()));
+        MockCookie sessionId = new MockCookie(CookieName.SESSION_ID.getName(), userMember.getSessionId());
+        MockCookie isAdmin = new MockCookie(CookieName.IS_ADMIN.getName(), Integer.toString(userMember.getIsAdmin()));
+        MockCookie isAutoLogin = new MockCookie(CookieName.IS_AUTO_LOGIN.getName(), "true");
+
         // request
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/api/member/id/{id}", "testUser")
-                        .session(session)
+                        .cookie(id)
+                        .cookie(name)
+                        .cookie(phoneNum)
+                        .cookie(isWorker)
+                        .cookie(sessionId)
+                        .cookie(isAdmin)
+                        .cookie(isAutoLogin)
                         .accept(MediaTypes.HAL_JSON)
         );
 
@@ -174,11 +211,24 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("멤버 개별 조회(해당 아이디로 데이터 x) by id")
     public void getMemberById_emptyResult() throws Exception {
-        session.setAttribute("member", userMember);
+        MockCookie id = new MockCookie(CookieName.ID.getName(), userMember.getId());
+        MockCookie name = new MockCookie(CookieName.NAME.getName(), userMember.getName());
+        MockCookie phoneNum = new MockCookie(CookieName.PHONE_NUM.getName(), userMember.getPhoneNumber());
+        MockCookie isWorker = new MockCookie(CookieName.IS_WORKER.getName(), Integer.toString(userMember.getIsWorker()));
+        MockCookie sessionId = new MockCookie(CookieName.SESSION_ID.getName(), userMember.getSessionId());
+        MockCookie isAdmin = new MockCookie(CookieName.IS_ADMIN.getName(), Integer.toString(userMember.getIsAdmin()));
+        MockCookie isAutoLogin = new MockCookie(CookieName.IS_AUTO_LOGIN.getName(), "true");
+
         // request
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/api/member/id/{id}", "testUser123")
-                        .session(session)
+                        .cookie(id)
+                        .cookie(name)
+                        .cookie(phoneNum)
+                        .cookie(isWorker)
+                        .cookie(sessionId)
+                        .cookie(isAdmin)
+                        .cookie(isAutoLogin)
                         .accept(MediaTypes.HAL_JSON)
         );
 
@@ -212,7 +262,7 @@ public class MemberControllerTests extends BaseControllerTest {
         );
 
         // result
-        result.andExpect(status().isFound())
+        result.andExpect(status().isAccepted())
                 .andDo(print());
     }
 

@@ -7,10 +7,14 @@ package com.uad2.application.common.interceptor;
  */
 
 import com.uad2.application.common.annotation.Auth;
+import com.uad2.application.common.enumData.CookieName;
 import com.uad2.application.common.enumData.Role;
+import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.LoginProcessor;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
+import com.uad2.application.member.service.MemberService;
+import com.uad2.application.utils.CookieUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +22,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 
 @Component
@@ -31,6 +39,9 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     LoginProcessor loginProcessor;
+
+    @Autowired
+    MemberService memberService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -50,18 +61,21 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 
         HttpSession session = request.getSession();
 
-        // 세션 정보가 없을 경우
-        Member member = (Member)session.getAttribute("member");
-        if(Objects.isNull(member)){
-            //로그인 페이지로 이동 필요
-            response.sendRedirect(request.getContextPath() + "/");
-            return false;
+        List<Cookie> cookieList = Optional.ofNullable(request.getCookies())
+                                    .map(Arrays::asList)
+                                    .orElseThrow(() -> new ClientException("Cookies are not exist"));
+        boolean isAutoLogin = Boolean.parseBoolean(
+                Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue())
+                        .orElse("false")
+        );
+        if(isAutoLogin && loginProcessor.isDifferentLoginStatusBetWeenCookieAndDB(cookieList)){
+            throw new ClientException("Cookie session is not valid");
         }
+        Member member = Optional.ofNullable(memberService.getMemberById(CookieUtil.getCookie(cookieList, CookieName.ID).getValue()))
+                .orElseThrow(() -> new ClientException("Id is not exist"));
         //api 열람 권한이 없을 경우
         if(auth.role() == Role.ADMIN && member.getIsAdmin() == 0){
-            //어떻게 처리할지 미정
-            response.sendRedirect(request.getContextPath() + "/");
-            return false;
+            throw new ClientException("Member auth is not valid");
         }
 
         //정상적인 로그인 상태일 경우, 로그인 로직을 재실행 시켜 로그인 상태를 매번 업데이트 해준다.
