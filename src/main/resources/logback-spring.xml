@@ -1,38 +1,165 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <!-- 변수 지정 -->
-    <property name="LOG_DIR" value="/logs" />
-    <property name="LOG_PATH_NAME" value="${LOG_DIR}/data.log" />
+    <property name="LOG_DIR" value="logs"/>
+    <property name="ALL_LOG_DIR" value="${LOG_DIR}/all"/>
+    <property name="DOMAIN_LOG_DIR" value="${LOG_DIR}/domain"/>
+    <property name="ATTENDANCE_LOG_DIR" value="${DOMAIN_LOG_DIR}/attendance"/>
+    <property name="CALCULATION_LOG_DIR" value="${DOMAIN_LOG_DIR}/calculation"/>
+    <property name="MATCHING_LOG_DIR" value="${DOMAIN_LOG_DIR}/matching"/>
+    <property name="MEMBER_LOG_DIR" value="${DOMAIN_LOG_DIR}/member"/>
+    <property name="NOTICE_LOG_DIR" value="${DOMAIN_LOG_DIR}/notice"/>
 
-    <!-- Send debug messages to System.out -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+
+    <!-- 콘솔 출력 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <!-- By default, encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %magenta([%thread]) %clr(%-5level) %logger{36} --- %clr(%msg){cyan} %n
+            </pattern>
         </encoder>
     </appender>
 
-    <!-- Send debug message to file -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/spring-boot-logging.log</file>
+    <!-- 전체 로그 파일 저장 -->
+    <appender name="ALL_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${ALL_LOG_DIR}/spring-boot-log.log</file>
 
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} --- %msg %n</pattern>
         </encoder>
 
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/spring-boot-logging.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
-
-            <!-- each file should be at most 10MB, keep 30 days worth of history -->
-            <maxHistory>30</maxHistory>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>10MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${ALL_LOG_DIR}/spring-boot-log.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>  <!-- 하나의 로그 파일 최대 크기 -->
+            <maxHistory>30</maxHistory> <!-- 아카이브 된 파일의 최대 저장일. 해당일 이후 자동 삭제 -->
+            <totalSizeCap>1GB</totalSizeCap>  <!-- 아카이브 된 모든 파일의 최대 크기 -->
         </rollingPolicy>
     </appender>
 
-    <root level="DEBUG">
-        <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
-    </root>
+    <!-- attendance 도메인 로그 파일 저장 -->
+    <appender name="ATTENDANCE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${ATTENDANCE_LOG_DIR}/spring-boot-log.log</file>
+
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} --- %msg %n</pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${ATTENDANCE_LOG_DIR}/spring-boot-log.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- calculation 도메인 로그 파일 저장-->
+    <appender name="CALCULATION_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${CALCULATION_LOG_DIR}/spring-boot-log.log</file>
+
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} --- %msg %n</pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${CALCULATION_LOG_DIR}/spring-boot-log.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- matching 도메인 로그 파일 저장-->
+    <appender name="MATCHING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${MATCHING_LOG_DIR}/spring-boot-log.log</file>
+
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} --- %msg %n</pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${MATCHING_LOG_DIR}/spring-boot-log.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- member 도메인 로그 파일 저장-->
+    <appender name="MEMBER_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${MEMBER_LOG_DIR}/spring-boot-log.log</file>
+
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} --- %msg %n</pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${MEMBER_LOG_DIR}/spring-boot-log.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- notice 도메인 로그 파일 저장-->
+    <appender name="NOTICE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${NOTICE_LOG_DIR}/spring-boot-log.log</file>
+
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} --- %msg %n</pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${NOTICE_LOG_DIR}/spring-boot-log.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 콘솔 로깅(주로 개발 환경에서 사용) -->
+    <springProfile name="console-logging">
+        <root level="DEBUG">    <!-- 루트 패키지 포함정, 하위 모든 패키지 로그 수준 DEBUG -->
+            <appender-ref ref="STDOUT"/>
+        </root>
+
+        <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">     <!-- SQL 로그 -->
+            <appender-ref ref="STDOUT"/>
+        </logger>
+        <logger name="org.hibernate.tool.hbm2ddl" level="DEBUG" additivity="false">    <!-- DDL 로그 -->
+            <appender-ref ref="STDOUT"/>
+        </logger>
+        <logger name="org.hibernate.type" level="TRACE" additivity="false">    <!-- 파라미터 결과 로그 -->
+            <appender-ref ref="STDOUT"/>
+        </logger>
+        <logger name="org.hibernate.stat" level="DEBUG" additivity="false">    <!-- 결과 통계 로그 -->
+            <appender-ref ref="STDOUT"/>
+        </logger>
+        <logger name="org.hibernate.type.BasicTypeRegistry" level="WARN" additivity="false">   <!-- 불필요한 로그 수준 WARN으로 생략-->
+            <appender-ref ref="STDOUT"/>
+        </logger>
+    </springProfile>
+
+    <!-- 파일 저장용 로깅(주로 운영 환경에서 사용) -->
+    <springProfile name="file-logging">
+        <root level="INFO">
+            <appender-ref ref="ALL_FILE"/>
+        </root>
+
+        <logger name="com.uad2.application.attendance" level="INFO" additivity="false">
+            <appender-ref ref="ATTENDANCE_FILE"/>
+        </logger>
+        <logger name="com.uad2.application.calculation" level="INFO" additivity="false">
+            <appender-ref ref="CALCULATION_FILE"/>
+        </logger>
+        <logger name="com.uad2.application.matching" level="INFO" additivity="false">
+            <appender-ref ref="MATCHING_FILE"/>
+        </logger>
+        <logger name="com.uad2.application.member" level="INFO" additivity="false">
+            <appender-ref ref="MEMBER_FILE"/>
+        </logger>
+        <logger name="com.uad2.application.notice" level="INFO" additivity="false">
+            <appender-ref ref="NOTICE_FILE"/>
+        </logger>
+    </springProfile>
+
 </configuration>
