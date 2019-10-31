@@ -11,15 +11,12 @@ public class SessionUtil {
 
     public static final int A_DAY_EXPIRATION = 60 * 60 * 24;
 
-    /**
-     * 세션 설정
-     */
     public static void setAttribute(HttpSession session, String name, Object object) {
         setAttribute(session,name,object,A_DAY_EXPIRATION);
     }
 
     /**
-     * 세션 설정
+     * 세션 추가
      */
     public static void setAttribute(HttpSession session, String name, Object object,int expiredTime) {
         session.setAttribute(name, object);
