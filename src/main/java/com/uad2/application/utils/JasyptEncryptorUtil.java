@@ -9,19 +9,21 @@ public class JasyptEncryptorUtil {
 
     public static String encrypt(String str){
         if(pbeEnc == null){
-            pbeEnc = new StandardPBEStringEncryptor();
-            pbeEnc.setAlgorithm(ENCRYPT_ALGORITHM);
-            pbeEnc.setPassword(ENCRYPT_PASSWORD);
+            initPbeEnc();
         }
         return pbeEnc.encrypt(str);
     }
 
     public static String decrypt(String str){
         if(pbeEnc == null){
-            pbeEnc = new StandardPBEStringEncryptor();
-            pbeEnc.setAlgorithm(ENCRYPT_ALGORITHM);
-            pbeEnc.setPassword(ENCRYPT_PASSWORD);
+            initPbeEnc();
         }
         return pbeEnc.decrypt(str);
+    }
+    
+    private static void initPbeEnc(){        
+        this.pbeEnc = new StandardPBEStringEncryptor();
+        this.pbeEnc.setAlgorithm(ENCRYPT_ALGORITHM);
+        this.pbeEnc.setPassword(ENCRYPT_PASSWORD);        
     }
 }
