@@ -22,8 +22,8 @@ public class JasyptEncryptorUtil {
     }
     
     private static void initPbeEnc(){        
-        this.pbeEnc = new StandardPBEStringEncryptor();
-        this.pbeEnc.setAlgorithm(ENCRYPT_ALGORITHM);
-        this.pbeEnc.setPassword(ENCRYPT_PASSWORD);        
+        pbeEnc = new StandardPBEStringEncryptor();
+        pbeEnc.setAlgorithm(ENCRYPT_ALGORITHM);
+        pbeEnc.setPassword(ENCRYPT_PASSWORD);
     }
 }
