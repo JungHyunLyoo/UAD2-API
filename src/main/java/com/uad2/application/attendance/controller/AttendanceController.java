@@ -3,6 +3,8 @@ package com.uad2.application.attendance.controller;
 import com.uad2.application.attendance.entity.Attendance;
 import com.uad2.application.attendance.resource.AttendanceResponseUtil;
 import com.uad2.application.attendance.service.AttendanceService;
+import com.uad2.application.common.annotation.Auth;
+import com.uad2.application.common.enumData.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +23,16 @@ public class AttendanceController {
 
     @Autowired
     AttendanceService attendanceService;
+
+
+    @Auth(role = Role.USER)
     @GetMapping(value = "/api/attendance/date/{date}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity getAllAttendanceList(@PathVariable String date){
         List<Attendance> attendanceList = attendanceService.getAllAttendanceList(date);
         return ResponseEntity.ok().body(AttendanceResponseUtil.makeListResponseResource(attendanceList));
     }
 
+    @Auth(role = Role.USER)
     @GetMapping(value = "/api/attendance/memberSeq/{memberSeq}/date/{date}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity getAttendanceList(@PathVariable int memberSeq,@PathVariable String date){
         List<Attendance> attendanceList = attendanceService.getAttendanceList(memberSeq,date);
