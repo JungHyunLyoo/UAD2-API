@@ -21,9 +21,33 @@ public class AttendanceController {
 
     @Autowired
     AttendanceService attendanceService;
+    @GetMapping(value = "/api/attendance/date/{date}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
+    public ResponseEntity getAllAttendanceList(@PathVariable String date){
+        List<Attendance> attendanceList = attendanceService.getAllAttendanceList(date);
+        return ResponseEntity.ok().body(AttendanceResponseUtil.makeListResponseResource(attendanceList));
+    }
+
     @GetMapping(value = "/api/attendance/memberSeq/{memberSeq}/date/{date}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
-    public ResponseEntity getAttendance(@PathVariable int memberSeq,@PathVariable String date){
+    public ResponseEntity getAttendanceList(@PathVariable int memberSeq,@PathVariable String date){
         List<Attendance> attendanceList = attendanceService.getAttendanceList(memberSeq,date);
         return ResponseEntity.ok().body(AttendanceResponseUtil.makeListResponseResource(attendanceList));
     }
+/*
+    @PostMapping(value = "", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
+    public ResponseEntity createAttendance(){
+        //get memseq
+        //get availabletime
+        //get availabledate
+
+        //updateMatchingInfo
+        //availabledate에 해당하는 매칭이 있을 경우만 취급
+        //availabletime에 해당 매칭의 시간이 포함되고 그 매칭에 내가 없을 경우->그 매칭에 나 추가시킴
+        //availabletime에 해당 매칭의 시간이 포함되지 않고 그 매칭에 내가 있을 경우->그 매칭에 나 제거함
+
+        //availabletime가 null이고 해당 월에 이전 참가 내역이 있으면 그 내역 제거
+        //availabletime가 null이 아니고 해당 월에 이전 참가 내역이 있으면 그 내역 갱신
+        //availabletime가 null이 아니고 해당 월에 이전 참가 내역이 없으면 새로 생성
+
+        //신청한 시간대에 5명 이상의 참여자가 있을 경우, 회장에게 메세지 발송
+    }*/
 }

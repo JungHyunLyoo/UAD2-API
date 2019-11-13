@@ -25,4 +25,8 @@ public class AttendanceService {
     public List<Attendance> getAttendanceAndMemberListByDateAndTime(Date date, String time) {
         return attendanceRepository.findByAvailableDateAndTime(date, time);
     }
+
+    public List<Attendance> getAllAttendanceList(String date){
+        return attendanceRepository.findByAvailableDate(date);
+    }
 }
