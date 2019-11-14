@@ -78,4 +78,8 @@ public class MatchingController {
            throw new ClientException(String.format("Attendance member is not exist at that day(%s)", requestMatching.getMatchingDate()));
         }
     }
+
+
+    //get matching
+    //rmove matching
 }
