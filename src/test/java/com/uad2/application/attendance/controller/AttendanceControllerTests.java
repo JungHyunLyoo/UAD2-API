@@ -5,7 +5,7 @@ package com.uad2.application.attendance.controller;
  * @DESCRIPTION
  */
 
-import com.uad2.application.common.BaseControllerTest;
+import com.uad2.application.BaseControllerTest;
 import com.uad2.application.common.TestDescription;
 import com.uad2.application.common.enumData.CookieName;
 import com.uad2.application.member.entity.Member;

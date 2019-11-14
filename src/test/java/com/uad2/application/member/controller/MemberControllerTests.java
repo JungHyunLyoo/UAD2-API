@@ -5,7 +5,7 @@ package com.uad2.application.member.controller;
  * @DATE 2019-09-09
  */
 
-import com.uad2.application.common.BaseControllerTest;
+import com.uad2.application.BaseControllerTest;
 import com.uad2.application.common.enumData.CookieName;
 import com.uad2.application.common.TestDescription;
 import com.uad2.application.member.dto.MemberDto;

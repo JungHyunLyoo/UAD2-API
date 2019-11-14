@@ -5,13 +5,12 @@ package com.uad2.application.calculation.controller;
  * @DESCRIPTION
  */
 
-import com.uad2.application.common.BaseControllerTest;
+import com.uad2.application.BaseControllerTest;
 import com.uad2.application.common.TestDescription;
 import com.uad2.application.common.enumData.CookieName;
 import com.uad2.application.member.entity.Member;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.mock.web.MockCookie;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -22,12 +21,9 @@ import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
