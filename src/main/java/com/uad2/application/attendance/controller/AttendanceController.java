@@ -1,20 +1,24 @@
 package com.uad2.application.attendance.controller;
 
+import com.uad2.application.attendance.dto.AttendanceDto;
 import com.uad2.application.attendance.entity.Attendance;
 import com.uad2.application.attendance.resource.AttendanceResponseUtil;
 import com.uad2.application.attendance.service.AttendanceService;
+import com.uad2.application.calculation.dto.CalculationDto;
 import com.uad2.application.common.annotation.Auth;
 import com.uad2.application.common.enumData.Role;
+import com.uad2.application.matching.entity.Matching;
+import com.uad2.application.matching.service.MatchingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 
 @RestController
@@ -23,6 +27,9 @@ public class AttendanceController {
 
     @Autowired
     AttendanceService attendanceService;
+
+    @Autowired
+    MatchingService matchingService;
 
 
     @Auth(role = Role.USER)
@@ -38,22 +45,60 @@ public class AttendanceController {
         List<Attendance> attendanceList = attendanceService.getAttendanceList(memberSeq,date);
         return ResponseEntity.ok().body(AttendanceResponseUtil.makeListResponseResource(attendanceList));
     }
-/*
-    @PostMapping(value = "", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
-    public ResponseEntity createAttendance(){
-        //get memseq
-        //get availabletime
-        //get availabledate
+
+    /*
+    @PostMapping(value = "/api/attendance", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
+    public ResponseEntity createAttendance(@RequestBody AttendanceDto.Request request){
+
+        String availableTime = request.getAvailableTime();
+        Date availableDate = request.getAvailableDate();
 
         //updateMatchingInfo
         //availabledate에 해당하는 매칭이 있을 경우만 취급
-        //availabletime에 해당 매칭의 시간이 포함되고 그 매칭에 내가 없을 경우->그 매칭에 나 추가시킴
-        //availabletime에 해당 매칭의 시간이 포함되지 않고 그 매칭에 내가 있을 경우->그 매칭에 나 제거함
+        Matching matching = matchingService.getMatchingByDate(availableDate);
+        if(Objects.nonNull(matching)){
+            if(availableTime.contains(matching.getMatchingTime()) &&
+                !matching.getAttendMember().contains(request.getMemberSeq())){
+                matching.setAttendMember(matching.getAttendMember() + request.getMemberSeq());
+            }
+            else if(!availableTime.contains(matching.getMatchingTime()) &&
+                    matching.getAttendMember().contains(request.getMemberSeq())){
+                matching.setAttendMember(matching.getAttendMember() - request.getMemberSeq());
+            }
+            //나머지 4개의 경우는...??
+        }
 
-        //availabletime가 null이고 해당 월에 이전 참가 내역이 있으면 그 내역 제거
-        //availabletime가 null이 아니고 해당 월에 이전 참가 내역이 있으면 그 내역 갱신
-        //availabletime가 null이 아니고 해당 월에 이전 참가 내역이 없으면 새로 생성
+        if(Objects.isNull(availableTime)){
+            List<Attendance> attendanceList = attendanceService.getAllAttendanceList(availableDate);
+            if(attendanceList.contains(request.getMemberSeq())){
+                //remove
+            }
+        }
+        else{
+            List<Attendance> attendanceList = attendanceService.getAllAttendanceList(availableDate);
+            if(attendanceList.contains(request.getMemberSeq())){
+                //update
+            }
+            else{
+                //insert
+            }
+        }
 
         //신청한 시간대에 5명 이상의 참여자가 있을 경우, 회장에게 메세지 발송
-    }*/
+        String[] matchingMemberList = matching.getAttendMember().split(",");
+        for(int i=0;i<matchingMemberList.length-1;i++){
+            String prev = matchingMemberList[i];
+            String next = matchingMemberList[i+1];
+            if(prev+1 == next){
+                String time = prev+","+next;
+                List<Attendance> attendanceList = attendanceService.getAttendanceAndMemberListByDateAndTime(availableDate,availableTime);
+                if(attendanceList.size() >= 5){
+                    //$messageController=new MessageController();
+                    //$messageText=$available_date.'일, '.$checkHour.'시간대 매칭 필요';
+                    //$messageController->sendMessage('01094736496',$messageText);
+                }
+            }
+        }
+    }
+     */
 }
