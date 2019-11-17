@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
 
-import java.util.Date;
 
 public class AttendanceDto {
 
@@ -25,7 +24,7 @@ public class AttendanceDto {
     public static class Request {   // 프로퍼티 공통 사용여부에 따라 Create, Update로 분리해도 괜찮을 것 같다.
         private int memberSeq;
         private String availableTime;
-        private Date availableDate;
+        private String availableDate;
     }
 
     @Getter
@@ -33,7 +32,7 @@ public class AttendanceDto {
     public static class Response {
         private MemberDto.Response member;
         private String availableTime;
-        private Date availableDate;
+        private String availableDate;
 
         public void setMember(Member member){
             this.member = modelMapper.map(member, MemberDto.Response.class);

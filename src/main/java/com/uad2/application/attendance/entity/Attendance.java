@@ -5,15 +5,16 @@ import java.sql.Date;
 import java.time.LocalDateTime;
 
 import com.uad2.application.member.entity.Member;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Getter  @Setter
 @ToString
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Attendance {
     @Id
     @Column
