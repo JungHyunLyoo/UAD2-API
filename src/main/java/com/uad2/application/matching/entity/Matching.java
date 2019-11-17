@@ -1,11 +1,9 @@
 package com.uad2.application.matching.entity;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 
-import com.uad2.application.member.entity.Member;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

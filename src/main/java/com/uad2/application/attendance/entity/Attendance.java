@@ -1,7 +1,8 @@
 package com.uad2.application.attendance.entity;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.sql.Date;
+import java.time.LocalDateTime;
 
 import com.uad2.application.member.entity.Member;
 import lombok.Getter;
@@ -31,9 +32,9 @@ public class Attendance {
 
     @CreationTimestamp
     @Column(nullable = false, name = "created_at")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(nullable = false, name = "updated_at")
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 }
