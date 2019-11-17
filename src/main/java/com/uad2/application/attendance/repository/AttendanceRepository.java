@@ -12,7 +12,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance,Long> {
     List<Attendance> findByMemberSeqAndAvailableDate(int memberSeq, String availableDate);
 
     @Query(value="SELECT * FROM Attendance WHERE available_date = ?1 AND available_time LIKE %?2%",nativeQuery = true)
-    List<Attendance> findByAvailableDateAndTime(Date availableDate, String availableTime);
+    List<Attendance> findByAvailableDateAndTime(String availableDate, String availableTime);
 
     @Query(value="SELECT * FROM Attendance WHERE available_date like ?1%",nativeQuery = true)
     List<Attendance> findByAvailableDate(String availableDate);

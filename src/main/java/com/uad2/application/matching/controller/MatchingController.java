@@ -48,7 +48,7 @@ public class MatchingController {
     public ResponseEntity createOrUpdateMatching(@RequestBody MatchingDto.Request requestMatching)
     {
         // 해당 일에 참가 가능 신청한 멤버들 참여정보 가져옴
-        List<Attendance> attendanceAndMemberList = attendanceService.getAttendanceAndMemberListByDateAndTime(requestMatching.getMatchingDate(), requestMatching.getMatchingTime());
+        List<Attendance> attendanceAndMemberList = attendanceService.getAttendanceAndMemberListByDateAndTime(requestMatching.getMatchingDate().toString(), requestMatching.getMatchingTime());
 
         if (!attendanceAndMemberList.isEmpty()) {
             // 참가자들의 seq 와 phoneNum 추출

@@ -22,7 +22,7 @@ public class AttendanceService {
         return attendanceRepository.findByMemberSeqAndAvailableDate(memberSeq,date);
     }
 
-    public List<Attendance> getAttendanceAndMemberListByDateAndTime(Date date, String time) {
+    public List<Attendance> getAttendanceAndMemberListByDateAndTime(String date, String time) {
         return attendanceRepository.findByAvailableDateAndTime(date, time);
     }
 
