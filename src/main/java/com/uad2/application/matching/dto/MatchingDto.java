@@ -31,4 +31,23 @@ public class MatchingDto {
 
         private int price;
     }
+
+    @Getter
+    @Setter
+    public static class Response {
+        private Date matchingDate;
+
+        private String matchingTime;
+
+        private String matchingPlace;
+
+        private String content;
+
+        private String attendMember;
+
+        private String maxCnt;
+
+        private int price;
+    }
+
 }

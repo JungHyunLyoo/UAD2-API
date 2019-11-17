@@ -5,9 +5,12 @@ import com.uad2.application.attendance.service.AttendanceService;
 import com.uad2.application.calculation.dto.CalculationDto;
 import com.uad2.application.calculation.entity.Calculation;
 import com.uad2.application.calculation.service.CalculationService;
+import com.uad2.application.common.annotation.Auth;
+import com.uad2.application.common.enumData.Role;
 import com.uad2.application.exception.ClientException;
 import com.uad2.application.matching.entity.Matching;
 import com.uad2.application.matching.dto.MatchingDto;
+import com.uad2.application.matching.resource.MatchingResponseUtil;
 import com.uad2.application.matching.service.MatchingService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -15,9 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +78,13 @@ public class MatchingController {
         } else {
            throw new ClientException(String.format("Attendance member is not exist at that day(%s)", requestMatching.getMatchingDate()));
         }
+    }
+
+    @Auth(role = Role.USER)
+    @GetMapping(value = "/api/matching/date/{date}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
+    public ResponseEntity getMatching(@PathVariable String date){
+        List<Matching> matchingList = matchingService.getMatchingByDate(date);
+        return ResponseEntity.ok().body(MatchingResponseUtil.makeListResponseResource(matchingList));
     }
 
 

@@ -9,7 +9,7 @@ import com.uad2.application.matching.repository.MatchingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.util.List;
 
 @Service
 public class MatchingService {
@@ -20,7 +20,7 @@ public class MatchingService {
         return matchingRepository.save(matching);
     }*/
 
-    public Matching getMatchingByDate(Date date) {
+    public List<Matching> getMatchingByDate(String date) {
         return matchingRepository.findByMatchingDate(date);
     }
 
