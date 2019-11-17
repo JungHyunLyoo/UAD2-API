@@ -9,6 +9,7 @@ import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
 import com.uad2.application.member.resource.MemberResponseUtil;
 import com.uad2.application.member.service.MemberService;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.net.URI;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
@@ -39,8 +42,11 @@ public class MemberController {
     @Autowired
     LoginProcessor loginProcessor;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @GetMapping(value = "/")
-    public ResponseEntity index(){
+    public ResponseEntity index() {
         return ResponseEntity.ok().body("index");
     }
 
@@ -79,7 +85,7 @@ public class MemberController {
             throw new ClientException(String.format("PhoneNumber(%s) already exist", phoneNumber));
         }
 
-        Member savedMember = memberService.createMember(requestMember);
+        Member savedMember = memberService.createMember(modelMapper.map(requestMember, Member.class));
         URI createdUri = linkTo(MemberController.class).slash("id").slash(requestMember.getId()).toUri();
         return ResponseEntity.created(createdUri).body(MemberResponseUtil.makeResponseResource(savedMember));
     }
@@ -105,7 +111,7 @@ public class MemberController {
             HttpServletRequest request,
             HttpServletResponse response,
             @RequestBody MemberDto.LoginRequest loginRequest) {
-        loginProcessor.login(request,response,session,loginRequest);
+        loginProcessor.login(request, response, session, loginRequest);
         return ResponseEntity.ok().build();
     }
 
@@ -114,7 +120,7 @@ public class MemberController {
             HttpSession session,
             HttpServletRequest request,
             HttpServletResponse response) {
-        loginProcessor.login(request,response,session,null);
+        loginProcessor.login(request, response, session, null);
         return ResponseEntity.ok().build();
     }
 
@@ -126,7 +132,7 @@ public class MemberController {
             HttpSession session,
             HttpServletRequest request,
             HttpServletResponse response) {
-        loginProcessor.logout(request,response,session);
+        loginProcessor.logout(request, response, session);
         return ResponseEntity.ok().build();
     }
 

@@ -1,14 +1,10 @@
 package com.uad2.application.member.service;
 
-import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
 import com.uad2.application.member.repository.MemberRepository;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.uad2.application.utils.EncryptUtil;
-import org.springframework.util.ObjectUtils;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
@@ -19,12 +15,14 @@ import java.util.List;
  */
 @Service
 public class MemberService {
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private ModelMapper modelMapper;
 
-    public List<Member> getAllMember(){
+    private final MemberRepository memberRepository;
+
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
+
+    public List<Member> getAllMember() {
         return memberRepository.findAll();
     }
 
@@ -36,8 +34,8 @@ public class MemberService {
         return memberRepository.findByIdAndSessionId(id, sessionId);
     }
 
-    public Member createMember(MemberDto.Request requestMember) {
-        return memberRepository.save(modelMapper.map(requestMember, Member.class));
+    public Member createMember(Member member) {
+        return memberRepository.save(member);
     }
 
     public void updateSessionInfo(Member member, String sessionId, Date sessionLimit) {
@@ -47,10 +45,10 @@ public class MemberService {
     }
 
     public boolean isSamePwd(MemberDto.Request requestMember) {
-        try{
+        try {
             Member member = memberRepository.findById(requestMember.getId());
             return member.getPwd().equals(EncryptUtil.encryptMD5(requestMember.getPwd()));
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new RuntimeException("Error when getting pwd");
         }
     }
@@ -59,7 +57,7 @@ public class MemberService {
         return memberRepository.findByPhoneNumber(phoneNumber);
     }
 
-    public List<Member> findBySeqList(int[] seqList){
+    public List<Member> findBySeqList(int[] seqList) {
         return memberRepository.findAllBySeqIn(seqList);
     }
     /*
