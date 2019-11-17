@@ -8,6 +8,7 @@ package com.uad2.application.attendance.dto;
 
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
@@ -20,6 +21,7 @@ public class AttendanceDto {
 
     @Getter
     @Setter
+    @Builder
     public static class Request {   // 프로퍼티 공통 사용여부에 따라 Create, Update로 분리해도 괜찮을 것 같다.
         private int memberSeq;
         private String availableTime;
