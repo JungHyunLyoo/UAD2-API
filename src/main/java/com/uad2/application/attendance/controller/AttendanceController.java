@@ -1,5 +1,6 @@
 package com.uad2.application.attendance.controller;
 
+import com.uad2.application.attendance.AttendanceValidator;
 import com.uad2.application.attendance.dto.AttendanceDto;
 import com.uad2.application.attendance.entity.Attendance;
 import com.uad2.application.attendance.repository.AttendanceRepository;
@@ -36,6 +37,9 @@ public class AttendanceController {
     AttendanceService attendanceService;
 
     @Autowired
+    AttendanceValidator attendanceValidator;
+
+    @Autowired
     MatchingService matchingService;
 
     @Autowired
@@ -48,6 +52,7 @@ public class AttendanceController {
     @Auth(role = Role.USER)
     @GetMapping(value = "/api/attendance/date/{date}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity getAllAttendanceList(@PathVariable String date){
+        attendanceValidator.validateGetAllAttendanceList(date);
         List<Attendance> attendanceList = attendanceService.getAllAttendanceList(date);
         return ResponseEntity.ok().body(AttendanceResponseUtil.makeListResponseResource(attendanceList));
     }
@@ -55,6 +60,7 @@ public class AttendanceController {
     @Auth(role = Role.USER)
     @GetMapping(value = "/api/attendance/memberSeq/{memberSeq}/date/{date}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity getAttendanceList(@PathVariable int memberSeq,@PathVariable String date){
+        attendanceValidator.validateGetAllAttendanceList(date);
         Attendance attendanceList = attendanceService.getAttendance(memberSeq,date);
         return ResponseEntity.ok().body(AttendanceResponseUtil.makeResponseResource(attendanceList));
     }

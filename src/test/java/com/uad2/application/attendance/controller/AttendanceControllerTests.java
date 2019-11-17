@@ -100,6 +100,136 @@ public class AttendanceControllerTests extends BaseControllerTest {
 
     @Test
     @Transactional
+    @TestDescription("특정일 참가 내역 조회 에러(로그인 x)")
+    public void getAllAttendanceList_badRequest_noAuth() throws Exception {
+        // request
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/api/attendance/date/{date}","2019-11-10")
+        );
+        // result
+        result.andExpect(status().isAccepted())
+                .andDo(print());
+    }
+
+
+    @Test
+    @Transactional
+    @TestDescription("특정일 참가 내역 조회 에러(파라미터 오류1)")
+    public void getAllAttendanceList_badRequest_invalidParameter1() throws Exception {
+
+        MockCookie id = new MockCookie(CookieName.ID.getName(), userMember.getId());
+        MockCookie name = new MockCookie(CookieName.NAME.getName(), userMember.getName());
+        MockCookie phoneNum = new MockCookie(CookieName.PHONE_NUM.getName(), userMember.getPhoneNumber());
+        MockCookie isWorker = new MockCookie(CookieName.IS_WORKER.getName(), Integer.toString(userMember.getIsWorker()));
+        MockCookie sessionId = new MockCookie(CookieName.SESSION_ID.getName(), userMember.getSessionId());
+        MockCookie isAdmin = new MockCookie(CookieName.IS_ADMIN.getName(), Integer.toString(userMember.getIsAdmin()));
+        MockCookie isAutoLogin = new MockCookie(CookieName.IS_AUTO_LOGIN.getName(), "false");
+
+        // request
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/api/attendance/date/{date}","201911")
+                        .cookie(id)
+                        .cookie(name)
+                        .cookie(phoneNum)
+                        .cookie(isWorker)
+                        .cookie(sessionId)
+                        .cookie(isAdmin)
+                        .cookie(isAutoLogin)
+        );
+        // result
+        result.andExpect(status().isAccepted())
+                .andDo(print());
+    }
+
+
+    @Test
+    @Transactional
+    @TestDescription("특정일 참가 내역 조회 에러(파라미터 오류2)")
+    public void getAllAttendanceList_badRequest_invalidParameter2() throws Exception {
+
+        MockCookie id = new MockCookie(CookieName.ID.getName(), userMember.getId());
+        MockCookie name = new MockCookie(CookieName.NAME.getName(), userMember.getName());
+        MockCookie phoneNum = new MockCookie(CookieName.PHONE_NUM.getName(), userMember.getPhoneNumber());
+        MockCookie isWorker = new MockCookie(CookieName.IS_WORKER.getName(), Integer.toString(userMember.getIsWorker()));
+        MockCookie sessionId = new MockCookie(CookieName.SESSION_ID.getName(), userMember.getSessionId());
+        MockCookie isAdmin = new MockCookie(CookieName.IS_ADMIN.getName(), Integer.toString(userMember.getIsAdmin()));
+        MockCookie isAutoLogin = new MockCookie(CookieName.IS_AUTO_LOGIN.getName(), "false");
+
+        // request
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/api/attendance/date/{date}","20191110")
+                        .cookie(id)
+                        .cookie(name)
+                        .cookie(phoneNum)
+                        .cookie(isWorker)
+                        .cookie(sessionId)
+                        .cookie(isAdmin)
+                        .cookie(isAutoLogin)
+        );
+        // result
+        result.andExpect(status().isAccepted())
+                .andDo(print());
+    }
+
+    @Test
+    @Transactional
+    @TestDescription("특정일 참가 내역 조회 에러(파라미터 오류3)")
+    public void getAllAttendanceList_badRequest_invalidParameter3() throws Exception {
+
+        MockCookie id = new MockCookie(CookieName.ID.getName(), userMember.getId());
+        MockCookie name = new MockCookie(CookieName.NAME.getName(), userMember.getName());
+        MockCookie phoneNum = new MockCookie(CookieName.PHONE_NUM.getName(), userMember.getPhoneNumber());
+        MockCookie isWorker = new MockCookie(CookieName.IS_WORKER.getName(), Integer.toString(userMember.getIsWorker()));
+        MockCookie sessionId = new MockCookie(CookieName.SESSION_ID.getName(), userMember.getSessionId());
+        MockCookie isAdmin = new MockCookie(CookieName.IS_ADMIN.getName(), Integer.toString(userMember.getIsAdmin()));
+        MockCookie isAutoLogin = new MockCookie(CookieName.IS_AUTO_LOGIN.getName(), "false");
+
+        // request
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/api/attendance/date/{date}","2019-13")
+                        .cookie(id)
+                        .cookie(name)
+                        .cookie(phoneNum)
+                        .cookie(isWorker)
+                        .cookie(sessionId)
+                        .cookie(isAdmin)
+                        .cookie(isAutoLogin)
+        );
+        // result
+        result.andExpect(status().isAccepted())
+                .andDo(print());
+    }
+
+    @Test
+    @Transactional
+    @TestDescription("특정일 참가 내역 조회 에러(파라미터 오류4)")
+    public void getAllAttendanceList_badRequest_invalidParameter4() throws Exception {
+
+        MockCookie id = new MockCookie(CookieName.ID.getName(), userMember.getId());
+        MockCookie name = new MockCookie(CookieName.NAME.getName(), userMember.getName());
+        MockCookie phoneNum = new MockCookie(CookieName.PHONE_NUM.getName(), userMember.getPhoneNumber());
+        MockCookie isWorker = new MockCookie(CookieName.IS_WORKER.getName(), Integer.toString(userMember.getIsWorker()));
+        MockCookie sessionId = new MockCookie(CookieName.SESSION_ID.getName(), userMember.getSessionId());
+        MockCookie isAdmin = new MockCookie(CookieName.IS_ADMIN.getName(), Integer.toString(userMember.getIsAdmin()));
+        MockCookie isAutoLogin = new MockCookie(CookieName.IS_AUTO_LOGIN.getName(), "false");
+
+        // request
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/api/attendance/date/{date}","2019-13-00")
+                        .cookie(id)
+                        .cookie(name)
+                        .cookie(phoneNum)
+                        .cookie(isWorker)
+                        .cookie(sessionId)
+                        .cookie(isAdmin)
+                        .cookie(isAutoLogin)
+        );
+        // result
+        result.andExpect(status().isAccepted())
+                .andDo(print());
+    }
+    @Test
+    @Transactional
     @TestDescription("참가 데이터 생성")
     public void createAttendance() throws Exception {
         MockCookie id = new MockCookie(CookieName.ID.getName(), userMember.getId());
