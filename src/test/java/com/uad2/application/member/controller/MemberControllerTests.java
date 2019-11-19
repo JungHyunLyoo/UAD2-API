@@ -9,24 +9,16 @@ import com.uad2.application.BaseControllerTest;
 import com.uad2.application.common.enumData.CookieName;
 import com.uad2.application.common.TestDescription;
 import com.uad2.application.member.dto.MemberDto;
-import com.uad2.application.member.entity.Member;
 import com.uad2.application.utils.CookieUtil;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockCookie;
-import org.springframework.mock.web.MockHttpSession;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
+import java.util.*;
 
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
@@ -39,68 +31,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class MemberControllerTests extends BaseControllerTest {
 
-    private MockHttpSession session;
-    private Member adminMember;
-    private Member userMember;
-
-    @Before
-    public void setUp() {
-        final int expiredTime = 60 * 60 * 24;
-        session = new MockHttpSession();
-        session.setMaxInactiveInterval(expiredTime * 365);
-
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        calendar.add(Calendar.SECOND, expiredTime);
-        adminMember = Member.builder()
-                .seq(1)
-                .id("testAdmin")
-                .pwd("testAdmin")
-                .name("testAdmin")
-                .phoneNumber("01000000001")
-                .sessionId(null)
-                .sessionLimit(calendar.getTime())
-                .isAdmin(1)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-
-        userMember = Member.builder()
-                .seq(135)
-                .id("testUser")
-                .pwd("testUser")
-                .name("testUser")
-                .phoneNumber("01000000000")
-                .sessionId("1B3F16603664677C2ABE377C71ABF196")
-                .sessionLimit(calendar.getTime())
-                .isAdmin(0)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-    }
-
 
     @Test
     @Transactional
     @TestDescription("전체 회원 조회")
     public void getAllMembers() throws Exception {
-        MockCookie id = new MockCookie(CookieName.ID.getName(), adminMember.getId());
-        MockCookie name = new MockCookie(CookieName.NAME.getName(), adminMember.getName());
-        MockCookie phoneNum = new MockCookie(CookieName.PHONE_NUM.getName(), adminMember.getPhoneNumber());
-        MockCookie isWorker = new MockCookie(CookieName.IS_WORKER.getName(), Integer.toString(adminMember.getIsWorker()));
-        MockCookie sessionId = new MockCookie(CookieName.SESSION_ID.getName(), adminMember.getSessionId());
-        MockCookie isAdmin = new MockCookie(CookieName.IS_ADMIN.getName(), Integer.toString(adminMember.getIsAdmin()));
-        MockCookie isAutoLogin = new MockCookie(CookieName.IS_AUTO_LOGIN.getName(), "false");
-
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.get("/api/member")
-                        .cookie(id)
-                        .cookie(name)
-                        .cookie(phoneNum)
-                        .cookie(isWorker)
-                        .cookie(sessionId)
-                        .cookie(isAdmin)
-                        .cookie(isAutoLogin)
+                super.getRequest("/api/member",super.getMemberCookieList(adminMember,AUTOLOGIN_FALSE))
                         .accept(MediaTypes.HAL_JSON)
         );
 
@@ -124,26 +62,11 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("전체 회원 조회 에러(일반 유저 로그인)")
     public void getAllMembers_badRequest_noAuth() throws Exception {
-        MockCookie id = new MockCookie(CookieName.ID.getName(), userMember.getId());
-        MockCookie name = new MockCookie(CookieName.NAME.getName(), userMember.getName());
-        MockCookie phoneNum = new MockCookie(CookieName.PHONE_NUM.getName(), userMember.getPhoneNumber());
-        MockCookie isWorker = new MockCookie(CookieName.IS_WORKER.getName(), Integer.toString(userMember.getIsWorker()));
-        MockCookie sessionId = new MockCookie(CookieName.SESSION_ID.getName(), userMember.getSessionId());
-        MockCookie isAdmin = new MockCookie(CookieName.IS_ADMIN.getName(), Integer.toString(userMember.getIsAdmin()));
-        MockCookie isAutoLogin = new MockCookie(CookieName.IS_AUTO_LOGIN.getName(), "false");
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.get("/api/member")
-                        .cookie(id)
-                        .cookie(name)
-                        .cookie(phoneNum)
-                        .cookie(isWorker)
-                        .cookie(sessionId)
-                        .cookie(isAdmin)
-                        .cookie(isAutoLogin)
+                super.getRequest("/api/member",super.getMemberCookieList(userMember,AUTOLOGIN_FALSE))
                         .accept(MediaTypes.HAL_JSON)
         );
-
         // result
         result.andExpect(status().isAccepted())
                 .andDo(print());
@@ -152,13 +75,11 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("전체 회원 조회 에러(로그인 x)")
     public void getAllMembers_badRequest_noLogin() throws Exception {
-
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.get("/api/member")
+                super.getRequest("/api/member")
                         .accept(MediaTypes.HAL_JSON)
         );
-
         // result
         result.andExpect(status().isAccepted())
                 .andDo(print());
@@ -168,24 +89,12 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("멤버 개별 조회 by id")
     public void getMemberById() throws Exception {
-        MockCookie id = new MockCookie(CookieName.ID.getName(), userMember.getId());
-        MockCookie name = new MockCookie(CookieName.NAME.getName(), userMember.getName());
-        MockCookie phoneNum = new MockCookie(CookieName.PHONE_NUM.getName(), userMember.getPhoneNumber());
-        MockCookie isWorker = new MockCookie(CookieName.IS_WORKER.getName(), Integer.toString(userMember.getIsWorker()));
-        MockCookie sessionId = new MockCookie(CookieName.SESSION_ID.getName(), userMember.getSessionId());
-        MockCookie isAdmin = new MockCookie(CookieName.IS_ADMIN.getName(), Integer.toString(userMember.getIsAdmin()));
-        MockCookie isAutoLogin = new MockCookie(CookieName.IS_AUTO_LOGIN.getName(), "true");
+        String[] paramList = new String[1];
+        paramList[0] = "testUser";
 
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.get("/api/member/id/{id}", "testUser")
-                        .cookie(id)
-                        .cookie(name)
-                        .cookie(phoneNum)
-                        .cookie(isWorker)
-                        .cookie(sessionId)
-                        .cookie(isAdmin)
-                        .cookie(isAutoLogin)
+                super.getRequest("/api/member/id/{id}",paramList,super.getMemberCookieList(userMember,AUTOLOGIN_TRUE))
                         .accept(MediaTypes.HAL_JSON)
         );
 
@@ -211,24 +120,12 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("멤버 개별 조회(해당 아이디로 데이터 x) by id")
     public void getMemberById_emptyResult() throws Exception {
-        MockCookie id = new MockCookie(CookieName.ID.getName(), userMember.getId());
-        MockCookie name = new MockCookie(CookieName.NAME.getName(), userMember.getName());
-        MockCookie phoneNum = new MockCookie(CookieName.PHONE_NUM.getName(), userMember.getPhoneNumber());
-        MockCookie isWorker = new MockCookie(CookieName.IS_WORKER.getName(), Integer.toString(userMember.getIsWorker()));
-        MockCookie sessionId = new MockCookie(CookieName.SESSION_ID.getName(), userMember.getSessionId());
-        MockCookie isAdmin = new MockCookie(CookieName.IS_ADMIN.getName(), Integer.toString(userMember.getIsAdmin()));
-        MockCookie isAutoLogin = new MockCookie(CookieName.IS_AUTO_LOGIN.getName(), "true");
+        String[] paramList = new String[1];
+        paramList[0] = "testUser123";
 
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.get("/api/member/id/{id}", "testUser123")
-                        .cookie(id)
-                        .cookie(name)
-                        .cookie(phoneNum)
-                        .cookie(isWorker)
-                        .cookie(sessionId)
-                        .cookie(isAdmin)
-                        .cookie(isAutoLogin)
+                super.getRequest("/api/member/id/{id}",paramList,super.getMemberCookieList(userMember,AUTOLOGIN_TRUE))
                         .accept(MediaTypes.HAL_JSON)
         );
 
@@ -255,9 +152,11 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("멤버 개별 조회 by id 에러(로그인 x)")
     public void getMemberById_badRequest_noLogin() throws Exception {
+        String[] paramList = new String[1];
+        paramList[0] = "testUser";
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.get("/api/member/id/{id}", "testUser")
+                super.getRequest("/api/member/id/{id}",paramList)
                         .accept(MediaTypes.HAL_JSON)
         );
 
@@ -270,12 +169,11 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("개별 회원 조회 에러(매개변수 미기입)")
     public void getMemberById_badRequest_emptyParameter() throws Exception {
-        session.setAttribute("member", userMember);
-
+        String[] paramList = new String[1];
+        paramList[0] = "";
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.get("/api/member/id/{id}", "")
-                        .session(session)
+                super.getRequest("/api/member/id/{id}",paramList)
                         .accept(MediaTypes.HAL_JSON)
         );
 
@@ -305,10 +203,9 @@ public class MemberControllerTests extends BaseControllerTest {
 
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.post("/api/member")
+                super.postRequest("/api/member",member)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaTypes.HAL_JSON)
-                        .content(objectMapper.writeValueAsString(member))
         );
 
         // result
@@ -351,10 +248,9 @@ public class MemberControllerTests extends BaseControllerTest {
 
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.post("/api/member")
+                super.postRequest("/api/member",member)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaTypes.HAL_JSON)
-                        .content(objectMapper.writeValueAsString(member))
         );
 
         result.andExpect(status().isAccepted())
@@ -387,9 +283,9 @@ public class MemberControllerTests extends BaseControllerTest {
 
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.post("/api/member/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest))
+                super.postRequest("/api/member/login",loginRequest)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaTypes.HAL_JSON)
         );
 
         result.andExpect(status().isOk())
@@ -414,9 +310,9 @@ public class MemberControllerTests extends BaseControllerTest {
 
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.post("/api/member/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest))
+                super.postRequest("/api/member/login",loginRequest)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaTypes.HAL_JSON)
         );
 
         result.andExpect(status().isAccepted())
@@ -440,13 +336,13 @@ public class MemberControllerTests extends BaseControllerTest {
                 .pwd("wrongPwd")
                 .isAutoLogin(false)
                 .build();
-
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.post("/api/member/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest))
+                super.postRequest("/api/member/login",loginRequest)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaTypes.HAL_JSON)
         );
+
 
         result.andExpect(status().isAccepted())
                 .andDo(print())
@@ -472,10 +368,11 @@ public class MemberControllerTests extends BaseControllerTest {
 
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.post("/api/member/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest))
+                super.postRequest("/api/member/login",loginRequest)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaTypes.HAL_JSON)
         );
+
 
         result.andExpect(status().isOk())
                 .andDo(print())
@@ -505,9 +402,9 @@ public class MemberControllerTests extends BaseControllerTest {
 
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.post("/api/member/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest))
+                super.postRequest("/api/member/login",loginRequest)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaTypes.HAL_JSON)
         );
 
         result.andExpect(status().isAccepted())
@@ -534,9 +431,9 @@ public class MemberControllerTests extends BaseControllerTest {
 
         // request
         ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.post("/api/member/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest))
+                super.postRequest("/api/member/login",loginRequest)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaTypes.HAL_JSON)
         );
 
         result.andExpect(status().isAccepted())
