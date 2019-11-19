@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockCookie;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -30,18 +31,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class MemberControllerTests extends BaseControllerTest {
-
-
     @Test
     @Transactional
     @TestDescription("전체 회원 조회")
     public void getAllMembers() throws Exception {
+        MockCookie[] adminMemberCookieList = super.getAdminMemberCookieList(AUTOLOGIN_FALSE);
         // request
         ResultActions result = mockMvc.perform(
-                super.getRequest("/api/member",super.getMemberCookieList(adminMember,AUTOLOGIN_FALSE))
+                super.getRequest("/api/member", adminMemberCookieList)
                         .accept(MediaTypes.HAL_JSON)
         );
-
         // result
         result.andExpect(status().isOk())
                 .andDo(print())
@@ -56,15 +55,14 @@ public class MemberControllerTests extends BaseControllerTest {
                         )
                 ));
     }
-
-
     @Test
     @Transactional
     @TestDescription("전체 회원 조회 에러(일반 유저 로그인)")
     public void getAllMembers_badRequest_noAuth() throws Exception {
+        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
         // request
         ResultActions result = mockMvc.perform(
-                super.getRequest("/api/member",super.getMemberCookieList(userMember,AUTOLOGIN_FALSE))
+                super.getRequest("/api/member", userMemberCookieList)
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
@@ -84,20 +82,17 @@ public class MemberControllerTests extends BaseControllerTest {
         result.andExpect(status().isAccepted())
                 .andDo(print());
     }
-
     @Test
     @Transactional
     @TestDescription("멤버 개별 조회 by id")
     public void getMemberById() throws Exception {
-        String[] paramList = new String[1];
-        paramList[0] = "testUser";
-
+        String[] paramList = new String[]{"testUser"};
+        MockCookie[] userMemberCookieList = super.getMemberCookieList(userMember, AUTOLOGIN_TRUE);
         // request
         ResultActions result = mockMvc.perform(
-                super.getRequest("/api/member/id/{id}",paramList,super.getMemberCookieList(userMember,AUTOLOGIN_TRUE))
+                super.getRequest("/api/member/id/{id}",paramList, userMemberCookieList)
                         .accept(MediaTypes.HAL_JSON)
         );
-
         // result
         result.andExpect(status().isOk())
                 .andDo(print())
@@ -115,20 +110,17 @@ public class MemberControllerTests extends BaseControllerTest {
                         )
                 ));
     }
-
     @Test
     @Transactional
     @TestDescription("멤버 개별 조회(해당 아이디로 데이터 x) by id")
     public void getMemberById_emptyResult() throws Exception {
-        String[] paramList = new String[1];
-        paramList[0] = "testUser123";
-
+        String[] paramList = new String[]{"testUser123"};
+        MockCookie[] userMemberCookieList = super.getMemberCookieList(userMember, AUTOLOGIN_TRUE);
         // request
         ResultActions result = mockMvc.perform(
-                super.getRequest("/api/member/id/{id}",paramList,super.getMemberCookieList(userMember,AUTOLOGIN_TRUE))
+                super.getRequest("/api/member/id/{id}",paramList, userMemberCookieList)
                         .accept(MediaTypes.HAL_JSON)
         );
-
         // result
         result.andExpect(status().isOk())
                 .andDo(print())
@@ -146,14 +138,11 @@ public class MemberControllerTests extends BaseControllerTest {
                         )
                 ));
     }
-
-
     @Test
     @Transactional
     @TestDescription("멤버 개별 조회 by id 에러(로그인 x)")
     public void getMemberById_badRequest_noLogin() throws Exception {
-        String[] paramList = new String[1];
-        paramList[0] = "testUser";
+        String[] paramList = new String[]{"testUser"};
         // request
         ResultActions result = mockMvc.perform(
                 super.getRequest("/api/member/id/{id}",paramList)
@@ -164,19 +153,16 @@ public class MemberControllerTests extends BaseControllerTest {
         result.andExpect(status().isAccepted())
                 .andDo(print());
     }
-
     @Test
     @Transactional
     @TestDescription("개별 회원 조회 에러(매개변수 미기입)")
     public void getMemberById_badRequest_emptyParameter() throws Exception {
-        String[] paramList = new String[1];
-        paramList[0] = "";
+        String[] paramList = new String[]{""};
         // request
         ResultActions result = mockMvc.perform(
                 super.getRequest("/api/member/id/{id}",paramList)
                         .accept(MediaTypes.HAL_JSON)
         );
-
         // result
         result.andExpect(status().isNotFound())
                 .andDo(print())
@@ -185,8 +171,6 @@ public class MemberControllerTests extends BaseControllerTest {
                                 parameterWithName("id").description("아이디")
                         )));
     }
-
-
     @Test
     @Transactional
     @TestDescription("회원 데이터 생성")
@@ -200,14 +184,12 @@ public class MemberControllerTests extends BaseControllerTest {
                 .isWorker(0)
                 .phoneNumber("01234567890")
                 .build();
-
         // request
         ResultActions result = mockMvc.perform(
                 super.postRequest("/api/member",member)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaTypes.HAL_JSON)
         );
-
         // result
         result.andExpect(status().isCreated())
                 .andDo(print())
@@ -229,10 +211,8 @@ public class MemberControllerTests extends BaseControllerTest {
                                 subsectionWithPath("member").description("회원 데이터"),
                                 subsectionWithPath("_links").description("링크")
                         )
-                ))
-        ;
+                ));
     }
-
     @Test
     @Transactional
     @TestDescription("회원 데이터 생성 에러(필수 파라미터 부재)")
@@ -245,14 +225,13 @@ public class MemberControllerTests extends BaseControllerTest {
                 .isWorker(0)
                 .phoneNumber("01234567890")
                 .build();
-
         // request
         ResultActions result = mockMvc.perform(
                 super.postRequest("/api/member",member)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaTypes.HAL_JSON)
         );
-
+        // result
         result.andExpect(status().isAccepted())
                 .andDo(print())
                 .andExpect(jsonPath("message").exists())
@@ -270,7 +249,6 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$[0].objectName").exists());*/
     }
-
     @Test
     @Transactional
     @TestDescription("일반 로그인 (자동 로그인 false)")
@@ -280,14 +258,13 @@ public class MemberControllerTests extends BaseControllerTest {
                 .pwd("testUser")
                 .isAutoLogin(false)
                 .build();
-
         // request
         ResultActions result = mockMvc.perform(
                 super.postRequest("/api/member/login",loginRequest)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaTypes.HAL_JSON)
         );
-
+        // result
         result.andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(cookie().exists(CookieName.ID.getName()))
@@ -297,7 +274,6 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andExpect(cookie().exists(CookieName.SESSION_ID.getName()))
                 .andExpect(cookie().exists(CookieName.IS_ADMIN.getName()));
     }
-
     @Test
     @Transactional
     @TestDescription("일반 로그인 아이디 오류(자동 로그인 false)")
@@ -307,14 +283,13 @@ public class MemberControllerTests extends BaseControllerTest {
                 .pwd("testUser")
                 .isAutoLogin(false)
                 .build();
-
         // request
         ResultActions result = mockMvc.perform(
                 super.postRequest("/api/member/login",loginRequest)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaTypes.HAL_JSON)
         );
-
+        // result
         result.andExpect(status().isAccepted())
                 .andDo(print())
                 .andExpect(jsonPath("message").exists())
@@ -326,7 +301,6 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andExpect(cookie().doesNotExist(CookieName.SESSION_ID.getName()))
                 .andExpect(cookie().doesNotExist(CookieName.IS_ADMIN.getName()));
     }
-
     @Test
     @Transactional
     @TestDescription("일반 로그인 비밀번호 오류(자동 로그인 false)")
@@ -342,8 +316,7 @@ public class MemberControllerTests extends BaseControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaTypes.HAL_JSON)
         );
-
-
+        // result
         result.andExpect(status().isAccepted())
                 .andDo(print())
                 .andExpect(jsonPath("message").exists())
@@ -355,7 +328,6 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andExpect(cookie().doesNotExist(CookieName.SESSION_ID.getName()))
                 .andExpect(cookie().doesNotExist(CookieName.IS_ADMIN.getName()));
     }
-
     @Test
     @Transactional
     @TestDescription("자동 로그인")
@@ -365,15 +337,13 @@ public class MemberControllerTests extends BaseControllerTest {
                 .pwd("testUser")
                 .isAutoLogin(true)
                 .build();
-
         // request
         ResultActions result = mockMvc.perform(
                 super.postRequest("/api/member/login",loginRequest)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaTypes.HAL_JSON)
         );
-
-
+        // result
         result.andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(cookie().exists(CookieName.ID.getName()))
@@ -389,7 +359,6 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andExpect(cookie().maxAge(CookieName.SESSION_ID.getName(), CookieUtil.A_YEAR_EXPIRATION))
                 .andExpect(cookie().maxAge(CookieName.IS_ADMIN.getName(), CookieUtil.A_YEAR_EXPIRATION));
     }
-
     @Test
     @Transactional
     @TestDescription("자동 로그인 아이디 오류")
@@ -399,14 +368,13 @@ public class MemberControllerTests extends BaseControllerTest {
                 .pwd("testUser")
                 .isAutoLogin(true)
                 .build();
-
         // request
         ResultActions result = mockMvc.perform(
                 super.postRequest("/api/member/login",loginRequest)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaTypes.HAL_JSON)
         );
-
+        // result
         result.andExpect(status().isAccepted())
                 .andDo(print())
                 .andExpect(jsonPath("message").exists())
@@ -418,7 +386,6 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andExpect(cookie().doesNotExist(CookieName.SESSION_ID.getName()))
                 .andExpect(cookie().doesNotExist(CookieName.IS_ADMIN.getName()));
     }
-
     @Test
     @Transactional
     @TestDescription("자동 로그인 비밀번호 오류")
@@ -428,14 +395,13 @@ public class MemberControllerTests extends BaseControllerTest {
                 .pwd("invalidPwd")
                 .isAutoLogin(true)
                 .build();
-
         // request
         ResultActions result = mockMvc.perform(
                 super.postRequest("/api/member/login",loginRequest)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaTypes.HAL_JSON)
         );
-
+        // result
         result.andExpect(status().isAccepted())
                 .andDo(print())
                 .andExpect(jsonPath("message").exists())
@@ -447,7 +413,6 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andExpect(cookie().doesNotExist(CookieName.SESSION_ID.getName()))
                 .andExpect(cookie().doesNotExist(CookieName.IS_ADMIN.getName()));
     }
-
     @Test
     @Transactional
     @TestDescription("자동 로그인 테스트")

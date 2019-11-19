@@ -82,6 +82,12 @@ public class BaseControllerTest {
                 .updatedAt(LocalDateTime.now())
                 .build();
     }
+    protected MockCookie[] getUserMemberCookieList(String isAutoLogin){
+        return getMemberCookieList(userMember,isAutoLogin);
+    }
+    protected MockCookie[] getAdminMemberCookieList(String isAutoLogin){
+        return getMemberCookieList(adminMember,isAutoLogin);
+    }
     protected MockCookie[] getMemberCookieList(Member member,String isAutoLogin){
         MockCookie[] mockCookieList = new MockCookie[7];
         mockCookieList[0] = new MockCookie(CookieName.ID.getName(), member.getId());
