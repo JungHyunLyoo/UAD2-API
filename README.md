@@ -70,7 +70,7 @@ UAD's second project
                     
 프로젝트 실행(내장 tomcat 실행)
 ----
-    mvn spring-boot:run -Djasypt.encryptor.password={jasypt.encryptor.password}
+    mvn spring-boot:run -Djasypt.encryptor.password={jasypt.encryptor.password} -Dspring.profiles.active=local
  
 readme 마크다운 사용법
 ----

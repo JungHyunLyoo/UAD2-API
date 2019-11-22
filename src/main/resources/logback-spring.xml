@@ -116,50 +116,56 @@
         </rollingPolicy>
     </appender>
 
-    <!-- 콘솔 로깅(주로 개발 환경에서 사용) -->
-    <springProfile name="console-logging">
+    <!-- 로컬 환경 -->
+    <springProfile name="local">
         <root level="DEBUG">    <!-- 루트 패키지 포함정, 하위 모든 패키지 로그 수준 DEBUG -->
             <appender-ref ref="STDOUT"/>
+            <appender-ref ref="ALL_FILE"/>
         </root>
 
         <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">     <!-- SQL 로그 -->
             <appender-ref ref="STDOUT"/>
+            <appender-ref ref="ATTENDANCE_FILE"/>
         </logger>
         <logger name="org.hibernate.tool.hbm2ddl" level="DEBUG" additivity="false">    <!-- DDL 로그 -->
             <appender-ref ref="STDOUT"/>
+            <appender-ref ref="CALCULATION_FILE"/>
         </logger>
         <logger name="org.hibernate.type" level="TRACE" additivity="false">    <!-- 파라미터 결과 로그 -->
             <appender-ref ref="STDOUT"/>
+            <appender-ref ref="MATCHING_FILE"/>
         </logger>
         <logger name="org.hibernate.stat" level="DEBUG" additivity="false">    <!-- 결과 통계 로그 -->
             <appender-ref ref="STDOUT"/>
+            <appender-ref ref="MEMBER_FILE"/>
         </logger>
         <logger name="org.hibernate.type.BasicTypeRegistry" level="WARN" additivity="false">   <!-- 불필요한 로그 수준 WARN으로 생략-->
             <appender-ref ref="STDOUT"/>
-        </logger>
-    </springProfile>
-
-    <!-- 파일 저장용 로깅(주로 운영 환경에서 사용) -->
-    <springProfile name="file-logging">
-        <root level="INFO">
-            <appender-ref ref="ALL_FILE"/>
-        </root>
-
-        <logger name="com.uad2.application.attendance" level="INFO" additivity="false">
-            <appender-ref ref="ATTENDANCE_FILE"/>
-        </logger>
-        <logger name="com.uad2.application.calculation" level="INFO" additivity="false">
-            <appender-ref ref="CALCULATION_FILE"/>
-        </logger>
-        <logger name="com.uad2.application.matching" level="INFO" additivity="false">
-            <appender-ref ref="MATCHING_FILE"/>
-        </logger>
-        <logger name="com.uad2.application.member" level="INFO" additivity="false">
-            <appender-ref ref="MEMBER_FILE"/>
-        </logger>
-        <logger name="com.uad2.application.notice" level="INFO" additivity="false">
             <appender-ref ref="NOTICE_FILE"/>
         </logger>
     </springProfile>
+
+    <!-- 운영 환경 -->
+<!--    <springProfile name="prod">-->
+<!--        <root level="INFO">-->
+<!--            <appender-ref ref="ALL_FILE"/>-->
+<!--        </root>-->
+
+<!--        <logger name="com.uad2.application.attendance" level="INFO" additivity="false">-->
+<!--            <appender-ref ref="ATTENDANCE_FILE"/>-->
+<!--        </logger>-->
+<!--        <logger name="com.uad2.application.calculation" level="INFO" additivity="false">-->
+<!--            <appender-ref ref="CALCULATION_FILE"/>-->
+<!--        </logger>-->
+<!--        <logger name="com.uad2.application.matching" level="INFO" additivity="false">-->
+<!--            <appender-ref ref="MATCHING_FILE"/>-->
+<!--        </logger>-->
+<!--        <logger name="com.uad2.application.member" level="INFO" additivity="false">-->
+<!--            <appender-ref ref="MEMBER_FILE"/>-->
+<!--        </logger>-->
+<!--        <logger name="com.uad2.application.notice" level="INFO" additivity="false">-->
+<!--            <appender-ref ref="NOTICE_FILE"/>-->
+<!--        </logger>-->
+<!--    </springProfile>-->
 
 </configuration>
