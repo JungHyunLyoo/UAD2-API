@@ -8,6 +8,7 @@ import com.uad2.application.attendance.resource.AttendanceResponseUtil;
 import com.uad2.application.attendance.service.AttendanceService;
 import com.uad2.application.common.annotation.Auth;
 import com.uad2.application.common.enumData.Role;
+import com.uad2.application.exception.ClientException;
 import com.uad2.application.matching.entity.Matching;
 import com.uad2.application.matching.service.MatchingService;
 import com.uad2.application.member.entity.Member;
@@ -71,6 +72,11 @@ public class AttendanceController {
 
         String availableTime = attendanceRequest.getAvailableTime();
         String availableDate = attendanceRequest.getAvailableDate();
+        int memberSeq = attendanceRequest.getMemberSeq();
+        Member memberTest = (Member)SessionUtil.getAttribute(request.getSession(),"member");
+        if(memberSeq != memberTest.getSeq()){
+            throw new ClientException("seq error");
+        }
 
         //updateMatchingInfo
         //availabledate에 해당하는 매칭이 있을 경우만 취급
