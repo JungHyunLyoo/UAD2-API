@@ -126,4 +126,12 @@ public class BaseControllerTest {
         mockHttpServletRequestBuilder.content(objectMapper.writeValueAsString(content));
         return mockHttpServletRequestBuilder;
     }
+    protected MockHttpServletRequestBuilder postRequest(String url,Object content, MockCookie[] mockCookieList) throws Exception{
+        MockHttpServletRequestBuilder mockHttpServletRequestBuilder = RestDocumentationRequestBuilders.post(url);
+        mockHttpServletRequestBuilder.content(objectMapper.writeValueAsString(content));
+        for (int i = 0; i < mockCookieList.length; i++) {
+            mockHttpServletRequestBuilder.cookie(mockCookieList[i]);
+        }
+        return mockHttpServletRequestBuilder;
+    }
 }
