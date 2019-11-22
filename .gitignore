@@ -29,3 +29,6 @@ HELP.md
 
 ### VS Code ###
 .vscode/
+
+### RestDocs###
+/src/main/resources/static/docs/index.html
