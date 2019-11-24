@@ -8,12 +8,10 @@ package com.uad2.application.attendance.controller;
 import com.uad2.application.BaseControllerTest;
 import com.uad2.application.attendance.dto.AttendanceDto;
 import com.uad2.application.common.TestDescription;
-import com.uad2.application.common.enumData.CookieName;
 import org.junit.Test;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockCookie;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.transaction.Transactional;
@@ -187,6 +185,85 @@ public class AttendanceControllerTests extends BaseControllerTest {
         );
         // result
         result.andExpect(status().isAccepted())
+                .andDo(print());
+    }
+    @Test
+    @Transactional
+    @TestDescription("참가 데이터 생성 에러(시간대 미기입)")
+    public void createAttendance_error_emptyAvailableTime() throws Exception {
+        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
+        AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
+                .availableDate("2019-11-02")
+                .memberSeq(userMember.getSeq())
+                .build();
+        // request
+        ResultActions result = mockMvc.perform(
+                super.postRequest("/api/attendance",attendanceRequest,userMemberCookieList)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaTypes.HAL_JSON)
+        );
+        // result
+        result.andExpect(status().isAccepted())
+                .andDo(print());
+    }
+    @Test
+    @Transactional
+    @TestDescription("참가 데이터 생성 에러(참가 삭제요청, 그런데 기존 참가내역 존재 x)")
+    public void createAttendance_error_emptyAttendance() throws Exception {
+        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
+        AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
+                .availableDate("2019-11-02")
+                .availableTime("")
+                .memberSeq(userMember.getSeq())
+                .build();
+        // request
+        ResultActions result = mockMvc.perform(
+                super.postRequest("/api/attendance",attendanceRequest,userMemberCookieList)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaTypes.HAL_JSON)
+        );
+        // result
+        result.andExpect(status().isAccepted())
+                .andDo(print());
+    }
+    @Test
+    @Transactional
+    @TestDescription("참가 데이터 수정")
+    public void updateAttendance() throws Exception {
+        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
+        AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
+                .availableDate("2019-11-09")
+                .availableTime("5,6")
+                .memberSeq(userMember.getSeq())
+                .build();
+        // request
+        ResultActions result = mockMvc.perform(
+                super.postRequest("/api/attendance",attendanceRequest,userMemberCookieList)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaTypes.HAL_JSON)
+        );
+        // result
+        result.andExpect(status().isOk())
+                .andDo(print());
+    }
+    @Test
+    @Transactional
+    @TestDescription("참가 데이터 삭제")
+    public void deleteAttendance() throws Exception {
+        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
+        AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
+                .availableDate("2019-11-09")
+                .availableTime("")
+                .memberSeq(userMember.getSeq())
+                .build();
+        // request
+        ResultActions result = mockMvc.perform(
+                super.postRequest("/api/attendance",attendanceRequest,userMemberCookieList)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaTypes.HAL_JSON)
+        );
+        // result
+        result.andExpect(status().isNoContent())
                 .andDo(print());
     }
 }

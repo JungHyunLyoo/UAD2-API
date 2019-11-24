@@ -7,6 +7,7 @@ package com.uad2.application.attendance.service;
 
 import com.uad2.application.attendance.entity.Attendance;
 import com.uad2.application.attendance.repository.AttendanceRepository;
+import com.uad2.application.matching.service.MatchingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,9 @@ public class AttendanceService {
     @Autowired
     private AttendanceRepository attendanceRepository;
 
+    @Autowired
+    MatchingService matchingService;
+
     public Attendance getAttendance(int memberSeq,String date){
         return attendanceRepository.findByMemberSeqAndAvailableDate(memberSeq,date);
     }
@@ -25,7 +29,17 @@ public class AttendanceService {
         return attendanceRepository.findByAvailableDateAndTime(date, time);
     }
 
+    public void deleteAttendance(Attendance attendance){
+        attendanceRepository.delete(attendance);
+    }
+
+    public Attendance saveAttendance(Attendance attendance){
+        return attendanceRepository.save(attendance);
+    }
+
     public List<Attendance> getAllAttendanceList(String date){
         return attendanceRepository.findByAvailableDate(date);
     }
+
+
 }
