@@ -4,6 +4,7 @@ package com.uad2.application.attendance;
  * @DATE 2019-09-09
  */
 
+import com.uad2.application.attendance.dto.AttendanceDto;
 import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.dto.MemberDto;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,21 @@ public class AttendanceValidator {
                 break;
             default:
                 throw new ClientException("date length is wrong");
+        }
+    }
+
+    public void validateCreateAttendance(AttendanceDto.Request attendanceRequest) {
+        String availableTime = attendanceRequest.getAvailableTime();
+        String availableDate = attendanceRequest.getAvailableDate();
+        int memberSeq = attendanceRequest.getMemberSeq();
+        if(Objects.isNull(availableTime)){
+            throw new ClientException("availableTime is null");
+        }
+        if(Objects.isNull(availableDate)){
+            throw new ClientException("availableDate is null");
+        }
+        if(memberSeq == 0){
+            throw new ClientException("availableDate is null");
         }
     }
 }
