@@ -42,25 +42,24 @@ public class MatchingService {
         List<Matching> matchingList = matchingRepository.findByMatchingDate(availableDate);
         boolean isMatchingExist = Objects.nonNull(matchingList) && matchingList.size() > 0;
         if(isMatchingExist){
-            for (Matching matching : matchingList) {
-                if(Objects.nonNull(matching)){
-                    //1.해당 매칭의 시간이 요청 시간에 포함 o, 해당 매칭에 요청 memseq 존재 x -> 해당 매칭에 요청 memseq 추가
-                    //2.해당 매칭의 시간이 요청 시간에 포함 x, 해당 매칭에 요청 memseq 존재 o -> 해당 매칭에 요청 memseq 삭제
-                    //3.해당 매칭의 시간이 요청 시간에 포함 o, 해당 매칭에 요청 memseq 존재 o -> 액션x(해당 매칭에 영향 x)
-                    //4.해당 매칭의 시간이 요청 시간에 포함 x, 해당 매칭에 요청 memseq 존재 x -> 액션x(해당 매칭에 영향 x)
-                    if(availableTime.contains(matching.getMatchingTime()) &&
-                            !matching.getAttendMember().contains(Integer.toString(memberSeq))){
-                        matching.setAttendMember(matching.getAttendMember() + "," + memberSeq);
-                        return matching;
-                    }
-                    else if(!availableTime.contains(matching.getMatchingTime()) &&
-                            matching.getAttendMember().contains(Integer.toString(memberSeq))){
-                        System.out.println("delete attendance in matching");
-                        matching.setAttendMember(matching.getAttendMember().replace("," + memberSeq,""));
-                        matching.setAttendMember(matching.getAttendMember().replace("," + memberSeq,""));
-                        matching.setAttendMember(matching.getAttendMember().replace("," + memberSeq,""));
-                        return matching;
-                    }
+            Matching matching = matchingList.get(0);
+            if(Objects.nonNull(matching)){
+                //1.해당 매칭의 시간이 요청 시간에 포함 o, 해당 매칭에 요청 memseq 존재 x -> 해당 매칭에 요청 memseq 추가
+                //2.해당 매칭의 시간이 요청 시간에 포함 x, 해당 매칭에 요청 memseq 존재 o -> 해당 매칭에 요청 memseq 삭제
+                //3.해당 매칭의 시간이 요청 시간에 포함 o, 해당 매칭에 요청 memseq 존재 o -> 액션x(해당 매칭에 영향 x)
+                //4.해당 매칭의 시간이 요청 시간에 포함 x, 해당 매칭에 요청 memseq 존재 x -> 액션x(해당 매칭에 영향 x)
+                if(availableTime.contains(matching.getMatchingTime()) &&
+                        !matching.getAttendMember().contains(Integer.toString(memberSeq))){
+                    matching.setAttendMember(matching.getAttendMember() + "," + memberSeq);
+                    return matching;
+                }
+                else if(!availableTime.contains(matching.getMatchingTime()) &&
+                        matching.getAttendMember().contains(Integer.toString(memberSeq))){
+                    System.out.println("delete attendance in matching");
+                    matching.setAttendMember(matching.getAttendMember().replace("," + memberSeq,""));
+                    matching.setAttendMember(matching.getAttendMember().replace("," + memberSeq,""));
+                    matching.setAttendMember(matching.getAttendMember().replace("," + memberSeq,""));
+                    return matching;
                 }
             }
         }

@@ -9,9 +9,11 @@ import com.uad2.application.attendance.service.AttendanceService;
 import com.uad2.application.common.annotation.Auth;
 import com.uad2.application.common.enumData.Role;
 import com.uad2.application.exception.ClientException;
+import com.uad2.application.matching.entity.Matching;
 import com.uad2.application.matching.service.MatchingService;
 import com.uad2.application.member.entity.Member;
 import com.uad2.application.member.service.MemberService;
+import com.uad2.application.message.service.MessageService;
 import com.uad2.application.utils.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +51,8 @@ public class AttendanceController {
     @Autowired
     AttendanceRepository attendanceRepository;
 
+    @Autowired
+    MessageService messageService;
 
     @Auth(role = Role.USER)
     @GetMapping(value = "/api/attendance/date/{date}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
@@ -69,29 +73,29 @@ public class AttendanceController {
     @Auth(role = Role.USER)
     @PostMapping(value = "/api/attendance", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
     public ResponseEntity createAttendance(HttpServletRequest request, @RequestBody AttendanceDto.Request attendanceRequest){
+        attendanceValidator.validateCreateAttendance(attendanceRequest);
         String availableTime = attendanceRequest.getAvailableTime();
         String availableDate = attendanceRequest.getAvailableDate();
-        if(Objects.isNull(availableTime) || Objects.isNull(availableDate)){
-            throw new ClientException("availableTime or availableDate is null");
-        }
-
         int memberSeq = attendanceRequest.getMemberSeq();
+
         Member memberTest = (Member)SessionUtil.getAttribute(request.getSession(),"member");
         if(memberSeq != memberTest.getSeq()){
             throw new ClientException("seq error");
         }
-        boolean isUpdatedMatching = Objects.nonNull(matchingService.updateMatchingByAttendance(attendanceRequest));
         Attendance attendance = attendanceService.getAttendance(memberSeq,availableDate);
-        //StringUtils.isEmpty(availableTime) && attendance == null -> 이런 경우 없음. 에러임
-        //StringUtils.isEmpty(availableTime) && attendance != null -> 참가 삭제
-        //!StringUtils.isEmpty(availableTime) && attendance == null -> 참가 생성
-        //!StringUtils.isEmpty(availableTime) && attendance != null -> 참가 수정
+        /*
+        StringUtils.isEmpty(availableTime) && attendance == null -> 이런 경우 없음. 에러임
+        StringUtils.isEmpty(availableTime) && attendance != null -> 참가 삭제
+        !StringUtils.isEmpty(availableTime) && attendance == null -> 참가 생성
+        !StringUtils.isEmpty(availableTime) && attendance != null -> 참가 수정
+         */
+        ResponseEntity resultEntity;
         if(StringUtils.isEmpty(availableTime)) {
             if(Objects.isNull(attendance)){
                 throw new ClientException("empty attendance");
             }
             attendanceService.deleteAttendance(attendance);
-            return ResponseEntity.noContent().build();
+            resultEntity = ResponseEntity.noContent().build();
         }
         else{
             if(Objects.isNull(attendance)){
@@ -102,30 +106,26 @@ public class AttendanceController {
                         .availableTime(availableTime).build();
                 Attendance createdAttendance = attendanceService.saveAttendance(attendanceNew);
                 URI createdUri = linkTo(AttendanceController.class).slash("seq").slash(createdAttendance.getSeq()).toUri();
-                return ResponseEntity.created(createdUri).body(AttendanceResponseUtil.makeResponseResource(createdAttendance));
+                resultEntity = ResponseEntity.created(createdUri).body(AttendanceResponseUtil.makeResponseResource(createdAttendance));
             }
             else{
                 attendance.setAvailableTime(availableTime);
                 Attendance updatedAttendance = attendanceService.saveAttendance(attendance);
-                return ResponseEntity.ok().body(AttendanceResponseUtil.makeResponseResource(updatedAttendance));
+                resultEntity = ResponseEntity.ok().body(AttendanceResponseUtil.makeResponseResource(updatedAttendance));
             }
         }
-        /*
+        //매칭 갱신
+        Matching matching = matchingService.updateMatchingByAttendance(attendanceRequest);
         //신청한 시간대에 5명 이상의 참여자가 있을 경우, 회장에게 메세지 발송
-        String[] matchingMemberList = matching.getAttendMember().split(",");
-        for(int i=0;i<matchingMemberList.length-1;i++){
-            String prev = matchingMemberList[i];
-            String next = matchingMemberList[i+1];
-            if(prev+1 == next){
-                String time = prev+","+next;
-                List<Attendance> attendanceList = attendanceService.getAttendanceAndMemberListByDateAndTime(availableDate,availableTime);
-                if(attendanceList.size() >= 5){
-                    //$messageController=new MessageController();
-                    //$messageText=$available_date.'일, '.$checkHour.'시간대 매칭 필요';
-                    //$messageController->sendMessage('01094736496',$messageText);
-                }
+        if(Objects.nonNull(matching)){
+            String[] matchingMemberList = matching.getAttendMember().split(",");
+            if(matchingMemberList.length >= 4){
+                String targetNumber = "01094736496";
+                String content = "*매칭 필요*\n날짜 : " + availableDate + "\n시간 : " + availableTime;
+                //messageService.sendMessage(targetNumber, content);
+                //시간대 변환 constant 클래스 필요
             }
         }
-         */
+        return resultEntity;
     }
 }

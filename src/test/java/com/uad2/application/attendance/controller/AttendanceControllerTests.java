@@ -170,7 +170,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
     }
     @Test
     @Transactional
-    @TestDescription("참가 데이터 생성 에러(요청 회원 미요청)")
+    @TestDescription("참가 데이터 생성 에러(요청 회원 미기입)")
     public void createAttendance_error_emptyMember() throws Exception {
         MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
         AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
