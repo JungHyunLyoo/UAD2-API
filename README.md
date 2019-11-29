@@ -47,6 +47,11 @@ FRONT server git repository
 - host : pjhdev.com
 - mysql 10.1.41-MariaDB
 - jpa 2.1.5
+#### project path
+- C:\UAD2\UAD2-API
+#### maven path
+- C:\UAD2\UAD2-API\maven\repository
+- C:\UAD2\UAD2-API\maven\setting.xml
 #### 협업도구
 - notion
     - repository : https://www.notion.so/0dcf5ff7bda446b68f3bfacd9cc47880?v=e624d0e95ace45b6b29805434e2a1be7
