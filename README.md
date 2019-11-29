@@ -48,10 +48,13 @@ FRONT server git repository
 - mysql 10.1.41-MariaDB
 - jpa 2.1.5
 #### project path
-- C:\UAD2\UAD2-API
+- WINDOW -> C:\UAD2\UAD2-API
+- MAC -> ????
 #### maven path
-- C:\UAD2\UAD2-API\maven\repository
-- C:\UAD2\UAD2-API\maven\setting.xml
+- WINDOW -> C:\UAD2\UAD2-API\maven\repository
+- WINDOW -> C:\UAD2\UAD2-API\maven\setting.xml
+- MAC -> ????\maven\repository
+- MAC -> ????\setting.xml
 #### 협업도구
 - notion
     - repository : https://www.notion.so/0dcf5ff7bda446b68f3bfacd9cc47880?v=e624d0e95ace45b6b29805434e2a1be7
