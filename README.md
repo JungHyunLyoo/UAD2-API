@@ -4,7 +4,7 @@ UAD's second project(UAD2-API)
 
 설명
 ----
-- UAD 프로젝트의 두 번째 버전.
+- UAD 프로젝트의 두 번째 버전(API)
  
 - Php Laravel로 개발된 첫 번째 버전을 Java SpringBoot로 개편. 
 <br>Front는 React로 동일
@@ -35,7 +35,6 @@ FRONT server git repository
 #### ide
 - intellij idea <ultimate 2019.1>
 - heidiSQL <9.5.0.5196 (64bit)>
-- vscode
 #### spring
 - boot 2.1.5.RELEASE
 - spring 5.1
@@ -54,7 +53,6 @@ FRONT server git repository
     - 작업 과정
         1. pm은 칸반보드의 todo 리스트에 업무를 할당함
         2. 각 작업자는 in Progress에 할당받은 업무를 이동시킴. 그리고 property에 종료 날짜를 기록함
-        3. 종료 기한을 못지키면 5천원 기부행
     - 사용 가이드 : https://www.notion.so/Notion-1ad7ccbc41a44298814a4820d4acb14e
     
 - git
