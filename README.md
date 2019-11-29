@@ -1,4 +1,4 @@
-UAD's second project
+UAD's second project(UAD2-API)
 ====
 ![UAD](https://user-images.githubusercontent.com/47667821/64473706-fb272880-d1a4-11e9-88a8-9fbfbb133038.png)
 
@@ -17,6 +17,11 @@ UAD's second project
         - infra : 11박준호 
         - back(Php Laravel) : 13김시훈
         - front(React) : 13진여준
+
+FRONT server git repository
+----
+- https://github.com/JungHyunLyoo/UAD2-FRONT
+
 
 멤버 구성
 ----
