@@ -77,7 +77,7 @@ FRONT server git repository
                     
 프로젝트 빌드 및 테스트
 ----
-    mvn package -Djasypt.encryptor.password={jasypt.encryptor.password}
+    mvn package -Djasypt.encryptor.password={jasypt.encryptor.password} -Dspring.profiles.active=local
                     
 프로젝트 실행(내장 tomcat 실행)
 ----
