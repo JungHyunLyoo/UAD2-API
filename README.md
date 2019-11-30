@@ -48,10 +48,13 @@ FRONT server git repository
 - mysql 10.1.41-MariaDB
 - jpa 2.1.5
 #### project path
-- C:\UAD2\UAD2-API
+- WINDOW -> C:\UAD2\UAD2-API
+- MAC -> ????
 #### maven path
-- C:\UAD2\UAD2-API\maven\repository
-- C:\UAD2\UAD2-API\maven\setting.xml
+- WINDOW -> C:\UAD2\UAD2-API\maven\repository
+- WINDOW -> C:\UAD2\UAD2-API\maven\setting.xml
+- MAC -> ????\maven\repository
+- MAC -> ????\setting.xml
 #### 협업도구
 - notion
     - repository : https://www.notion.so/0dcf5ff7bda446b68f3bfacd9cc47880?v=e624d0e95ace45b6b29805434e2a1be7
@@ -74,7 +77,7 @@ FRONT server git repository
                     
 프로젝트 빌드 및 테스트
 ----
-    mvn package -Djasypt.encryptor.password={jasypt.encryptor.password}
+    mvn package -Djasypt.encryptor.password={jasypt.encryptor.password} -Dspring.profiles.active=local
                     
 프로젝트 실행(내장 tomcat 실행)
 ----
