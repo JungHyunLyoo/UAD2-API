@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AttendanceControllerTests extends BaseControllerTest {
     @Test
     @Transactional
-    @TestDescription("특정일 참가 내역 조회")
+    @TestDescription("특정일 참가 내역 조회 성공")
     public void getAllAttendanceList() throws Exception {
         String[] paramList = new String[]{"2019-11-10"};
         MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
@@ -50,12 +50,45 @@ public class AttendanceControllerTests extends BaseControllerTest {
     }
     @Test
     @Transactional
-    @TestDescription("특정일 참가 내역 조회 에러(파라미터 오류1)")
-    public void getAllAttendanceList_badRequest_invalidParameter1() throws Exception {
+    @TestDescription("특정일 참가 내역 조회 에러(파라미터 오류)")
+    public void getAllAttendanceList_badRequest_invalidParameter() throws Exception {
+        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
+
         String[] paramList = new String[]{"201911"};
-        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
         // request
         ResultActions result = mockMvc.perform(
+                super.getRequest("/api/attendance/date/{date}",paramList, userMemberCookieList)
+                        .accept(MediaTypes.HAL_JSON)
+        );
+        // result
+        result.andExpect(status().isAccepted())
+                .andDo(print());
+
+
+        paramList = new String[]{"20191110"};
+        // request
+        result = mockMvc.perform(
+                super.getRequest("/api/attendance/date/{date}",paramList, userMemberCookieList)
+                        .accept(MediaTypes.HAL_JSON)
+        );
+        // result
+        result.andExpect(status().isAccepted())
+                .andDo(print());
+
+        paramList = new String[]{"2019-13"};
+        // request
+        result = mockMvc.perform(
+                super.getRequest("/api/attendance/date/{date}",paramList, userMemberCookieList)
+                        .accept(MediaTypes.HAL_JSON)
+        );
+        // result
+        result.andExpect(status().isAccepted())
+                .andDo(print());
+
+
+        paramList = new String[]{"2019-13-00"};
+        // request
+        result = mockMvc.perform(
                 super.getRequest("/api/attendance/date/{date}",paramList, userMemberCookieList)
                         .accept(MediaTypes.HAL_JSON)
         );
@@ -65,52 +98,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
     }
     @Test
     @Transactional
-    @TestDescription("특정일 참가 내역 조회 에러(파라미터 오류2)")
-    public void getAllAttendanceList_badRequest_invalidParameter2() throws Exception {
-        String[] paramList = new String[]{"20191110"};
-        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
-        // request
-        ResultActions result = mockMvc.perform(
-                super.getRequest("/api/attendance/date/{date}",paramList, userMemberCookieList)
-                        .accept(MediaTypes.HAL_JSON)
-        );
-        // result
-        result.andExpect(status().isAccepted())
-                .andDo(print());
-    }
-    @Test
-    @Transactional
-    @TestDescription("특정일 참가 내역 조회 에러(파라미터 오류3)")
-    public void getAllAttendanceList_badRequest_invalidParameter3() throws Exception {
-        String[] paramList = new String[]{"2019-13"};
-        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
-        // request
-        ResultActions result = mockMvc.perform(
-                super.getRequest("/api/attendance/date/{date}",paramList, userMemberCookieList)
-                        .accept(MediaTypes.HAL_JSON)
-        );
-        // result
-        result.andExpect(status().isAccepted())
-                .andDo(print());
-    }
-    @Test
-    @Transactional
-    @TestDescription("특정일 참가 내역 조회 에러(파라미터 오류4)")
-    public void getAllAttendanceList_badRequest_invalidParameter4() throws Exception {
-        String[] paramList = new String[]{"2019-13-00"};
-        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
-        // request
-        ResultActions result = mockMvc.perform(
-                super.getRequest("/api/attendance/date/{date}",paramList, userMemberCookieList)
-                        .accept(MediaTypes.HAL_JSON)
-        );
-        // result
-        result.andExpect(status().isAccepted())
-                .andDo(print());
-    }
-    @Test
-    @Transactional
-    @TestDescription("참가 데이터 생성(매칭 업데이트 x)")
+    @TestDescription("참가 데이터 생성 성공(매칭 업데이트 x)")
     public void createAttendance_notUpdateMatching() throws Exception {
         MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
         AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
@@ -130,7 +118,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
     }
     @Test
     @Transactional
-    @TestDescription("참가 데이터 생성(매칭 업데이트 o, 매칭에 회원 추가)")
+    @TestDescription("참가 데이터 생성 성공(매칭 업데이트 o)")
     public void createAttendance_updateMatching_addMember() throws Exception {
         MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
         AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
@@ -208,7 +196,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
     }
     @Test
     @Transactional
-    @TestDescription("참가 데이터 생성 에러(참가 삭제요청, 그런데 기존 참가내역 존재 x)")
+    @TestDescription("참가 데이터 생성 에러(참가 내역 초기화 필요, 그런데 기존 참가내역 존재 x)")
     public void createAttendance_error_emptyAttendance() throws Exception {
         MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
         AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
@@ -228,7 +216,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
     }
     @Test
     @Transactional
-    @TestDescription("참가 데이터 수정")
+    @TestDescription("참가 데이터 수정 성공")
     public void updateAttendance() throws Exception {
         MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
         AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
