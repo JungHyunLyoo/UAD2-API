@@ -16,11 +16,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-
+    private final CommonInterceptor commonInterceptor;
     @Autowired
-    private CommonInterceptor commonInterceptor;
-
-
+    public WebConfig(CommonInterceptor commonInterceptor){
+        this.commonInterceptor = commonInterceptor;
+    }
     @Bean
     public ModelMapper modelMapper() {
         //DTO와 같은 클래스들의 서로간 변환을 담당

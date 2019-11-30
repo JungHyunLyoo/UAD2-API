@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class CalculationControllerTests  extends BaseControllerTest {
-
     @Test
     @Transactional
     @TestDescription("전체 정산 데이터 내역 조회")

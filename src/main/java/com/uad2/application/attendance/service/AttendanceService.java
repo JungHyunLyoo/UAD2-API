@@ -15,11 +15,13 @@ import java.util.List;
 
 @Service
 public class AttendanceService {
-    @Autowired
-    private AttendanceRepository attendanceRepository;
+
+    private final AttendanceRepository attendanceRepository;
 
     @Autowired
-    MatchingService matchingService;
+    public AttendanceService(AttendanceRepository attendanceRepository){
+        this.attendanceRepository = attendanceRepository;
+    }
 
     public Attendance getAttendance(int memberSeq,String date){
         return attendanceRepository.findByMemberSeqAndAvailableDate(memberSeq,date);

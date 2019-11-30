@@ -33,17 +33,21 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 public class MemberController {
     static final Logger logger = LoggerFactory.getLogger(MemberController.class);
 
+    private final MemberValidator memberValidator;
+    private final MemberService memberService;
+    private final LoginProcessor loginProcessor;
+    private final ModelMapper modelMapper;
     @Autowired
-    MemberValidator memberValidator;
+    public MemberController(MemberValidator memberValidator,
+                            MemberService memberService,
+                            LoginProcessor loginProcessor,
+                            ModelMapper modelMapper){
+        this.memberValidator = memberValidator;
+        this.memberService = memberService;
+        this.loginProcessor = loginProcessor;
+        this.modelMapper = modelMapper;
+    }
 
-    @Autowired
-    MemberService memberService;
-
-    @Autowired
-    LoginProcessor loginProcessor;
-
-    @Autowired
-    private ModelMapper modelMapper;
 
     @GetMapping(value = "/")
     public ResponseEntity index() {

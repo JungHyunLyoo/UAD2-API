@@ -37,11 +37,15 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 
     private Logger logger = LoggerFactory.getLogger(CommonInterceptor.class);
 
-    @Autowired
-    LoginProcessor loginProcessor;
+    private final LoginProcessor loginProcessor;
+    private final MemberService memberService;
 
     @Autowired
-    MemberService memberService;
+    public CommonInterceptor(LoginProcessor loginProcessor,
+                             MemberService memberService){
+        this. loginProcessor = loginProcessor;
+        this. memberService = memberService;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

@@ -15,9 +15,12 @@ import java.util.Map;
 
 @RestController
 public class MessageController {
-
+    private final MessageService messageService;
     @Autowired
-    MessageService messageService;
+    public MessageController(MessageService messageService){
+        this.messageService = messageService;
+    }
+
 
     @PostMapping("/message/sendMessage")
     public ResponseEntity sendMessage(

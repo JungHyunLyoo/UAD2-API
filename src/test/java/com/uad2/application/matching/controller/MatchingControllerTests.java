@@ -20,9 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 public class MatchingControllerTests extends BaseControllerTest {
-
-
-
     @Test
     @Transactional
     @TestDescription("월별 매칭 내역 조회")

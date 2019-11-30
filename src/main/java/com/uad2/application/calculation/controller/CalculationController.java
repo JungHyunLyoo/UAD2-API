@@ -25,18 +25,21 @@ import java.util.*;
 
 @RestController
 public class CalculationController {
+    private final CalculationRepository calculationRepository;
+    private final CalculationService calculationService;
+    private final MatchingRepository matchingRepository;
+    private final MemberService memberService;
 
     @Autowired
-    CalculationRepository calculationRepository;
-
-    @Autowired
-    CalculationService calculationService;
-
-    @Autowired
-    MatchingRepository matchingRepository;
-
-    @Autowired
-    MemberService memberService;
+    public CalculationController(CalculationRepository calculationRepository,
+                                 CalculationService calculationService,
+                                 MatchingRepository matchingRepository,
+                                 MemberService memberService){
+        this.calculationRepository = calculationRepository;
+        this.calculationService = calculationService;
+        this.matchingRepository = matchingRepository;
+        this.memberService = memberService;
+    }
 
     //@Auth(role = Role.ADMIN)
     @PostMapping(value = "/api/calculation", produces = MediaType.APPLICATION_JSON_VALUE)

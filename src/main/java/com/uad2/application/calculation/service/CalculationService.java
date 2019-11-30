@@ -12,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 @Service
 public class CalculationService {
+    private final CalculationRepository calculationRepository;
 
     @Autowired
-    private CalculationRepository calculationRepository;
+    public CalculationService(CalculationRepository calculationRepository){
+        this.calculationRepository = calculationRepository;
+    }
 
     public Calculation saveCalculation(CalculationDto.Request requestCalculation, Matching matching) {
         Calculation calculation = (new ModelMapper()).map(requestCalculation, Calculation.class);

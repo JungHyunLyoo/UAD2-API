@@ -27,17 +27,21 @@ import java.util.List;
 public class MatchingController {
     static final Logger logger = LoggerFactory.getLogger(MatchingController.class);
 
+    private final AttendanceService attendanceService;
+    private final MatchingService matchingService;
+    private final CalculationService calculationService;
+    private final ModelMapper modelMapper;
     @Autowired
-    AttendanceService attendanceService;
+    public MatchingController(AttendanceService attendanceService,
+                              MatchingService matchingService,
+                              CalculationService calculationService,
+                              ModelMapper modelMapper){
+        this.attendanceService = attendanceService;
+        this.matchingService =  matchingService;
+        this.calculationService = calculationService;
+        this.modelMapper = modelMapper;
+    }
 
-    @Autowired
-    MatchingService matchingService;
-
-    @Autowired
-    CalculationService calculationService;
-
-    @Autowired
-    ModelMapper modelMapper;
 
     /**
      * 매칭 생성용 API

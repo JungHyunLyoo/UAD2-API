@@ -15,9 +15,11 @@ import java.util.Objects;
 
 @Service
 public class MatchingService {
+    private final MatchingRepository matchingRepository;
     @Autowired
-    private MatchingRepository matchingRepository;
-
+    public MatchingService(MatchingRepository matchingRepository){
+        this.matchingRepository = matchingRepository;
+    }
     /*public Matching createMatching(Matching matching) {
         return matchingRepository.save(matching);
     }*/

@@ -36,23 +36,23 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 public class AttendanceController {
     static final Logger logger = LoggerFactory.getLogger(AttendanceController.class);
 
-    @Autowired
-    AttendanceService attendanceService;
+    private final AttendanceService attendanceService;
+    private final AttendanceValidator attendanceValidator;
+    private final MatchingService matchingService;
+    private final MessageService messageService;
 
     @Autowired
-    AttendanceValidator attendanceValidator;
+    public AttendanceController(AttendanceService attendanceService,
+                                AttendanceValidator attendanceValidator,
+                                MatchingService matchingService,
+                                MessageService messageService
+                                ){
+        this.attendanceService = attendanceService;
+        this.attendanceValidator = attendanceValidator;
+        this.matchingService = matchingService;
+        this.messageService = messageService;
+    }
 
-    @Autowired
-    MatchingService matchingService;
-
-    @Autowired
-    MemberService memberService;
-
-    @Autowired
-    AttendanceRepository attendanceRepository;
-
-    @Autowired
-    MessageService messageService;
 
     @Auth(role = Role.USER)
     @GetMapping(value = "/api/attendance/date/{date}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
@@ -129,3 +129,4 @@ public class AttendanceController {
         return resultEntity;
     }
 }
+

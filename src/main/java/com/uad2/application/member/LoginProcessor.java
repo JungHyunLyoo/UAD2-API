@@ -29,9 +29,11 @@ import java.util.*;
 public class LoginProcessor {
     private Logger logger = LoggerFactory.getLogger(LoginProcessor.class);
 
+    private final MemberService memberService;
     @Autowired
-    private MemberService memberService;
-
+    public LoginProcessor(MemberService memberService){
+        this.memberService = memberService;
+    }
     /**
      * 일반 로그인 처리 메소드
      */
