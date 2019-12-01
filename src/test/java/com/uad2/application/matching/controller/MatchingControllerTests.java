@@ -48,4 +48,39 @@ public class MatchingControllerTests extends BaseControllerTest {
         result.andExpect(status().isOk())
                 .andDo(print());
     }
+    @Test
+    @Transactional
+    @TestDescription("월별 매칭 내역 조회_에러(파라미터 미입력)")
+    public void getMatching_error_emptyParam() throws Exception {
+    }
+    @Test
+    @Transactional
+    @TestDescription("매칭 생성")
+    public void createMatching() throws Exception{
+
+    }
+    @Test
+    @Transactional
+    @TestDescription("매칭 생성 에러(파라미터 미입력)")
+    public void createMatching_error_emptyParam() throws Exception{
+
+    }
+    @Test
+    @Transactional
+    @TestDescription("매칭 수정")
+    public void updateMatching() throws Exception{
+
+    }
+    @Test
+    @Transactional
+    @TestDescription("매칭 삭제")
+    public void removeMatching() throws Exception{
+
+    }
+    @Test
+    @Transactional
+    @TestDescription("매칭 삭제 에러(파라미터 미입력)")
+    public void removeMatching_error_emptyParam() throws Exception{
+
+    }
 }
