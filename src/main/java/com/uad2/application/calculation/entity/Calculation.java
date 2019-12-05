@@ -38,7 +38,7 @@ public class Calculation {
     private int kind;
 
     @Column(name = "calculation_date")
-    private Date calculationDate;
+    private String calculationDate;
 
     @Column(name = "attend_cnt", nullable = false)
     private int attendCnt;

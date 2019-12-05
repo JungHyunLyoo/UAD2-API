@@ -19,7 +19,7 @@ public class CalculationDto {
     @Setter
     @Builder
     public static class Request {   // 프로퍼티 공통 사용여부에 따라 Create, Update로 분리해도 괜찮을 것 같다.
-        private Date calculationDate;
+        private String calculationDate;
         private int price;
         private int matchingSeq;
         private String content;

@@ -17,7 +17,7 @@ public class MatchingDto {
     public static class Request {
         private int seq;
 
-        private Date matchingDate;
+        private String matchingDate;
 
         private String matchingTime;
 
@@ -35,7 +35,7 @@ public class MatchingDto {
     @Getter
     @Setter
     public static class Response {
-        private Date matchingDate;
+        private String matchingDate;
 
         private String matchingTime;
 

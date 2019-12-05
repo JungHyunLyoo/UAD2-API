@@ -22,9 +22,11 @@ public class CalculationService {
         this.calculationRepository = calculationRepository;
     }
 
-    public Calculation saveCalculation(CalculationDto.Request requestCalculation, Matching matching) {
-        Calculation calculation = (new ModelMapper()).map(requestCalculation, Calculation.class);
-        calculation.setMatchingSeq(matching);
+    public Calculation saveCalculation(Calculation calculation) {
         return calculationRepository.save(calculation);
+    }
+
+    public List<Calculation> getCalculationListByCalculationDate(String date){
+        return calculationRepository.findByCalculationDate(date);
     }
 }

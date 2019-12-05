@@ -22,7 +22,7 @@ public class Matching {
     private int seq;
 
     @Column(nullable = false, name = "matching_date")
-    private Date matchingDate;
+    private String matchingDate;
 
     @Column(name = "matching_time", length = 30)
     private String matchingTime;
