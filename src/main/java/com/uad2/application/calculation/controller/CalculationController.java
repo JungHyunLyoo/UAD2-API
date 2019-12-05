@@ -11,6 +11,7 @@ import com.uad2.application.matching.entity.Matching;
 import com.uad2.application.matching.repository.MatchingRepository;
 import com.uad2.application.member.entity.Member;
 import com.uad2.application.member.service.MemberService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
@@ -29,16 +30,19 @@ public class CalculationController {
     private final CalculationService calculationService;
     private final MatchingRepository matchingRepository;
     private final MemberService memberService;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public CalculationController(CalculationRepository calculationRepository,
                                  CalculationService calculationService,
                                  MatchingRepository matchingRepository,
-                                 MemberService memberService){
+                                 MemberService memberService,
+                                 ModelMapper modelMapper){
         this.calculationRepository = calculationRepository;
         this.calculationService = calculationService;
         this.matchingRepository = matchingRepository;
         this.memberService = memberService;
+        this.modelMapper = modelMapper;
     }
 
     //@Auth(role = Role.ADMIN)
@@ -48,7 +52,9 @@ public class CalculationController {
         if(Objects.isNull(matching)){
             throw new ClientException("matching is not exist");
         }
-        Calculation calculation = calculationService.saveCalculation(request, matching);
+        Calculation temp = modelMapper.map(request, Calculation.class);//있는 매칭 업데이트 테스트 되는지 판단 필요\
+        temp.setMatching(matching);
+        Calculation calculation = calculationService.saveCalculation(temp);
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("calculation",calculation);
         return ResponseEntity.ok().body(returnMap);
