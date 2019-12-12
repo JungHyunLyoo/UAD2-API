@@ -9,22 +9,32 @@ import com.uad2.application.BaseControllerTest;
 import com.uad2.application.attendance.dto.AttendanceDto;
 import com.uad2.application.common.TestDescription;
 import org.junit.Test;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockCookie;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.transaction.Transactional;
 
+import static com.uad2.application.api.document.utils.DocumentFormatGenerator.getDateFormat;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@AutoConfigureRestDocs(outputDir = "target/generated-snippets/attendance")
 public class AttendanceControllerTests extends BaseControllerTest {
     @Test
     @Transactional
     @TestDescription("특정일 참가 내역 조회 성공")
     public void getAllAttendanceList() throws Exception {
-        String[] paramList = new String[]{"2019-11-10"};
+        String[] paramList = new String[]{"2019-11-09"};
         MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
         // request
         ResultActions result = mockMvc.perform(
@@ -33,7 +43,23 @@ public class AttendanceControllerTests extends BaseControllerTest {
         );
         // result
         result.andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("getAllAttendances",
+                        pathParameters(
+                                parameterWithName("date").description("참가일 (yyyy-MM-dd)")
+                        ),
+                        links(
+                                linkWithRel("profile").description("restDoc link")
+                        ),
+                        responseFields(
+                                subsectionWithPath("attendanceList").description("참가 회원 데이터 리스트"),
+                                subsectionWithPath("_links").description("링크"),
+                                fieldWithPath("attendanceList[].member").type(JsonFieldType.OBJECT).description("회원 정보"),
+                                fieldWithPath("attendanceList[].availableTime").type(JsonFieldType.STRING).description("참가 신청 시간"),
+                                fieldWithPath("attendanceList[].availableDate").type(JsonFieldType.STRING).attributes(getDateFormat()).description("참가 신청 일자")
+                        )
+                ));
+        ;
     }
     @Test
     @Transactional
@@ -134,7 +160,24 @@ public class AttendanceControllerTests extends BaseControllerTest {
         );
         // result
         result.andExpect(status().isCreated())
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("createAttendance_updateMatching",
+                        requestFields(
+                                fieldWithPath("memberSeq").type(JsonFieldType.NUMBER).description("회원 인덱스"),
+                                fieldWithPath("availableTime").type(JsonFieldType.STRING).description("참가 신청 시간"),
+                                fieldWithPath("availableDate").type(JsonFieldType.STRING).description("참가 신청 일자 (yyyy-MM-dd)")
+                        ),
+                        links(
+                                linkWithRel("profile").description("restDoc link")
+                        ),
+                        responseFields(
+                                subsectionWithPath("attendance").description("참가 회원 데이터"),
+                                subsectionWithPath("_links").description("링크"),
+                                fieldWithPath("attendance.member").type(JsonFieldType.OBJECT).description("회원 정보"),
+                                fieldWithPath("attendance.availableTime").type(JsonFieldType.STRING).description("참가 신청 시간"),
+                                fieldWithPath("attendance.availableDate").type(JsonFieldType.STRING).attributes(getDateFormat()).description("참가 신청 일자")
+                        )
+                ));
     }
     @Test
     @Transactional
@@ -233,7 +276,25 @@ public class AttendanceControllerTests extends BaseControllerTest {
         );
         // result
         result.andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("updateAttendance",
+                        requestFields(
+                                fieldWithPath("memberSeq").type(JsonFieldType.NUMBER).description("회원 인덱스"),
+                                fieldWithPath("availableTime").type(JsonFieldType.STRING).description("참가 신청 시간"),
+                                fieldWithPath("availableDate").type(JsonFieldType.STRING).description("참가 신청 일자 (yyyy-MM-dd)")
+                        ),
+                        links(
+                                linkWithRel("profile").description("restDoc link")
+                        ),
+                        responseFields(
+                                subsectionWithPath("attendance").description("참가 회원 데이터"),
+                                subsectionWithPath("_links").description("링크"),
+                                fieldWithPath("attendance.member").type(JsonFieldType.OBJECT).description("회원 정보"),
+                                fieldWithPath("attendance.availableTime").type(JsonFieldType.STRING).description("참가 신청 시간"),
+                                fieldWithPath("attendance.availableDate").type(JsonFieldType.STRING).attributes(getDateFormat()).description("참가 신청 일자")
+                        )
+                ));
+
     }
     @Test
     @Transactional
@@ -253,7 +314,14 @@ public class AttendanceControllerTests extends BaseControllerTest {
         );
         // result
         result.andExpect(status().isNoContent())
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("deleteAttendance",
+                        requestFields(
+                                fieldWithPath("memberSeq").type(JsonFieldType.NUMBER).description("회원 인덱스"),
+                                fieldWithPath("availableTime").type(JsonFieldType.STRING).description("참가 신청 시간"),
+                                fieldWithPath("availableDate").type(JsonFieldType.STRING).description("참가 신청 일자 (yyyy-MM-dd)")
+                        )
+                ));
 
     }
     @Test
@@ -276,4 +344,39 @@ public class AttendanceControllerTests extends BaseControllerTest {
         result.andExpect(status().isAccepted())
                 .andDo(print());
     }
+
+    @Test
+    @Transactional
+    @TestDescription("특정 회원의 참가 데이터 조회 by memberSeq & date")
+    public void getAttendance_byMemberSeqAndDate() throws Exception {
+        String[] paramList = new String[]{"400", "2019-12-12"};
+        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
+
+        // request
+        ResultActions result = mockMvc.perform(
+                super.getRequest("/api/attendance/memberSeq/{memberSeq}/date/{date}",paramList,userMemberCookieList)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaTypes.HAL_JSON)
+        );
+        // result
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("getAttendance_byMemberSeqAndDate",
+                        pathParameters(
+                                parameterWithName("memberSeq").description("회원 인덱스"),
+                                parameterWithName("date").description("참가일 (yyyy-MM-dd)")
+                        ),
+                        links(
+                                linkWithRel("profile").description("restDoc link")
+                        ),
+                        responseFields(
+                                subsectionWithPath("attendance").description("참가 회원 데이터"),
+                                subsectionWithPath("_links").description("링크"),
+                                fieldWithPath("attendance.member").type(JsonFieldType.OBJECT).description("회원 정보"),
+                                fieldWithPath("attendance.availableTime").type(JsonFieldType.STRING).description("참가 신청 시간"),
+                                fieldWithPath("attendance.availableDate").type(JsonFieldType.STRING).attributes(getDateFormat()).description("참가 신청 일자")
+                        )
+                ));
+    }
+
 }

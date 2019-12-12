@@ -67,62 +67,252 @@ UAD2 스프링 API 서버
 | 요청한 리소스 존재하지 않음.
 |===
 
-[[API]]
-== API
+
+
+[[member-API]]
+== 회원 API
 
 [[getAllMembers]]
-=== 멤버 전체 조회
+=== 회원 전체 조회
 
 ==== Request HTTP
-include::{snippets}/sample/getAllMembers/http-request.adoc[]
+include::{snippets}/member/getAllMembers/http-request.adoc[]
 
 ==== Response
-include::{snippets}/sample/getAllMembers/response-fields.adoc[]
+include::{snippets}/member/getAllMembers/response-fields.adoc[]
 
 ==== Response paging link
-include::{snippets}/sample/getAllMembers/links.adoc[]
+include::{snippets}/member/getAllMembers/links.adoc[]
 
 [[getMemberById]]
-=== 멤버 개별 조회 by id
+=== 회원 개별 조회 by id
 
 ==== Request HTTP
-include::{snippets}/sample/getMemberById/http-request.adoc[]
+include::{snippets}/member/getMemberById/http-request.adoc[]
 
 ==== Request path parameters
-include::{snippets}/sample/getMemberById/path-parameters.adoc[]
+include::{snippets}/member/getMemberById/path-parameters.adoc[]
 
 ==== Response Body
-include::{snippets}/sample/getMemberById/response-body.adoc[]
+include::{snippets}/member/getMemberById/response-body.adoc[]
 
 ==== Response
-include::{snippets}/sample/getMemberById/response-fields.adoc[]
+include::{snippets}/member/getMemberById/response-fields.adoc[]
 
 
 [[getMemberById_badRequest_emptyParameter]]
 === 개별 회원 조회 에러(매개변수 미기입)
 
 ==== Request HTTP
-include::{snippets}/sample/getMemberById_badRequest_emptyParameter/http-request.adoc[]
+include::{snippets}/member/getMemberById_badRequest_emptyParameter/http-request.adoc[]
 
 ==== Request path parameters
-include::{snippets}/sample/getMemberById_badRequest_emptyParameter/path-parameters.adoc[]
+include::{snippets}/member/getMemberById_badRequest_emptyParameter/path-parameters.adoc[]
 
 ==== Response Body
-include::{snippets}/sample/getMemberById_badRequest_emptyParameter/response-body.adoc[]
+include::{snippets}/member/getMemberById_badRequest_emptyParameter/response-body.adoc[]
 
 
 [[createMember]]
-=== 멤버 생성
+=== 회원 생성
 
 ==== Request HTTP
-include::{snippets}/sample/createMember/http-request.adoc[]
+include::{snippets}/member/createMember/http-request.adoc[]
 
 ==== Request
-include::{snippets}/sample/createMember/request-fields.adoc[]
+include::{snippets}/member/createMember/request-fields.adoc[]
 
 ==== Response Body
-include::{snippets}/sample/createMember/response-body.adoc[]
+include::{snippets}/member/createMember/response-body.adoc[]
 
 ==== Response
-include::{snippets}/sample/createMember/response-fields.adoc[]
+include::{snippets}/member/createMember/response-fields.adoc[]
 
+
+[[checkPwd]]
+=== 비밀번호 체크
+프로필 수정을 위한 비밀번호 검증 API
+
+==== Request HTTP
+include::{snippets}/member/checkPwd/http-request.adoc[]
+
+==== Request
+include::{snippets}/member/checkPwd/request-fields.adoc[]
+
+==== Response Body
+include::{snippets}/member/checkPwd/response-body.adoc[]
+
+==== Response
+include::{snippets}/member/checkPwd/response-fields.adoc[]
+
+
+
+[[attendance-API]]
+== 참가 API
+
+
+[[getAllAttendances]]
+=== 특정일 참가 내역 조회
+특정일에 참가 신청한 내역 조회 API
+
+==== Request path parameters
+include::{snippets}/attendance/getAllAttendances/path-parameters.adoc[]
+
+==== Response Body
+include::{snippets}/attendance/getAllAttendances/response-body.adoc[]
+
+==== Response
+include::{snippets}/attendance/getAllAttendances/response-fields.adoc[]
+
+==== Response paging link
+include::{snippets}/attendance/getAllAttendances/links.adoc[]
+
+
+[[createAttendance_updateMatching]]
+=== 참가 데이터 생성
+
+==== Request HTTP
+include::{snippets}/attendance/createAttendance_updateMatching/http-request.adoc[]
+
+==== Request
+include::{snippets}/attendance/createAttendance_updateMatching/request-fields.adoc[]
+
+==== Response Body
+include::{snippets}/attendance/createAttendance_updateMatching/response-body.adoc[]
+
+==== Response
+include::{snippets}/attendance/createAttendance_updateMatching/response-fields.adoc[]
+
+==== Response paging link
+include::{snippets}/attendance/createAttendance_updateMatching/links.adoc[]
+
+
+[[updateAttendance]]
+=== 참가 데이터 수정
+
+==== Request HTTP
+include::{snippets}/attendance/updateAttendance/http-request.adoc[]
+
+==== Request
+include::{snippets}/attendance/updateAttendance/request-fields.adoc[]
+
+==== Response Body
+include::{snippets}/attendance/updateAttendance/response-body.adoc[]
+
+==== Response
+include::{snippets}/attendance/updateAttendance/response-fields.adoc[]
+
+==== Response paging link
+include::{snippets}/attendance/updateAttendance/links.adoc[]
+
+
+[[deleteAttendance]]
+=== 참가 데이터 삭제
+
+==== Request HTTP
+include::{snippets}/attendance/deleteAttendance/http-request.adoc[]
+
+==== Request
+include::{snippets}/attendance/deleteAttendance/request-fields.adoc[]
+
+==== Response
+include::{snippets}/attendance/deleteAttendance/http-response.adoc[]
+
+
+[[getAttendance_byMemberSeqAndDate]]
+=== 특정 회원의 참가 데이터 조회 by memberSeq & date
+
+==== Request HTTP
+include::{snippets}/attendance/getAttendance_byMemberSeqAndDate/http-request.adoc[]
+
+==== Request path parameters
+include::{snippets}/attendance/getAttendance_byMemberSeqAndDate/path-parameters.adoc[]
+
+==== Response Body
+include::{snippets}/attendance/getAttendance_byMemberSeqAndDate/response-body.adoc[]
+
+==== Response
+include::{snippets}/attendance/getAttendance_byMemberSeqAndDate/response-fields.adoc[]
+
+==== Response paging link
+include::{snippets}/attendance/getAttendance_byMemberSeqAndDate/links.adoc[]
+
+
+
+[[matching-API]]
+== 매칭 API
+
+
+[[getMatching_monthly]]
+=== 월별 매칭 내역 조회
+
+==== Request HTTP
+include::{snippets}/matching/getMatching_monthly/http-request.adoc[]
+
+==== Request path parameters
+include::{snippets}/matching/getMatching_monthly/path-parameters.adoc[]
+
+==== Response Body
+include::{snippets}/matching/getMatching_monthly/response-body.adoc[]
+
+==== Response
+include::{snippets}/matching/getMatching_monthly/response-fields.adoc[]
+
+==== Response paging link
+include::{snippets}/matching/getMatching_monthly/links.adoc[]
+
+
+[[getMatching_daily]]
+=== 일별 매칭 내역 조회
+
+==== Request HTTP
+include::{snippets}/matching/getMatching_daily/http-request.adoc[]
+
+==== Request path parameters
+include::{snippets}/matching/getMatching_daily/path-parameters.adoc[]
+
+==== Response Body
+include::{snippets}/matching/getMatching_daily/response-body.adoc[]
+
+==== Response
+include::{snippets}/matching/getMatching_daily/response-fields.adoc[]
+
+==== Response paging link
+include::{snippets}/matching/getMatching_daily/links.adoc[]
+
+
+[[createMatching]]
+=== 매칭 생성
+
+==== Request HTTP
+include::{snippets}/matching/createMatching/http-request.adoc[]
+
+==== Request
+include::{snippets}/matching/createMatching/request-fields.adoc[]
+
+==== Response Body
+include::{snippets}/matching/createMatching/response-body.adoc[]
+
+==== Response
+include::{snippets}/matching/createMatching/response-fields.adoc[]
+
+==== Response paging link
+include::{snippets}/matching/createMatching/links.adoc[]
+
+
+
+[[calculation-API]]
+== 정산 API
+
+
+[[getAllCalculations]]
+=== 정산 조회
+
+==== Request HTTP
+include::{snippets}/calculation/getAllCalculations/http-request.adoc[]
+
+==== Request path parameters
+include::{snippets}/calculation/getAllCalculations/path-parameters.adoc[]
+
+==== Response
+include::{snippets}/calculation/getAllCalculations/response-fields.adoc[]

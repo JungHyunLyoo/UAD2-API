@@ -9,14 +9,24 @@ import com.uad2.application.BaseControllerTest;
 import com.uad2.application.common.TestDescription;
 import com.uad2.application.common.enumData.CookieName;
 import org.junit.Test;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.mock.web.MockCookie;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.transaction.Transactional;
+
+import static com.uad2.application.api.document.utils.DocumentFormatGenerator.getDateFormat;
+import static com.uad2.application.api.document.utils.DocumentFormatGenerator.getDateTimeFormat;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@AutoConfigureRestDocs(outputDir = "target/generated-snippets/calculation")
 public class CalculationControllerTests  extends BaseControllerTest {
     @Test
     @Transactional
@@ -44,7 +54,28 @@ public class CalculationControllerTests  extends BaseControllerTest {
         );
         // result
         result.andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("getAllCalculations",
+                        pathParameters(
+                                parameterWithName("year").description("졍산 연도"),
+                                parameterWithName("month").description("정산 월"),
+                                parameterWithName("memberSeq").description("회원 인덱스")
+                        ),
+                        responseFields(
+                                subsectionWithPath("calculationList").description("정산 매칭 데이터 리스트"),
+                                subsectionWithPath("count").description("카운팅"),
+                                subsectionWithPath("totalCount").description("누적 카운팅"),
+                                fieldWithPath("calculationList[].seq").type(JsonFieldType.NUMBER).description("회원 인덱스"),
+                                fieldWithPath("calculationList[].matching").type(JsonFieldType.OBJECT).description("매칭 정보"),
+                                fieldWithPath("calculationList[].price").type(JsonFieldType.NUMBER).description("회비"),
+                                fieldWithPath("calculationList[].content").type(JsonFieldType.STRING).description("설명"),
+                                fieldWithPath("calculationList[].kind").type(JsonFieldType.NUMBER).description("종류"),
+                                fieldWithPath("calculationList[].calculationDate").type(JsonFieldType.STRING).attributes(getDateFormat()).description("정산일"),
+                                fieldWithPath("calculationList[].attendCnt").type(JsonFieldType.NUMBER).description("참가 회원 카운팅"),
+                                fieldWithPath("calculationList[].createAt").type(JsonFieldType.STRING).attributes(getDateTimeFormat()).description("생성일"),
+                                fieldWithPath("calculationList[].updateAt").type(JsonFieldType.STRING).attributes(getDateTimeFormat()).description("수정일")
+                        )
+                ));
     }
 
     @Test
