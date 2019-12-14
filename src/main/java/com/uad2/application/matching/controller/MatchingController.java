@@ -118,6 +118,4 @@ public class MatchingController {
         return ResponseEntity.ok().body(MatchingResponseUtil.makeListResponseResource(matchingList));
     }
 
-
-    //remove matching
 }

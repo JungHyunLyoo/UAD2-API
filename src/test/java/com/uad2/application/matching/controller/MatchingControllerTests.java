@@ -141,16 +141,4 @@ public class MatchingControllerTests extends BaseControllerTest {
         result.andExpect(status().isCreated())
                 .andDo(print());
     }
-    @Test
-    @Transactional
-    @TestDescription("매칭 삭제")
-    public void removeMatching() throws Exception{
-
-    }
-    @Test
-    @Transactional
-    @TestDescription("매칭 삭제 에러(파라미터 미입력)")
-    public void removeMatching_error_emptyParam() throws Exception{
-
-    }
 }
