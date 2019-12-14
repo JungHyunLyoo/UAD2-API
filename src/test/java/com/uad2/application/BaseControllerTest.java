@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -30,7 +29,6 @@ import java.util.TimeZone;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@AutoConfigureRestDocs(outputDir = "target/generated-snippets/sample")
 @Import(RestDocsConfiguration.class)
 @Ignore
 public class BaseControllerTest {

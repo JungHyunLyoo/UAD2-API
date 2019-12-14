@@ -6,11 +6,12 @@ package com.uad2.application.member.controller;
  */
 
 import com.uad2.application.BaseControllerTest;
-import com.uad2.application.common.enumData.CookieName;
 import com.uad2.application.common.TestDescription;
+import com.uad2.application.common.enumData.CookieName;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.utils.CookieUtil;
 import org.junit.Test;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -19,7 +20,9 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
@@ -30,12 +33,15 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@AutoConfigureRestDocs(outputDir = "target/generated-snippets/member")
 public class MemberControllerTests extends BaseControllerTest {
+
     @Test
     @Transactional
     @TestDescription("전체 회원 조회")
     public void getAllMembers() throws Exception {
         MockCookie[] adminMemberCookieList = super.getAdminMemberCookieList(AUTOLOGIN_FALSE);
+
         // request
         ResultActions result = mockMvc.perform(
                 super.getRequest("/api/member", adminMemberCookieList)
@@ -51,7 +57,20 @@ public class MemberControllerTests extends BaseControllerTest {
                         ),
                         responseFields(
                                 subsectionWithPath("memberList").description("전체 회원 데이터 리스트"),
-                                subsectionWithPath("_links").description("링크")
+                                subsectionWithPath("_links").description("링크"),
+                                fieldWithPath("memberList[].seq").description("인덱스").type(JsonFieldType.NUMBER),
+                                fieldWithPath("memberList[].id").description("아이디").type(JsonFieldType.STRING),
+                                fieldWithPath("memberList[].name").description("이름").type(JsonFieldType.STRING),
+                                fieldWithPath("memberList[].profileImg").description("프로필 이미지").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("memberList[].attdCnt").description("누적 참석 횟수").type(JsonFieldType.NUMBER),
+                                fieldWithPath("memberList[].birthDay").description("생년월일").type(JsonFieldType.STRING),
+                                fieldWithPath("memberList[].studentId").description("학번").type(JsonFieldType.NUMBER),
+                                fieldWithPath("memberList[].isWorker").description("직장인 여부").type(JsonFieldType.NUMBER),
+                                fieldWithPath("memberList[].phoneNumber").description("핸드폰 번호").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("memberList[].sessionId").description("세션 ID").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("memberList[].sessionLimit").description("세션 만료일").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("memberList[].isAdmin").description("관리자 권한 여부").type(JsonFieldType.NUMBER),
+                                fieldWithPath("memberList[].isBenefit").description("특혜 (회비 면제)").type(JsonFieldType.NUMBER)
                         )
                 ));
     }
@@ -106,7 +125,20 @@ public class MemberControllerTests extends BaseControllerTest {
                         ),
                         responseFields(
                                 subsectionWithPath("member").description("회원 데이터"),
-                                subsectionWithPath("_links").description("링크")
+                                subsectionWithPath("_links").description("링크"),
+                                fieldWithPath("member.seq").description("인덱스").type(JsonFieldType.NUMBER),
+                                fieldWithPath("member.id").description("아이디").type(JsonFieldType.STRING),
+                                fieldWithPath("member.name").description("이름").type(JsonFieldType.STRING),
+                                fieldWithPath("member.profileImg").description("프로필 이미지").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("member.attdCnt").description("누적 참석 횟수").type(JsonFieldType.NUMBER),
+                                fieldWithPath("member.birthDay").description("생년월일").type(JsonFieldType.STRING),
+                                fieldWithPath("member.studentId").description("학번").type(JsonFieldType.NUMBER),
+                                fieldWithPath("member.isWorker").description("직장인 여부").type(JsonFieldType.NUMBER),
+                                fieldWithPath("member.phoneNumber").description("핸드폰 번호").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("member.sessionId").description("세션 ID").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("member.sessionLimit").description("세션 만료일").type(JsonFieldType.STRING).optional(),
+                                fieldWithPath("member.isAdmin").description("관리자 권한 여부").type(JsonFieldType.NUMBER),
+                                fieldWithPath("member.isBenefit").description("특혜 (회비 면제)").type(JsonFieldType.NUMBER)
                         )
                 ));
     }
@@ -201,7 +233,7 @@ public class MemberControllerTests extends BaseControllerTest {
                                 fieldWithPath("id").type(JsonFieldType.STRING).description("아이디"),
                                 fieldWithPath("pwd").type(JsonFieldType.STRING).description("비밀번호"),
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
-                                fieldWithPath("birthDay").type(JsonFieldType.STRING).description("생일"),
+                                fieldWithPath("birthDay").type(JsonFieldType.STRING).description("생일 (yyyy-MM-dd hh:mm:ss)"),
                                 fieldWithPath("studentId").type(JsonFieldType.NUMBER).description("학번"),
                                 fieldWithPath("isWorker").type(JsonFieldType.NUMBER).description("직장인 여부"),
                                 fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("핸드폰 번호"),
@@ -461,4 +493,36 @@ public class MemberControllerTests extends BaseControllerTest {
     public void testTest(int n1){
         Assert.assertEquals(n1,0);
     }*/
+
+    @Test
+    @Transactional
+    @TestDescription("비밀번호 체크 테스트")
+    public void checkPwd_when_usingFor_updateProfile() throws Exception {
+        MockCookie[] adminMemberCookieList = super.getAdminMemberCookieList(AUTOLOGIN_FALSE);
+
+        Map<String, String> request = new HashMap<>();
+        request.put("id", "testUser");
+        request.put("pwd", "12345678");
+
+        // request
+        ResultActions result = mockMvc.perform(
+                super.postRequest("/api/member/checkPwd", request, adminMemberCookieList)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+        // result
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("isSamePwd").exists())
+                .andDo(document("checkPwd",
+                        requestFields(
+                                fieldWithPath("id").type(JsonFieldType.STRING).description("아이디"),
+                                fieldWithPath("pwd").type(JsonFieldType.STRING).description("비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("isSamePwd").description("비밀번호 일치 여부").type(JsonFieldType.BOOLEAN)
+                        )
+                ));
+    }
+
+
 }
