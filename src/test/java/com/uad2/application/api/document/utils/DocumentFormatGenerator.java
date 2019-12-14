@@ -10,8 +10,12 @@ import static org.springframework.restdocs.snippet.Attributes.key;
  */
 public interface DocumentFormatGenerator {
 
-    static Attributes.Attribute getDateFormat() {
+    static Attributes.Attribute getDateTimeFormat() {
         return key("format").value("yyyy-MM-dd hh:mm:ss");
+    }
+
+    static Attributes.Attribute getDateFormat() {
+        return key("format").value("yyyy-MM-dd");
     }
 
 }
