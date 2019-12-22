@@ -1,7 +1,7 @@
 ifndef::snippets[]
 :snippets: ../../../target/generated-snippets
 endif::[]
-= UAD2 RESTful API 가이드
+= UAD2-API RESTful API 가이드
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
@@ -14,7 +14,7 @@ endif::[]
 [[overview]]
 == 개요
 
-UAD2 스프링 API 서버
+UAD2-API 스프링 API 서버
 
 [[overview-domain]]
 === 도메인

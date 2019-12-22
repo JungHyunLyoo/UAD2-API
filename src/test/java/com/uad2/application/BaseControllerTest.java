@@ -98,24 +98,22 @@ public class BaseControllerTest {
         return mockCookieList;
     }
     protected MockHttpServletRequestBuilder getRequest(String url){
-        MockHttpServletRequestBuilder mockHttpServletRequestBuilder = RestDocumentationRequestBuilders.get(url);
-        return mockHttpServletRequestBuilder;
+        return RestDocumentationRequestBuilders.get(url);
     }
     protected MockHttpServletRequestBuilder getRequest(String url, Object[] paramList){
-        MockHttpServletRequestBuilder mockHttpServletRequestBuilder = RestDocumentationRequestBuilders.get(url,paramList);
-        return mockHttpServletRequestBuilder;
+        return RestDocumentationRequestBuilders.get(url,paramList);
     }
     protected MockHttpServletRequestBuilder getRequest(String url, MockCookie[] mockCookieList){
         MockHttpServletRequestBuilder mockHttpServletRequestBuilder = RestDocumentationRequestBuilders.get(url);
-        for (int i = 0; i < mockCookieList.length; i++) {
-            mockHttpServletRequestBuilder.cookie(mockCookieList[i]);
+        for (MockCookie mockCookie : mockCookieList) {
+            mockHttpServletRequestBuilder.cookie(mockCookie);
         }
         return mockHttpServletRequestBuilder;
     }
     protected MockHttpServletRequestBuilder getRequest(String url, Object[] paramList, MockCookie[] mockCookieList){
         MockHttpServletRequestBuilder mockHttpServletRequestBuilder = RestDocumentationRequestBuilders.get(url,paramList);
-        for (int i = 0; i < mockCookieList.length; i++) {
-            mockHttpServletRequestBuilder.cookie(mockCookieList[i]);
+        for (MockCookie mockCookie : mockCookieList) {
+            mockHttpServletRequestBuilder.cookie(mockCookie);
         }
         return mockHttpServletRequestBuilder;
     }
@@ -127,8 +125,8 @@ public class BaseControllerTest {
     protected MockHttpServletRequestBuilder postRequest(String url,Object content, MockCookie[] mockCookieList) throws Exception{
         MockHttpServletRequestBuilder mockHttpServletRequestBuilder = RestDocumentationRequestBuilders.post(url);
         mockHttpServletRequestBuilder.content(objectMapper.writeValueAsString(content));
-        for (int i = 0; i < mockCookieList.length; i++) {
-            mockHttpServletRequestBuilder.cookie(mockCookieList[i]);
+        for (MockCookie mockCookie : mockCookieList) {
+            mockHttpServletRequestBuilder.cookie(mockCookie);
         }
         return mockHttpServletRequestBuilder;
     }
