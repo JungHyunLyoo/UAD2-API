@@ -6,8 +6,8 @@ UAD's second project(UAD2-API)
 ----
 - UAD 프로젝트의 두 번째 버전(API)
  
-- Php Laravel로 개발된 첫 번째 버전을 Java SpringBoot로 개편. 
-<br>Front는 React로 동일
+- BACK : Php Laravel로 개발된 첫 번째 버전을 Java SpringBoot로 개편. 
+<br>FRONT : React에서 React-native로 개편.
     
 - UAD 첫 번째 버전    
     - 저장소
@@ -28,7 +28,7 @@ FRONT server git repository
 - pm : 11유정현
 - infra : 11김종엽, 11박준호 
 - back(Java SpringBoot) : 11김종엽, 11조형근, 11박준호
-- front(React) : 13진여준
+- front(React-native) : 13진여준
 
 개발 환경
 ----
