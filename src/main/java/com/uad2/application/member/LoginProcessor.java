@@ -30,10 +30,12 @@ public class LoginProcessor {
     private Logger logger = LoggerFactory.getLogger(LoginProcessor.class);
 
     private final MemberService memberService;
+
     @Autowired
     public LoginProcessor(MemberService memberService){
         this.memberService = memberService;
     }
+
     /**
      * 일반 로그인 처리 메소드
      */
@@ -41,16 +43,20 @@ public class LoginProcessor {
                      HttpServletResponse response,
                      HttpSession session,
                      MemberDto.LoginRequest loginRequest) {
-        if (isEmptyLoginCookie(request)) {
-            //쿠키 로그인 데이터가 없는 요청일 경우 (이전에 로그인 한 시도가 없는 경우)
+        if (isEmptyLoginCookie(request.getCookies())) {
+            //쿠키가 없는 요청
+
+            //계정 존재 유무 체크
             Member member = Optional.ofNullable(memberService.getMemberById(loginRequest.getId()))
                     .orElseThrow(() -> new ClientException("Id is not exist"));
 
+            //비밀번호 일치 체크
             if(Objects.nonNull(member.getPwd()) &&
                     !member.getPwd().equals(EncryptUtil.encryptMD5(loginRequest.getPwd()))){
                 throw new ClientException("Pwd is not correct");
             }
 
+            //타입 구분 후 로그인 실행
             if(loginRequest.isAutoLogin()){
                 this.autoLogin(session,response,member);
             }
@@ -59,22 +65,27 @@ public class LoginProcessor {
             }
         }
         else{
-            //쿠키 로그인 데이터가 있는 요청일 경우 (이전에 로그인 했을 때, 자동로그인으로 로그인)
+            //쿠키가 있는 요청
             List<Cookie> cookieList = Arrays.asList(request.getCookies());
+
+            //계정 존재 유무 체크
+            String idFromCookie = CookieUtil.getCookie(cookieList, CookieName.ID).getValue();
+            Member member = Optional.ofNullable(memberService.getMemberById(idFromCookie))
+                    .orElseThrow(() -> new ClientException("Id is not exist"));
+
+            //자동 로그인 유효 체크
             boolean isAutoLogin = Boolean.parseBoolean(
                     Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue())
                             .orElse("false")
             );
-            Member member = Optional.ofNullable(memberService.getMemberById(loginRequest.getId()))
-                    .orElseThrow(() -> new ClientException("Id is not exist"));
-            //자동로그인으로 쿠키가 저장되어 있을 경우만 실행
-            //1회성 로그인으로 쿠키가 저장되어 있을 경우에는 아무 로직도 실행하지 않는다.
+            if(isAutoLogin && isDifferentLoginStatusBetWeenCookieAndDB(cookieList)){
+                removeLoginCookie(response);
+                SessionUtil.removeAttribute(session,"member");
+                throw new ClientException("Member session is not exist");
+            }
+
+            //타입 구분 후 로그인 실행
             if(isAutoLogin){
-                if( isDifferentLoginStatusBetWeenCookieAndDB(cookieList) ){
-                    removeLoginCookie(response);
-                    SessionUtil.removeAttribute(session,"member");
-                    throw new ClientException("Member session is not exist");
-                }
                 this.autoLogin(session,response,member);
             }
             else{
@@ -86,26 +97,40 @@ public class LoginProcessor {
     public void logout(HttpServletRequest request,
                        HttpServletResponse response,
                        HttpSession session){
-        //세션 제거
-        SessionUtil.removeAttribute(session,"member");
-        //쿠키 내 로그인 데이터와 db 내 로그인 데이터 일치 체크
-        //일치하면 쿠키,db 내 로그인 데이터 삭제
-        //일치하지 않으면 쿠키 내 로그인 데이터만 삭제
-        List<Cookie> cookieList = request.getCookies() != null ?
-                Arrays.asList(request.getCookies()) : null;
-        if(Objects.nonNull(cookieList)){
+        //로그인 쿠키 존재 체크
+        if (isEmptyLoginCookie(request.getCookies())) {
+            throw new ClientException("login cookie is empty");
+        }
+
+        //로그인 쿠키 획득
+        List<Cookie> cookieList = Arrays.asList(request.getCookies());
+
+        //자동 로그인 체크
+        boolean isAutoLogin = Boolean.parseBoolean(
+                Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue())
+                        .orElse("false")
+        );
+        if(isAutoLogin){
+            //로그인 쿠키와 db 로그인 일치 체크
             String sessionIdInCookie = Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.SESSION_ID))
-                                        .map(Cookie::getValue)
-                                        .orElse(null);
+                    .map(Cookie::getValue)
+                    .orElse(null);
             String idInCookie = Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.ID))
-                                        .map(Cookie::getValue)
-                                        .orElse(null);
+                    .map(Cookie::getValue)
+                    .orElse(null);
             Member member = memberService.getMemberByIdAndSessionId(sessionIdInCookie,idInCookie);
+
+            //db 로그인 초기화
             if(Objects.nonNull(member)){
                 memberService.updateSessionInfo(member,null,null);
             }
-            removeLoginCookie(response);
         }
+
+        //쿠키 제거
+        removeLoginCookie(response);
+
+        //세션 제거
+        SessionUtil.removeAttribute(session,"member");
     }
 
     public boolean isDifferentLoginStatusBetWeenCookieAndDB(List<Cookie> cookieList){
@@ -165,8 +190,7 @@ public class LoginProcessor {
         response.addCookie(CookieUtil.setCookie(CookieName.IS_AUTO_LOGIN, null, 0));
     }
 
-    private boolean isEmptyLoginCookie(HttpServletRequest request){
-        Cookie[] cookieArray = request.getCookies();
+    private boolean isEmptyLoginCookie(Cookie[] cookieArray){
         return !(cookieArray != null &&
                  CookieUtil.getCookie(Arrays.asList(cookieArray),CookieName.ID) != null &&
                  CookieUtil.getCookie(Arrays.asList(cookieArray),CookieName.NAME) != null &&

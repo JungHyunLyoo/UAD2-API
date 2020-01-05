@@ -65,24 +65,24 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 
         HttpSession session = request.getSession();
 
+        //쿠키 획득
         List<Cookie> cookieList = Optional.ofNullable(request.getCookies())
                                     .map(Arrays::asList)
                                     .orElseThrow(() -> new ClientException("Cookies are not exist"));
-        boolean isAutoLogin = Boolean.parseBoolean(
-                Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue())
-                        .orElse("false")
-        );
-        if(isAutoLogin && loginProcessor.isDifferentLoginStatusBetWeenCookieAndDB(cookieList)){
-            throw new ClientException("Cookie session is not valid");
-        }
+
+        //자동로그인 체크
+        checkAutoLogin(cookieList);
+
+        //계정 존재 여부 체크
         Member member = Optional.ofNullable(memberService.getMemberById(CookieUtil.getCookie(cookieList, CookieName.ID).getValue()))
                 .orElseThrow(() -> new ClientException("Id is not exist"));
-        //api 열람 권한이 없을 경우
+
+        //계정 열람 권한 체크
         if(auth.role() == Role.ADMIN && member.getIsAdmin() == 0){
             throw new ClientException("Member auth is not valid");
         }
 
-        //정상적인 로그인 상태일 경우, 로그인 로직을 재실행 시켜 로그인 상태를 매번 업데이트 해준다.
+        //로그인 실행
         MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
                                                 .id(member.getId())
                                                 .pwd(member.getPwd())
@@ -92,4 +92,14 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
         return true;
     }
 
+    private void checkAutoLogin(List<Cookie> cookieList){
+        boolean isAutoLogin = Boolean.parseBoolean(
+                Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue())
+                        .orElse("false")
+        );
+        if(isAutoLogin && loginProcessor.isDifferentLoginStatusBetWeenCookieAndDB(cookieList)){
+            throw new ClientException("Cookie session is not valid");
+        }
+
+    }
 }
