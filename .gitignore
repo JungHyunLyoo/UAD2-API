@@ -32,3 +32,6 @@ HELP.md
 
 ### RestDocs###
 /src/main/resources/static/docs/index.html
+
+### Test Profile Image###
+/test_profile.png
