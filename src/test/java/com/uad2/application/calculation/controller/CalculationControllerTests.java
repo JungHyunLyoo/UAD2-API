@@ -88,7 +88,7 @@ public class CalculationControllerTests  extends BaseControllerTest {
                 RestDocumentationRequestBuilders.get("/api/calculation/year/{year}/month/{month}/memberSeq/{memberSeq}",2019,10,135)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print());
     }
     @Test
@@ -145,7 +145,7 @@ public class CalculationControllerTests  extends BaseControllerTest {
                         .cookie(isAutoLogin)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print());
     }
 

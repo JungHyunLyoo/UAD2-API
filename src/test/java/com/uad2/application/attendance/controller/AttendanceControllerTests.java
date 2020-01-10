@@ -71,7 +71,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
                 super.getRequest("/api/attendance/date/{date}",paramList)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print());
     }
     @Test
@@ -87,7 +87,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print());
 
 
@@ -98,7 +98,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print());
 
         paramList = new String[]{"2019-13"};
@@ -108,7 +108,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print());
 
 
@@ -119,7 +119,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print());
     }
     @Test
@@ -217,7 +217,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print());
     }
     @Test
@@ -236,7 +236,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print());
     }
     @Test
@@ -255,7 +255,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print());
     }
     @Test
@@ -341,7 +341,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print());
     }
 

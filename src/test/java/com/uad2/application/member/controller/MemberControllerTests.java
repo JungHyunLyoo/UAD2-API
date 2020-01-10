@@ -22,9 +22,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.transaction.Transactional;
-import java.io.File;
 import java.io.FileInputStream;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,7 +86,7 @@ public class MemberControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print());
     }
     @Test
@@ -101,7 +99,7 @@ public class MemberControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print());
     }
     @Test
@@ -185,7 +183,7 @@ public class MemberControllerTests extends BaseControllerTest {
         );
 
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print());
     }
     @Test
@@ -273,7 +271,7 @@ public class MemberControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print())
                 .andExpect(jsonPath("message").exists())
                 .andExpect(jsonPath("message").value("id is empty"));
@@ -331,7 +329,7 @@ public class MemberControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print())
                 .andExpect(jsonPath("message").exists())
                 .andExpect(jsonPath("message").value("Id is not exist"))
@@ -358,7 +356,7 @@ public class MemberControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print())
                 .andExpect(jsonPath("message").exists())
                 .andExpect(jsonPath("message").value("Pwd is not correct"))
@@ -416,7 +414,7 @@ public class MemberControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print())
                 .andExpect(jsonPath("message").exists())
                 .andExpect(jsonPath("message").value("Id is not exist"))
@@ -443,7 +441,7 @@ public class MemberControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print())
                 .andExpect(jsonPath("message").exists())
                 .andExpect(jsonPath("message").value("Pwd is not correct"))

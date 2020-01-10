@@ -35,7 +35,7 @@ public class ExceptionAdvice {
 
     //커스텀 익셉션
     @ExceptionHandler(value = { ClientException.class })
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String,String> clientException(ClientException e) {
         return getErrorForm(e);
     }

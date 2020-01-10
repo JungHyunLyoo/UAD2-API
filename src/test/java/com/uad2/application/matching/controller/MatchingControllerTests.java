@@ -186,7 +186,7 @@ public class MatchingControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isAccepted())
+        result.andExpect(status().isBadRequest())
                 .andDo(print());
     }
     @Test
