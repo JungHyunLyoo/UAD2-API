@@ -49,7 +49,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        logger.info("-----Common interceptor-----");
+        logger.info("-----Common interceptor start-----");
         // handler : 인터셉터 이후에 실행할 컨트롤러의 메소드
         if (!(handler instanceof HandlerMethod)) {
             // 컨트롤러에 존재하지 않는 메소드인 경우 그대로 컨트롤러로 넘긴다.
