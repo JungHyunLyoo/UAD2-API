@@ -72,17 +72,20 @@ UAD2-API 스프링 API 서버
 [[member-API]]
 == 회원 API
 
-[[getAllMembers]]
+[[getAllMember]]
 === 회원 전체 조회
 
 ==== Request HTTP
-include::{snippets}/member/getAllMembers/http-request.adoc[]
+include::{snippets}/member/getAllMember/http-request.adoc[]
+
+==== Response Body
+include::{snippets}/member/getAllMember/response-body.adoc[]
 
 ==== Response
-include::{snippets}/member/getAllMembers/response-fields.adoc[]
+include::{snippets}/member/getAllMember/response-fields.adoc[]
 
 ==== Response paging link
-include::{snippets}/member/getAllMembers/links.adoc[]
+include::{snippets}/member/getAllMember/links.adoc[]
 
 [[getMemberById]]
 === 회원 개별 조회 by id
@@ -120,7 +123,8 @@ include::{snippets}/member/getMemberById_badRequest_emptyParameter/response-body
 include::{snippets}/member/createMember/http-request.adoc[]
 
 ==== Request
-include::{snippets}/member/createMember/request-fields.adoc[]
+include::{snippets}/member/createMember/request-parameters.adoc[]
+include::{snippets}/member/createMember/request-parts.adoc[]
 
 ==== Response Body
 include::{snippets}/member/createMember/response-body.adoc[]

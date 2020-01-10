@@ -16,10 +16,14 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockCookie;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +32,7 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -39,7 +42,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Test
     @Transactional
     @TestDescription("전체 회원 조회")
-    public void getAllMembers() throws Exception {
+    public void getAllMember() throws Exception {
         MockCookie[] adminMemberCookieList = super.getAdminMemberCookieList(AUTOLOGIN_FALSE);
 
         // request
@@ -51,7 +54,7 @@ public class MemberControllerTests extends BaseControllerTest {
         result.andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath("memberList").exists())
-                .andDo(document("getAllMembers",//조각 모음 폴더의 이름
+                .andDo(document("getAllMember",//조각 모음 폴더의 이름
                         links(
                                 linkWithRel("profile").description("restDoc link")
                         ),
@@ -77,7 +80,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Test
     @Transactional
     @TestDescription("전체 회원 조회 에러(일반 유저 로그인)")
-    public void getAllMembers_badRequest_noAuth() throws Exception {
+    public void getAllMember_badRequest_noAuth() throws Exception {
         MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
         // request
         ResultActions result = mockMvc.perform(
@@ -91,7 +94,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Test
     @Transactional
     @TestDescription("전체 회원 조회 에러(로그인 x)")
-    public void getAllMembers_badRequest_noLogin() throws Exception {
+    public void getAllMember_badRequest_noLogin() throws Exception {
         // request
         ResultActions result = mockMvc.perform(
                 super.getRequest("/api/member")
@@ -207,19 +210,19 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("회원 데이터 생성")
     public void createMember() throws Exception {
-        MemberDto.Request member = MemberDto.Request.builder()
-                .id("test")
-                .pwd("test")
-                .name("test")
-                .birthDay(new Date())
-                .studentId(11)
-                .isWorker(0)
-                .phoneNumber("01234567890")
-                .build();
-        // request
+                // request
         ResultActions result = mockMvc.perform(
-                super.postRequest("/api/member",member)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                RestDocumentationRequestBuilders
+                        .fileUpload("/api/member")
+                        .file(new MockMultipartFile("profileImg", new FileInputStream("./uad.png")))
+                        .param("id","test")
+                        .param("pwd","test")
+                        .param("name","test")
+                        .param("birthDay","2020-01-01")
+                        .param("studentId","11")
+                        .param("isWorker","0")
+                        .param("phoneNumber","1121")
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
@@ -229,15 +232,20 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_UTF8_VALUE))
                 .andDo(document("createMember",
-                        requestFields(
-                                fieldWithPath("id").type(JsonFieldType.STRING).description("아이디"),
-                                fieldWithPath("pwd").type(JsonFieldType.STRING).description("비밀번호"),
-                                fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
-                                fieldWithPath("birthDay").type(JsonFieldType.STRING).description("생일 (yyyy-MM-dd hh:mm:ss)"),
-                                fieldWithPath("studentId").type(JsonFieldType.NUMBER).description("학번"),
-                                fieldWithPath("isWorker").type(JsonFieldType.NUMBER).description("직장인 여부"),
-                                fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("핸드폰 번호"),
-                                fieldWithPath("isAutoLogin").type(JsonFieldType.BOOLEAN).description("자동 로그인 flag").optional()
+                        requestParameters(
+                                parameterWithName("id").description("아이디"),
+                                parameterWithName("pwd").description("비밀번호"),
+                                parameterWithName("name").description("이름"),
+                                parameterWithName("birthDay").description("생일(yyyy-MM-dd)"),
+                                parameterWithName("id").description("아이디"),
+                                parameterWithName("id").description("아이디"),
+                                parameterWithName("studentId").description("학번"),
+                                parameterWithName("isWorker").description("직장인 여부"),
+                                parameterWithName("phoneNumber").description("핸드폰 번호"),
+                                parameterWithName("id").description("아이디")
+                        ),
+                        requestParts(
+                                partWithName("profileImg").description("프로필 이미지")
                         ),
                         responseFields(
                                 subsectionWithPath("member").description("회원 데이터"),
@@ -245,6 +253,7 @@ public class MemberControllerTests extends BaseControllerTest {
                         )
                 ));
     }
+    /*
     @Test
     @Transactional
     @TestDescription("회원 데이터 생성 에러(필수 파라미터 부재)")
@@ -269,7 +278,7 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andExpect(jsonPath("message").exists())
                 .andExpect(jsonPath("message").value("id is empty"));
     }
-
+*/
     @Test
     public void createMember_badRequest_wrongInput() throws Exception {/*
         MemberExternalDto memberExternalDto = MemberExternalDto.builder().build();

@@ -124,7 +124,7 @@ public class MemberServiceTest {
 
         verify(memberRepository).save(any(Member.class));
     }
-
+/*
     @Test
     @TestDescription("비밀번호 동일 여부 확인")
     public void verify_samePwd() {
@@ -155,6 +155,7 @@ public class MemberServiceTest {
         verify(memberRepository).findById(requestMember.getId());
     }
 
+*/
     @Test
     @TestDescription("회원 개별 조회 by phoneNumber")
     public void getMember_ByPhoneNumber() {

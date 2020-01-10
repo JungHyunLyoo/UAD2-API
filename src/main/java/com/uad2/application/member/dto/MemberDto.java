@@ -16,7 +16,6 @@ public class MemberDto {
 
     @Getter
     @Setter
-    @Builder
     public static class Request {   // 프로퍼티 공통 사용여부에 따라 Create, Update로 분리해도 괜찮을 것 같다.
         private String id;
 
@@ -24,13 +23,23 @@ public class MemberDto {
 
         private String name;
 
-        private Date birthDay;
+        private String birthDay;
 
         private int studentId;
 
         private int isWorker;
 
         private String phoneNumber;
+
+        public Request(String id,String pwd,String name,String birthDay,int studentId,int isWorker,String phoneNumber) throws Exception{
+            this.id = id;
+            this.pwd = pwd;
+            this.name = name;
+            this.birthDay = birthDay;
+            this.studentId = studentId;
+            this.isWorker = isWorker;
+            this.phoneNumber = phoneNumber;
+        }
     }
 
     @Getter

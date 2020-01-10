@@ -2,6 +2,7 @@ package com.uad2.application.member.controller;
 
 import com.uad2.application.common.annotation.Auth;
 import com.uad2.application.common.enumData.Role;
+import com.uad2.application.config.PropertiesBundle;
 import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.LoginProcessor;
 import com.uad2.application.member.MemberValidator;
@@ -18,10 +19,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -80,14 +83,21 @@ public class MemberController {
     /**
      * 회원 생성 API
      */
-    @PostMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
-    public ResponseEntity createMember(@RequestBody MemberDto.Request requestMember) {
+    @PostMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity createMember(MemberDto.Request requestMember,
+        @RequestParam(value = "profileImg") MultipartFile profileImg) throws Exception {
+
+        //파라미터 체크
         memberValidator.validateCreateMember(requestMember);
 
+        //폰번호로 유일성 체크
         String phoneNumber = requestMember.getPhoneNumber();
         if (!ObjectUtils.isEmpty(memberService.findByPhoneNumber(phoneNumber))) {
             throw new ClientException(String.format("PhoneNumber(%s) already exist", phoneNumber));
         }
+
+        //프로필 이미지 저장
+        profileImg.transferTo(new File(PropertiesBundle.PROFILE_IMAGE_DIRECTORY + requestMember.getName() + "_profile.png"));
 
         Member savedMember = memberService.createMember(modelMapper.map(requestMember, Member.class));
         URI createdUri = linkTo(MemberController.class).slash("id").slash(requestMember.getId()).toUri();
