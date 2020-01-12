@@ -86,7 +86,7 @@ public class MemberControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isBadRequest())
+        result.andExpect(status().isForbidden())
                 .andDo(print());
     }
     @Test

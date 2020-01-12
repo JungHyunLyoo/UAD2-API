@@ -33,10 +33,15 @@ public class ExceptionAdvice {
         return getErrorForm(e);
     }
 
-    //커스텀 익셉션
     @ExceptionHandler(value = { ClientException.class })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String,String> clientException(ClientException e) {
+        return getErrorForm(e);
+    }
+
+    @ExceptionHandler(value = { ForbiddenException.class})
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Map<String,String> forbiddenException(ForbiddenException e) {
         return getErrorForm(e);
     }
 }

@@ -10,6 +10,7 @@ import com.uad2.application.common.annotation.Auth;
 import com.uad2.application.common.enumData.CookieName;
 import com.uad2.application.common.enumData.Role;
 import com.uad2.application.exception.ClientException;
+import com.uad2.application.exception.ForbiddenException;
 import com.uad2.application.member.LoginProcessor;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
@@ -79,7 +80,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 
         //계정 열람 권한 체크
         if(auth.role() == Role.ADMIN && member.getIsAdmin() == 0){
-            throw new ClientException("Member auth is not valid");
+            throw new ForbiddenException("Member auth is not valid");
         }
 
         //로그인 실행
