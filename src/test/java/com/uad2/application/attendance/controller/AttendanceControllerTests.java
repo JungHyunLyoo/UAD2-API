@@ -146,6 +146,13 @@ public class AttendanceControllerTests extends BaseControllerTest {
                         requestFields(
                                 fieldWithPath("availableDate").type(JsonFieldType.STRING).description("날짜(ex 2019-11-10)"),
                                 fieldWithPath("availableTime").type(JsonFieldType.STRING).description("참가 시간대")
+                        ),
+                        responseFields(
+                                subsectionWithPath("attendance").description("참가"),
+                                subsectionWithPath("_links").description("링크"),
+                                fieldWithPath("attendance.member").type(JsonFieldType.OBJECT).description("회원 정보"),
+                                fieldWithPath("attendance.availableTime").type(JsonFieldType.STRING).description("참가 신청 시간"),
+                                fieldWithPath("attendance.availableDate").type(JsonFieldType.STRING).attributes(getDateFormat()).description("참가 신청 일자")
                         )
                 ));
     }
@@ -183,26 +190,6 @@ public class AttendanceControllerTests extends BaseControllerTest {
                                 fieldWithPath("attendance.availableDate").type(JsonFieldType.STRING).attributes(getDateFormat()).description("참가 신청 일자")
                         )
                 ));
-    }
-    @Test
-    @Transactional
-    @TestDescription("참가 데이터 생성 오류(파라미터 오류)")
-    public void createAttendance_badRequest_invalidParameter() throws Exception {
-        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
-        AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
-                .availableDate("2019-11-09")
-                .availableTime("")
-                .build();
-        // request
-        ResultActions result = mockMvc.perform(
-                super.postRequest("/api/attendance",attendanceRequest,userMemberCookieList)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .accept(MediaTypes.HAL_JSON)
-        );
-        // result
-        result.andExpect(status().isNoContent())
-                .andDo(print());
-
     }
     @Test
     @Transactional
@@ -274,7 +261,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
-        result.andExpect(status().isNoContent())
+        result.andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("deleteAttendance",
                         requestFields(

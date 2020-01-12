@@ -100,7 +100,7 @@ public class AttendanceController {
                 throw new ClientException("empty attendance");
             }
             attendanceService.deleteAttendance(attendance);
-            resultEntity = ResponseEntity.noContent().build();
+            resultEntity = ResponseEntity.ok().build();
         }
         else{
             if(Objects.isNull(attendance)){
