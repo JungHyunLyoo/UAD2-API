@@ -15,6 +15,7 @@ import com.uad2.application.member.entity.Member;
 import com.uad2.application.member.service.MemberService;
 import com.uad2.application.message.service.MessageService;
 import com.uad2.application.utils.SessionUtil;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.net.URI;
 import java.sql.Date;
 import java.util.List;
@@ -72,11 +74,14 @@ public class AttendanceController {
 
     @Auth(role = Role.USER)
     @PostMapping(value = "/api/attendance", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
-    public ResponseEntity createAttendance(HttpServletRequest request, @RequestBody AttendanceDto.Request attendanceRequest){
+    public ResponseEntity createAttendance(HttpSession httpSession, HttpServletRequest request, @RequestBody AttendanceDto.Request attendanceRequest){
         attendanceValidator.validateCreateAttendance(attendanceRequest);
+
+        Member loginMember = (Member) httpSession.getAttribute("member");
+        int memberSeq = loginMember.getSeq();
         String availableTime = attendanceRequest.getAvailableTime();
         String availableDate = attendanceRequest.getAvailableDate();
-        int memberSeq = attendanceRequest.getMemberSeq();
+
 
         Member memberTest = (Member)SessionUtil.getAttribute(request.getSession(),"member");
         if(memberSeq != memberTest.getSeq()){
@@ -115,7 +120,7 @@ public class AttendanceController {
             }
         }
         //매칭 갱신
-        Matching matching = matchingService.updateMatchingByAttendance(attendanceRequest);
+        Matching matching = matchingService.updateMatchingByAttendance(attendanceRequest,memberSeq);
         //신청한 시간대에 5명 이상의 참여자가 있을 경우, 회장에게 메세지 발송
         if(Objects.nonNull(matching)){
             String[] matchingMemberList = matching.getAttendMember().split(",");

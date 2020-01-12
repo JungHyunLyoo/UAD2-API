@@ -33,10 +33,9 @@ public class MatchingService {
     }
 
 
-    public Matching updateMatchingByAttendance(AttendanceDto.Request request){
+    public Matching updateMatchingByAttendance(AttendanceDto.Request request,int memberSeq){
         String availableTime = request.getAvailableTime();//null check
         String availableDate = request.getAvailableDate();
-        int memberSeq = request.getMemberSeq();
         if(Objects.isNull(availableTime) || Objects.isNull(availableDate)){
             throw new RuntimeException("Need null check, availableTime : " + availableTime + ", availableDate : " + availableDate);
         }
@@ -57,7 +56,6 @@ public class MatchingService {
                 }
                 else if(!availableTime.contains(matching.getMatchingTime()) &&
                         matching.getAttendMember().contains(Integer.toString(memberSeq))){
-                    System.out.println("delete attendance in matching");
                     matching.setAttendMember(matching.getAttendMember().replace("," + memberSeq,""));
                     matching.setAttendMember(matching.getAttendMember().replace("," + memberSeq,""));
                     matching.setAttendMember(matching.getAttendMember().replace("," + memberSeq,""));

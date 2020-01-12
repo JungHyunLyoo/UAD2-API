@@ -36,14 +36,10 @@ public class AttendanceValidator {
     public void validateCreateAttendance(AttendanceDto.Request attendanceRequest) {
         String availableTime = attendanceRequest.getAvailableTime();
         String availableDate = attendanceRequest.getAvailableDate();
-        int memberSeq = attendanceRequest.getMemberSeq();
         if(Objects.isNull(availableTime)){
             throw new ClientException("availableTime is null");
         }
         if(Objects.isNull(availableDate)){
-            throw new ClientException("availableDate is null");
-        }
-        if(memberSeq == 0){
             throw new ClientException("availableDate is null");
         }
     }

@@ -22,7 +22,6 @@ public class AttendanceDto {
     @Setter
     @Builder
     public static class Request {   // 프로퍼티 공통 사용여부에 따라 Create, Update로 분리해도 괜찮을 것 같다.
-        private int memberSeq;
         private String availableTime;
         private String availableDate;
     }

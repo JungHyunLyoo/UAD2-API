@@ -178,40 +178,57 @@ include::{snippets}/member/checkPwd/response-fields.adoc[]
 == 참가 API
 
 
-[[getAllAttendances]]
+[[getAllAttendanceList]]
 === 특정일 참가 내역 조회
 특정일에 참가 신청한 내역 조회 API
 
 ==== Request path parameters
-include::{snippets}/attendance/getAllAttendances/path-parameters.adoc[]
+include::{snippets}/attendance/getAllAttendanceList/path-parameters.adoc[]
 
 ==== Response Body
-include::{snippets}/attendance/getAllAttendances/response-body.adoc[]
+include::{snippets}/attendance/getAllAttendanceList/response-body.adoc[]
 
 ==== Response
-include::{snippets}/attendance/getAllAttendances/response-fields.adoc[]
+include::{snippets}/attendance/getAllAttendanceList/response-fields.adoc[]
 
 ==== Response paging link
-include::{snippets}/attendance/getAllAttendances/links.adoc[]
+include::{snippets}/attendance/getAllAttendanceList/links.adoc[]
 
-
-[[createAttendance_updateMatching]]
-=== 참가 데이터 생성
+[[createAttendanceNotUpdateMatching]]
+=== 참가 데이터 생성(매칭 업데이트 x)
 
 ==== Request HTTP
-include::{snippets}/attendance/createAttendance_updateMatching/http-request.adoc[]
+include::{snippets}/attendance/createAttendanceNotUpdateMatching/http-request.adoc[]
 
 ==== Request
-include::{snippets}/attendance/createAttendance_updateMatching/request-fields.adoc[]
+include::{snippets}/attendance/createAttendanceNotUpdateMatching/request-fields.adoc[]
 
 ==== Response Body
-include::{snippets}/attendance/createAttendance_updateMatching/response-body.adoc[]
+include::{snippets}/attendance/createAttendanceNotUpdateMatching/response-body.adoc[]
 
 ==== Response
-include::{snippets}/attendance/createAttendance_updateMatching/response-fields.adoc[]
+include::{snippets}/attendance/createAttendanceNotUpdateMatching/response-fields.adoc[]
 
 ==== Response paging link
-include::{snippets}/attendance/createAttendance_updateMatching/links.adoc[]
+include::{snippets}/attendance/createAttendanceNotUpdateMatching/links.adoc[]
+
+[[createAttendanceUpdateMatching]]
+=== 참가 데이터 생성(매칭 업데이트 o)
+
+==== Request HTTP
+include::{snippets}/attendance/createAttendanceUpdateMatching/http-request.adoc[]
+
+==== Request
+include::{snippets}/attendance/createAttendanceUpdateMatching/request-fields.adoc[]
+
+==== Response Body
+include::{snippets}/attendance/createAttendanceUpdateMatching/response-body.adoc[]
+
+==== Response
+include::{snippets}/attendance/createAttendanceUpdateMatching/response-fields.adoc[]
+
+==== Response paging link
+include::{snippets}/attendance/createAttendanceUpdateMatching/links.adoc[]
 
 
 [[updateAttendance]]

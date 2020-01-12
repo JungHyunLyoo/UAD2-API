@@ -26,6 +26,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureRestDocs(outputDir = "target/generated-snippets/attendance")
@@ -44,7 +45,8 @@ public class AttendanceControllerTests extends BaseControllerTest {
         // result
         result.andExpect(status().isOk())
                 .andDo(print())
-                .andDo(document("getAllAttendances",
+                .andExpect(jsonPath("attendanceList").isNotEmpty())
+                .andDo(document("getAllAttendanceList",
                         pathParameters(
                                 parameterWithName("date").description("참가일 (yyyy-MM-dd)")
                         ),
@@ -59,7 +61,6 @@ public class AttendanceControllerTests extends BaseControllerTest {
                                 fieldWithPath("attendanceList[].availableDate").type(JsonFieldType.STRING).attributes(getDateFormat()).description("참가 신청 일자")
                         )
                 ));
-        ;
     }
     @Test
     @Transactional
@@ -72,6 +73,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
         );
         // result
         result.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("Cookies are not exist"))
                 .andDo(print());
     }
     @Test
@@ -130,27 +132,6 @@ public class AttendanceControllerTests extends BaseControllerTest {
         AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
                 .availableDate("2019-11-10")
                 .availableTime("1,2")
-                .memberSeq(userMember.getSeq())
-                .build();
-        // request
-        ResultActions result = mockMvc.perform(
-                super.postRequest("/api/attendance",attendanceRequest,userMemberCookieList)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .accept(MediaTypes.HAL_JSON)
-        );
-        // result
-        result.andExpect(status().isCreated())
-                .andDo(print());
-    }
-    @Test
-    @Transactional
-    @TestDescription("참가 데이터 생성 성공(매칭 업데이트 o)")
-    public void createAttendance_updateMatching_addMember() throws Exception {
-        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
-        AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
-                .availableDate("2019-11-02")
-                .availableTime("5,6")
-                .memberSeq(userMember.getSeq())
                 .build();
         // request
         ResultActions result = mockMvc.perform(
@@ -161,9 +142,33 @@ public class AttendanceControllerTests extends BaseControllerTest {
         // result
         result.andExpect(status().isCreated())
                 .andDo(print())
-                .andDo(document("createAttendance_updateMatching",
+                .andDo(document("createAttendanceNotUpdateMatching",
                         requestFields(
-                                fieldWithPath("memberSeq").type(JsonFieldType.NUMBER).description("회원 인덱스"),
+                                fieldWithPath("availableDate").type(JsonFieldType.STRING).description("날짜(ex 2019-11-10)"),
+                                fieldWithPath("availableTime").type(JsonFieldType.STRING).description("참가 시간대")
+                        )
+                ));
+    }
+    @Test
+    @Transactional
+    @TestDescription("참가 데이터 생성 성공(매칭 업데이트 o)")
+    public void createAttendance_updateMatching_addMember() throws Exception {
+        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
+        AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
+                .availableDate("2019-11-02")
+                .availableTime("5,6")
+                .build();
+        // request
+        ResultActions result = mockMvc.perform(
+                super.postRequest("/api/attendance",attendanceRequest,userMemberCookieList)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaTypes.HAL_JSON)
+        );
+        // result
+        result.andExpect(status().isCreated())
+                .andDo(print())
+                .andDo(document("createAttendanceUpdateMatching",
+                        requestFields(
                                 fieldWithPath("availableTime").type(JsonFieldType.STRING).description("참가 신청 시간"),
                                 fieldWithPath("availableDate").type(JsonFieldType.STRING).description("참가 신청 일자 (yyyy-MM-dd)")
                         ),
@@ -187,7 +192,6 @@ public class AttendanceControllerTests extends BaseControllerTest {
         AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
                 .availableDate("2019-11-09")
                 .availableTime("")
-                .memberSeq(userMember.getSeq())
                 .build();
         // request
         ResultActions result = mockMvc.perform(
@@ -202,51 +206,11 @@ public class AttendanceControllerTests extends BaseControllerTest {
     }
     @Test
     @Transactional
-    @TestDescription("참가 데이터 생성 에러(요청 회원 불일치)")
-    public void createAttendance_error_notValidMember() throws Exception {
-        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
-        AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
-                .availableDate("2019-11-02")
-                .availableTime("5,6")
-                .memberSeq(1)
-                .build();
-        // request
-        ResultActions result = mockMvc.perform(
-                super.postRequest("/api/attendance",attendanceRequest,userMemberCookieList)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .accept(MediaTypes.HAL_JSON)
-        );
-        // result
-        result.andExpect(status().isBadRequest())
-                .andDo(print());
-    }
-    @Test
-    @Transactional
-    @TestDescription("참가 데이터 생성 에러(요청 회원 미기입)")
-    public void createAttendance_error_emptyMember() throws Exception {
-        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
-        AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
-                .availableDate("2019-11-02")
-                .availableTime("5,6")
-                .build();
-        // request
-        ResultActions result = mockMvc.perform(
-                super.postRequest("/api/attendance",attendanceRequest,userMemberCookieList)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .accept(MediaTypes.HAL_JSON)
-        );
-        // result
-        result.andExpect(status().isBadRequest())
-                .andDo(print());
-    }
-    @Test
-    @Transactional
     @TestDescription("참가 데이터 생성 에러(시간대 미기입)")
     public void createAttendance_error_emptyAvailableTime() throws Exception {
         MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
         AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
                 .availableDate("2019-11-02")
-                .memberSeq(userMember.getSeq())
                 .build();
         // request
         ResultActions result = mockMvc.perform(
@@ -266,7 +230,6 @@ public class AttendanceControllerTests extends BaseControllerTest {
         AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
                 .availableDate("2019-11-09")
                 .availableTime("5,6")
-                .memberSeq(userMember.getSeq())
                 .build();
         // request
         ResultActions result = mockMvc.perform(
@@ -279,7 +242,6 @@ public class AttendanceControllerTests extends BaseControllerTest {
                 .andDo(print())
                 .andDo(document("updateAttendance",
                         requestFields(
-                                fieldWithPath("memberSeq").type(JsonFieldType.NUMBER).description("회원 인덱스"),
                                 fieldWithPath("availableTime").type(JsonFieldType.STRING).description("참가 신청 시간"),
                                 fieldWithPath("availableDate").type(JsonFieldType.STRING).description("참가 신청 일자 (yyyy-MM-dd)")
                         ),
@@ -304,7 +266,6 @@ public class AttendanceControllerTests extends BaseControllerTest {
         AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
                 .availableDate("2019-11-09")
                 .availableTime("")
-                .memberSeq(userMember.getSeq())
                 .build();
         // request
         ResultActions result = mockMvc.perform(
@@ -317,7 +278,6 @@ public class AttendanceControllerTests extends BaseControllerTest {
                 .andDo(print())
                 .andDo(document("deleteAttendance",
                         requestFields(
-                                fieldWithPath("memberSeq").type(JsonFieldType.NUMBER).description("회원 인덱스"),
                                 fieldWithPath("availableTime").type(JsonFieldType.STRING).description("참가 신청 시간"),
                                 fieldWithPath("availableDate").type(JsonFieldType.STRING).description("참가 신청 일자 (yyyy-MM-dd)")
                         )
@@ -332,7 +292,6 @@ public class AttendanceControllerTests extends BaseControllerTest {
         AttendanceDto.Request attendanceRequest = AttendanceDto.Request.builder()
                 .availableDate("2019-11-02")
                 .availableTime("")
-                .memberSeq(userMember.getSeq())
                 .build();
         // request
         ResultActions result = mockMvc.perform(
