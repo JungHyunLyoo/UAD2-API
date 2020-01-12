@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.uad2.application.api.document.utils.DocumentFormatGenerator.getDateFormat;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -251,23 +252,22 @@ public class MemberControllerTests extends BaseControllerTest {
                         )
                 ));
     }
-    /*
     @Test
     @Transactional
     @TestDescription("회원 데이터 생성 에러(필수 파라미터 부재)")
     public void createMember_badRequest_emptyRequest() throws Exception {
-        MemberDto.Request member = MemberDto.Request.builder()
-                .pwd("test")
-                .name("test")
-                .birthDay(new Date())
-                .studentId(11)
-                .isWorker(0)
-                .phoneNumber("01234567890")
-                .build();
         // request
         ResultActions result = mockMvc.perform(
-                super.postRequest("/api/member",member)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                RestDocumentationRequestBuilders
+                        .fileUpload("/api/member")
+                        .file(new MockMultipartFile("profileImg", new FileInputStream("./uad.png")))
+                        .param("pwd","test")
+                        .param("name","test")
+                        .param("birthDay","2020-01-01")
+                        .param("studentId","11")
+                        .param("isWorker","0")
+                        .param("phoneNumber","1121")
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
@@ -275,18 +275,6 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("message").exists())
                 .andExpect(jsonPath("message").value("id is empty"));
-    }
-*/
-    @Test
-    public void createMember_badRequest_wrongInput() throws Exception {/*
-        MemberExternalDto memberExternalDto = MemberExternalDto.builder().build();
-
-        mockMvc.perform(post("/api/member")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(objectMapper.writeValueAsBytes(memberExternalDto))
-        ).andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$[0].objectName").exists());*/
     }
     @Test
     @Transactional
@@ -311,7 +299,14 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andExpect(cookie().exists(CookieName.PHONE_NUM.getName()))
                 .andExpect(cookie().exists(CookieName.IS_WORKER.getName()))
                 .andExpect(cookie().exists(CookieName.SESSION_ID.getName()))
-                .andExpect(cookie().exists(CookieName.IS_ADMIN.getName()));
+                .andExpect(cookie().exists(CookieName.IS_ADMIN.getName()))
+                .andDo(document("loginMember",
+                        requestFields(
+                                fieldWithPath("id").type(JsonFieldType.STRING).attributes(getDateFormat()).description("아이디"),
+                                fieldWithPath("pwd").type(JsonFieldType.STRING).description("비밀번호"),
+                                fieldWithPath("isAutoLogin").type(JsonFieldType.BOOLEAN).description("자동로그인 여부")
+                        )
+                ));
     }
     @Test
     @Transactional

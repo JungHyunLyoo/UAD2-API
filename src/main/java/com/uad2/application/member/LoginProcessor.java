@@ -57,7 +57,7 @@ public class LoginProcessor {
             }
 
             //타입 구분 후 로그인 실행
-            if(loginRequest.isAutoLogin()){
+            if(loginRequest.getIsAutoLogin()){
                 this.autoLogin(session,response,member);
             }
             else {

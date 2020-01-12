@@ -119,9 +119,6 @@ include::{snippets}/member/getMemberById_badRequest_emptyParameter/response-body
 [[createMember]]
 === 회원 생성
 
-==== Request HTTP
-include::{snippets}/member/createMember/http-request.adoc[]
-
 ==== Request
 include::{snippets}/member/createMember/request-parameters.adoc[]
 include::{snippets}/member/createMember/request-parts.adoc[]
@@ -132,6 +129,18 @@ include::{snippets}/member/createMember/response-body.adoc[]
 ==== Response
 include::{snippets}/member/createMember/response-fields.adoc[]
 
+
+[[loginMember]]
+=== 로그인
+
+==== Request HTTP
+include::{snippets}/member/loginMember/http-request.adoc[]
+
+==== Request
+include::{snippets}/member/loginMember/request-fields.adoc[]
+
+==== Response
+include::{snippets}/attendance/deleteAttendance/http-response.adoc[]
 
 [[checkPwd]]
 === 비밀번호 체크

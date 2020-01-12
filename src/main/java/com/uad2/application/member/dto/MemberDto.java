@@ -9,6 +9,8 @@ package com.uad2.application.member.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.Date;
 
@@ -45,12 +47,20 @@ public class MemberDto {
     @Getter
     @Setter
     @Builder
+    @ToString
     public static class LoginRequest {
         private String id;
 
         private String pwd;
 
         private boolean isAutoLogin;
+
+        public boolean getIsAutoLogin(){
+            return isAutoLogin;
+        }
+        public void setIsAutoLogin(boolean isAutoLogin){
+            this.isAutoLogin = isAutoLogin;
+        }
     }
 
     @Getter
