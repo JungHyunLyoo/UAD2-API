@@ -152,7 +152,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("멤버 개별 조회(해당 아이디로 데이터 x) by id")
     public void getMemberById_emptyResult() throws Exception {
-        String[] paramList = new String[]{"testUser123"};
+        String[] paramList = new String[]{"testUser1234"};
         MockCookie[] userMemberCookieList = super.getMemberCookieList(userMember, AUTOLOGIN_TRUE);
         // request
         ResultActions result = mockMvc.perform(
@@ -163,7 +163,7 @@ public class MemberControllerTests extends BaseControllerTest {
         result.andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath("member").doesNotExist())
-                .andDo(document("getMemberById",
+                .andDo(document("getMemberByIdEmptyResult",
                         pathParameters(
                                 parameterWithName("id").description("아이디")
                         ),
@@ -209,7 +209,7 @@ public class MemberControllerTests extends BaseControllerTest {
     }
     @Test
     @Transactional
-    @TestDescription("회원 데이터 생성")
+    @TestDescription("회원 생성")
     public void createMember() throws Exception {
         // request
         ResultActions result = mockMvc.perform(
@@ -281,7 +281,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Test
     @Transactional
     @TestDescription("수동 로그인")
-    public void loginMember_general_isAutoLogin_false() throws Exception {
+    public void loginMember_isAutoLogin_false() throws Exception {
         MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
                 .id("testUser")
                 .pwd("testUser")
@@ -302,9 +302,9 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andExpect(cookie().exists(CookieName.IS_WORKER.getName()))
                 .andExpect(cookie().exists(CookieName.SESSION_ID.getName()))
                 .andExpect(cookie().exists(CookieName.IS_ADMIN.getName()))
-                .andDo(document("loginMember",
+                .andDo(document("loginMemberAutoLoginFalse",
                         requestFields(
-                                fieldWithPath("id").type(JsonFieldType.STRING).attributes(getDateFormat()).description("아이디"),
+                                fieldWithPath("id").type(JsonFieldType.STRING).description("아이디"),
                                 fieldWithPath("pwd").type(JsonFieldType.STRING).description("비밀번호"),
                                 fieldWithPath("isAutoLogin").type(JsonFieldType.BOOLEAN).description("자동로그인 여부")
                         )
@@ -315,7 +315,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @TestDescription("수동 로그인 아이디 오류")
     public void loginMember_general_isAutoLogin_false_badRequest_invalidId() throws Exception {
         MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
-                .id("testUser123")
+                .id("testUser1235")
                 .pwd("testUser")
                 .isAutoLogin(false)
                 .build();
@@ -367,7 +367,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Test
     @Transactional
     @TestDescription("자동 로그인")
-    public void loginMember_autoLogin_true() throws Exception {
+    public void loginMember_isAutoLogin_true() throws Exception {
         MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
                 .id("testUser")
                 .pwd("testUser")
@@ -394,7 +394,7 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andExpect(cookie().maxAge(CookieName.IS_WORKER.getName(), CookieUtil.A_YEAR_EXPIRATION))
                 .andExpect(cookie().maxAge(CookieName.SESSION_ID.getName(), CookieUtil.A_YEAR_EXPIRATION))
                 .andExpect(cookie().maxAge(CookieName.IS_ADMIN.getName(), CookieUtil.A_YEAR_EXPIRATION))
-                .andDo(document("loginMember",
+                .andDo(document("loginMemberAutoLoginTrue",
                         requestFields(
                                 fieldWithPath("id").type(JsonFieldType.STRING).attributes(getDateFormat()).description("아이디"),
                                 fieldWithPath("pwd").type(JsonFieldType.STRING).description("비밀번호"),

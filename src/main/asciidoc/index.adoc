@@ -23,7 +23,7 @@ UAD2-API 스프링 API 서버
 | 환경 | 도메인
 
 | 운영(version 1)
-| `https://유아들.kr`
+| `https://https://pjhdev.com:8085`
 |===
 
 [[overview-http-verbs]]
@@ -39,10 +39,10 @@ UAD2-API 스프링 API 서버
 | 리소스 생성
 
 | `PATCH`
-| 리소스 부분 수정
+| 리소스 부분 수정(사용 x)
 
 | `DELETE`
-| 리소스 삭제
+| 리소스 삭제(사용 x)
 |===
 
 [[overview-http-status-codes]]
@@ -103,18 +103,20 @@ include::{snippets}/member/getMemberById/response-body.adoc[]
 include::{snippets}/member/getMemberById/response-fields.adoc[]
 
 
-[[getMemberById_badRequest_emptyParameter]]
-=== 개별 회원 조회 에러(매개변수 미기입)
+[[getMemberByIdEmptyResult]]
+=== 회원 개별 조회 by id(해당 아이디로 데이터 x)
 
 ==== Request HTTP
-include::{snippets}/member/getMemberById_badRequest_emptyParameter/http-request.adoc[]
+include::{snippets}/member/getMemberByIdEmptyResult/http-request.adoc[]
 
 ==== Request path parameters
-include::{snippets}/member/getMemberById_badRequest_emptyParameter/path-parameters.adoc[]
+include::{snippets}/member/getMemberByIdEmptyResult/path-parameters.adoc[]
 
 ==== Response Body
-include::{snippets}/member/getMemberById_badRequest_emptyParameter/response-body.adoc[]
+include::{snippets}/member/getMemberByIdEmptyResult/response-body.adoc[]
 
+==== Response
+include::{snippets}/member/getMemberByIdEmptyResult/response-fields.adoc[]
 
 [[createMember]]
 === 회원 생성
@@ -130,17 +132,29 @@ include::{snippets}/member/createMember/response-body.adoc[]
 include::{snippets}/member/createMember/response-fields.adoc[]
 
 
-[[loginMember]]
-=== 로그인
+[[loginMemberAutoLoginFalse]]
+=== 수동 로그인
 
 ==== Request HTTP
-include::{snippets}/member/loginMember/http-request.adoc[]
+include::{snippets}/member/loginMemberAutoLoginFalse/http-request.adoc[]
 
 ==== Request
-include::{snippets}/member/loginMember/request-fields.adoc[]
+include::{snippets}/member/loginMemberAutoLoginFalse/request-fields.adoc[]
 
 ==== Response
-include::{snippets}/attendance/deleteAttendance/http-response.adoc[]
+include::{snippets}/member/loginMemberAutoLoginFalse/http-response.adoc[]
+
+[[loginMemberAutoLoginTrue]]
+=== 자동 로그인
+
+==== Request HTTP
+include::{snippets}/member/loginMemberAutoLoginTrue/http-request.adoc[]
+
+==== Request
+include::{snippets}/member/loginMemberAutoLoginTrue/request-fields.adoc[]
+
+==== Response
+include::{snippets}/member/loginMemberAutoLoginTrue/http-response.adoc[]
 
 [[checkPwd]]
 === 비밀번호 체크
