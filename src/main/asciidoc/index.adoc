@@ -332,6 +332,23 @@ include::{snippets}/matching/createMatching/response-fields.adoc[]
 include::{snippets}/matching/createMatching/links.adoc[]
 
 
+[[updateMatching]]
+=== 매칭 수정
+
+==== Request HTTP
+include::{snippets}/matching/updateMatching/http-request.adoc[]
+
+==== Request
+include::{snippets}/matching/updateMatching/request-fields.adoc[]
+
+==== Response Body
+include::{snippets}/matching/updateMatching/response-body.adoc[]
+
+==== Response
+include::{snippets}/matching/updateMatching/response-fields.adoc[]
+
+==== Response paging link
+include::{snippets}/matching/updateMatching/links.adoc[]
 
 [[calculation-API]]
 == 정산 API

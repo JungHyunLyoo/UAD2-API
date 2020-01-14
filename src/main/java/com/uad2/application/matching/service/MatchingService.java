@@ -28,7 +28,7 @@ public class MatchingService {
         return matchingRepository.findByMatchingDate(date);
     }
 
-    public Matching updateMatching(Matching matching) {
+    public Matching saveMatching(Matching matching) {
         return matchingRepository.save(matching);
     }
 

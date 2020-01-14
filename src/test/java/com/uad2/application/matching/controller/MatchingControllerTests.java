@@ -146,9 +146,7 @@ public class MatchingControllerTests extends BaseControllerTest {
                                 fieldWithPath("matchingPlace").type(JsonFieldType.STRING).description("매칭 장소"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("매칭 설명"),
                                 fieldWithPath("attendMember").type(JsonFieldType.STRING).description("참가 회원"),
-                                fieldWithPath("price").type(JsonFieldType.NUMBER).description("매칭 금액"),
-                                fieldWithPath("seq").type(JsonFieldType.NUMBER).ignored(),
-                                fieldWithPath("maxCnt").type(JsonFieldType.NUMBER).ignored()
+                                fieldWithPath("price").type(JsonFieldType.NUMBER).description("매칭 금액")
                         ),
                         links(
                                 linkWithRel("profile").description("restDoc link")
@@ -210,6 +208,30 @@ public class MatchingControllerTests extends BaseControllerTest {
         );
         // result
         result.andExpect(status().isCreated())
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("updateMatching",
+                        requestFields(
+                                fieldWithPath("matchingDate").type(JsonFieldType.STRING).attributes(getDateFormat()).description("매칭일 (yyyy-MM-dd)"),
+                                fieldWithPath("matchingTime").type(JsonFieldType.STRING).description("매칭 시간"),
+                                fieldWithPath("matchingPlace").type(JsonFieldType.STRING).description("매칭 장소"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("매칭 설명"),
+                                fieldWithPath("attendMember").type(JsonFieldType.STRING).description("참가 회원"),
+                                fieldWithPath("price").type(JsonFieldType.NUMBER).description("매칭 금액")
+                        ),
+                        links(
+                                linkWithRel("profile").description("restDoc link")
+                        ),
+                        responseFields(
+                                subsectionWithPath("attendance").description("매칭 데이터"),
+                                subsectionWithPath("_links").description("링크"),
+                                fieldWithPath("attendance.matchingDate").type(JsonFieldType.STRING).attributes(getDateFormat()).description("매칭일"),
+                                fieldWithPath("attendance.matchingTime").type(JsonFieldType.STRING).description("매칭 시간"),
+                                fieldWithPath("attendance.matchingPlace").type(JsonFieldType.STRING).description("매칭 장소"),
+                                fieldWithPath("attendance.content").type(JsonFieldType.STRING).description("매칭 설명"),
+                                fieldWithPath("attendance.attendMember").type(JsonFieldType.STRING).description("참가 회원"),
+                                fieldWithPath("attendance.maxCnt").type(JsonFieldType.NUMBER).description("최대 참석 가능 인원").optional(),
+                                fieldWithPath("attendance.price").type(JsonFieldType.NUMBER).description("매칭 금액")
+                        )
+                ));
     }
 }

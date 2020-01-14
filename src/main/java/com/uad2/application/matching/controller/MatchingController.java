@@ -85,7 +85,7 @@ public class MatchingController {
             matching.setAttendMember(String.join(",", attendanceMemberSeq));
             matching.setMatchingPlace(requestPlace);
             matching.setContent(requestContent);
-            Matching updatedMatching = matchingService.updateMatching(matching);
+            Matching savedMatching = matchingService.saveMatching(matching);
 
 
             List<Calculation> calculationList = calculationService.getCalculationListByCalculationDate(requestDate);
@@ -99,13 +99,13 @@ public class MatchingController {
             calculation.setContent(requestPlace);
             calculation.setPrice(requestPrice);
             calculation.setCalculationDate(requestDate);
-            calculation.setMatching(updatedMatching);
+            calculation.setMatching(savedMatching);
             calculation.setKind(0);
             calculation.setAttendCnt(0);
             calculationService.saveCalculation(calculation);
 
             URI createdUri = linkTo(MemberController.class).toUri();
-            return ResponseEntity.created(createdUri).body(MatchingResponseUtil.makeResponseResource(updatedMatching));
+            return ResponseEntity.created(createdUri).body(MatchingResponseUtil.makeResponseResource(savedMatching));
         } else {
            throw new ClientException(String.format("Attendance member is not exist at that day(%s)", requestMatching.getMatchingDate()));
         }
