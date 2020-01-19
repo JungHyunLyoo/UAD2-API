@@ -22,8 +22,8 @@ UAD2-API 스프링 API 서버
 |===
 | 환경 | 도메인
 
-| 운영(version 1)
-| `https://https://pjhdev.com:8085`
+| 운영
+| `http://pjhdev.com:8087`
 |===
 
 [[overview-http-verbs]]
