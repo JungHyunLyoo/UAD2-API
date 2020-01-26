@@ -7,7 +7,7 @@ UAD's second project(UAD2-API)
 - UAD 프로젝트의 두 번째 버전(API)
  
 - BACK : Php Laravel로 개발된 첫 번째 버전을 Java SpringBoot로 개편. 
-<br>FRONT : React에서 React-native로 개편.
+<br>Front : React->React-Native로 개편.
     
 - UAD 첫 번째 버전    
     - 저장소
