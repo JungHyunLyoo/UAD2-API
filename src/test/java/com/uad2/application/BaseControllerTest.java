@@ -73,7 +73,7 @@ public class BaseControllerTest {
                 .pwd("testUser")
                 .name("testUser")
                 .phoneNumber("01000000000")
-                .sessionId("CC1A4A921C8A4CB31B916E31A8F1C9D0")
+                .sessionId("CDF0814ED101C09C03C64DB85405C7B5")
                 .sessionLimit(calendar.getTime())
                 .isAdmin(0)
                 .createdAt(LocalDateTime.now())
