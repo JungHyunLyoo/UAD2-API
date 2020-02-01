@@ -42,7 +42,6 @@ public class CookieUtil {
     public static Cookie setCookie(CookieName cookieName, String value,int expirationPeriod) {
         Cookie cookie = new Cookie(cookieName.getName(), value);
         cookie.setMaxAge(expirationPeriod);
-        cookie.setPath("/api");
         return cookie;
     }
 
@@ -54,7 +53,6 @@ public class CookieUtil {
                 .peek(cookie -> {
                     cookie.setValue(null);
                     cookie.setMaxAge(0);
-                    cookie.setPath("/api");
                 })
                 .collect(Collectors.toList());
     }
