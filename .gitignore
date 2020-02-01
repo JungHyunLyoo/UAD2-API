@@ -2,6 +2,7 @@ HELP.md
 /maven/
 /target/
 /logs/
+/Java/
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###
