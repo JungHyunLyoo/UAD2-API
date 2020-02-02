@@ -9,6 +9,7 @@ package com.uad2.application.utils;
 import com.uad2.application.common.enumData.CookieName;
 
 import javax.servlet.http.Cookie;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,10 +41,16 @@ public class CookieUtil {
      * api 하위 URI에서 유효. HTTP 프로토콜에서만 가능
      */
     public static Cookie setCookie(CookieName cookieName, String value,int expirationPeriod) {
-        Cookie cookie = new Cookie(cookieName.getName(), value);
-        cookie.setMaxAge(expirationPeriod);
-        cookie.setPath("/");
-        return cookie;
+        try {
+            Cookie cookie = new Cookie(cookieName.getName(),  URLEncoder.encode(value, "UTF-8"));
+            cookie.setMaxAge(expirationPeriod);
+            cookie.setPath("/");
+            return cookie;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
