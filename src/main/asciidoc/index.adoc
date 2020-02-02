@@ -121,6 +121,9 @@ include::{snippets}/member/getMemberByIdEmptyResult/response-fields.adoc[]
 [[createMember]]
 === 회원 생성
 
+==== Request HTTP
+include::{snippets}/member/createMember/http-request.adoc[]
+
 ==== Request
 include::{snippets}/member/createMember/request-parameters.adoc[]
 include::{snippets}/member/createMember/request-parts.adoc[]
