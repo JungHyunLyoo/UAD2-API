@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <!-- 변수 지정 -->
-    <property name="LOG_DIR" value="logs"/>
-    <property name="ALL_LOG_DIR" value="${LOG_DIR}/all"/>
-    <property name="DOMAIN_LOG_DIR" value="${LOG_DIR}/domain"/>
+    <property name="ALL_LOG_DIR" value="${LOG_PATH}/all"/>
+    <property name="DOMAIN_LOG_DIR" value="${LOG_PATH}/domain"/>
     <property name="ATTENDANCE_LOG_DIR" value="${DOMAIN_LOG_DIR}/attendance"/>
     <property name="CALCULATION_LOG_DIR" value="${DOMAIN_LOG_DIR}/calculation"/>
     <property name="MATCHING_LOG_DIR" value="${DOMAIN_LOG_DIR}/matching"/>
