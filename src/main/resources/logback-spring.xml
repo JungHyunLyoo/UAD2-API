@@ -146,10 +146,8 @@
 
     <!-- 운영 환경 -->
     <springProfile name="prod">
-        <!-- 루트 패키지 포함정, 하위 모든 패키지 로그 수준 DEBUG -->
-<!--        <appender-ref ref="STDOUT"/>-->
-<!--        <appender-ref ref="ALL_FILE"/>-->
-        <root level="DEBUG">
+
+        <root level="DEBUG"><!-- 루트 패키지 포함정, 하위 모든 패키지 로그 수준 DEBUG -->
             <appender-ref ref="STDOUT"/>
             <appender-ref ref="ALL_FILE"/>
         </root>
