@@ -353,6 +353,8 @@ include::{snippets}/matching/updateMatching/response-fields.adoc[]
 ==== Response paging link
 include::{snippets}/matching/updateMatching/links.adoc[]
 
+
+
 [[calculation-API]]
 == 정산 API
 
@@ -368,3 +370,22 @@ include::{snippets}/calculation/getAllCalculations/path-parameters.adoc[]
 
 ==== Response
 include::{snippets}/calculation/getAllCalculations/response-fields.adoc[]
+
+
+
+[[overseas-football-API]]
+== 해외축구 API
+
+
+[[getAllOverseasFootballLeagues]]
+=== 해외축구 리그 정보 조회
+4대 리그(EPL, Laliga, Bundes, Serie A) 랭킹, 경기 일정 확인
+
+==== Request HTTP
+include::{snippets}/overseas/getAllOverseasFootballLeagues/http-request.adoc[]
+
+==== Response Body
+include::{snippets}/overseas/getAllOverseasFootballLeagues/response-body.adoc[]
+
+==== Response
+include::{snippets}/overseas/getAllOverseasFootballLeagues/response-fields.adoc[]
