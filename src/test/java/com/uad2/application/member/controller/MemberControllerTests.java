@@ -464,12 +464,7 @@ public class MemberControllerTests extends BaseControllerTest {
         // result
         result.andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("isAutoLogin").value("false"))
-                .andDo(document("checkAutoLogin",
-                        responseFields(
-                                fieldWithPath("isAutoLogin").description("자동 로그인 여부").type(JsonFieldType.BOOLEAN)
-                        )
-                ));
+                .andExpect(jsonPath("isAutoLogin").value("false"));
     }
 
     @Test

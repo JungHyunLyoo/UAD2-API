@@ -159,6 +159,16 @@ include::{snippets}/member/loginMemberAutoLoginTrue/request-fields.adoc[]
 ==== Response
 include::{snippets}/member/loginMemberAutoLoginTrue/http-response.adoc[]
 
+
+[[checkAutoLogin]]
+=== 자동 로그인 체크
+
+==== Request HTTP
+include::{snippets}/member/checkAutoLogin/http-request.adoc[]
+
+==== Response
+include::{snippets}/member/checkAutoLogin/http-response.adoc[]
+
 [[checkPwd]]
 === 비밀번호 체크
 프로필 수정을 위한 비밀번호 검증 API
