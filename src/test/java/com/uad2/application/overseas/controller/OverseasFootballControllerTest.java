@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockCookie;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -78,7 +79,9 @@ public class OverseasFootballControllerTest extends BaseControllerTest {
     @Test
     @TestDescription("4대 리그(EPL, Laliga, Bundes, SerieA) 리그 정보")
     public void getOverseasFootballInfo() throws Exception {
-        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
+        MockHttpServletResponse response = super.execLogin("testUser","testUser",false).andReturn().getResponse();
+
+        MockCookie[] cookieList = super.convertCookieToMockCookie(response.getCookies());
 
         List<Club> clubList = new ArrayList<>();
         for (TEAM el : TEAM.values()) {
@@ -132,7 +135,7 @@ public class OverseasFootballControllerTest extends BaseControllerTest {
 
         // request
         ResultActions result = mockMvc.perform(
-                super.getRequest("/api/overseas/football", userMemberCookieList)
+                super.getRequest("/api/overseas/football", cookieList)
         );
 
         // result

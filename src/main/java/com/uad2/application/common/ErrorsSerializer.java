@@ -6,7 +6,6 @@ package com.uad2.application.common;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.validation.Errors;
@@ -17,7 +16,6 @@ import java.io.IOException;
 public class ErrorsSerializer extends JsonSerializer<Errors> {
     @Override
     public void serialize(Errors errors, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        System.out.println("ErrorsSerializer :: serialize");
         jsonGenerator.writeStartArray();
         errors.getFieldErrors().forEach(e -> {
             try {

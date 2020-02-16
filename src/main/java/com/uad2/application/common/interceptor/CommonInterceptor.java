@@ -72,7 +72,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
                                     .orElseThrow(() -> new ClientException("Cookies are not exist"));
 
         //자동로그인 체크
-        checkAutoLogin(cookieList);
+        loginProcessor.checkAutoLogin(cookieList);
 
         //계정 존재 여부 체크
         Member member = Optional.ofNullable(memberService.getMemberById(CookieUtil.getCookie(cookieList, CookieName.ID).getValue()))
@@ -91,16 +91,5 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
                                                 .build();
         loginProcessor.login(request,response,session,loginRequest);
         return true;
-    }
-
-    private void checkAutoLogin(List<Cookie> cookieList){
-        boolean isAutoLogin = Boolean.parseBoolean(
-                Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue())
-                        .orElse("false")
-        );
-        if(isAutoLogin && loginProcessor.isDifferentLoginStatusBetWeenCookieAndDB(cookieList)){
-            throw new ClientException("Cookie session is not valid");
-        }
-
     }
 }

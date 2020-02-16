@@ -16,11 +16,13 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockCookie;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import javax.servlet.http.Cookie;
 import javax.transaction.Transactional;
 import java.io.FileInputStream;
 import java.util.HashMap;
@@ -42,11 +44,13 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("전체 회원 조회")
     public void getAllMember() throws Exception {
-        MockCookie[] adminMemberCookieList = super.getAdminMemberCookieList(AUTOLOGIN_FALSE);
+        MockHttpServletResponse response = this.execLogin("testAdmin","testAdmin",false).andReturn().getResponse();
+
+        MockCookie[] cookieList = this.convertCookieToMockCookie(response.getCookies());
 
         // request
         ResultActions result = mockMvc.perform(
-                super.getRequest("/api/member", adminMemberCookieList)
+                super.getRequest("/api/member", cookieList)
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
@@ -80,10 +84,12 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("전체 회원 조회 에러(일반 유저 로그인)")
     public void getAllMember_badRequest_noAuth() throws Exception {
-        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
+        MockHttpServletResponse response = super.execLogin("testUser","testUser",false).andReturn().getResponse();
+
+        MockCookie[] cookieList = super.convertCookieToMockCookie(response.getCookies());
         // request
         ResultActions result = mockMvc.perform(
-                super.getRequest("/api/member", userMemberCookieList)
+                super.getRequest("/api/member", cookieList)
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
@@ -111,11 +117,15 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("멤버 개별 조회 by id")
     public void getMemberById() throws Exception {
+        MockHttpServletResponse response = this.execLogin("testUser","testUser",true).andReturn().getResponse();
+
+        MockCookie[] cookieList = super.convertCookieToMockCookie(response.getCookies());
+
         String[] paramList = new String[]{"testUser"};
-        MockCookie[] userMemberCookieList = super.getMemberCookieList(userMember, AUTOLOGIN_TRUE);
+
         // request
         ResultActions result = mockMvc.perform(
-                super.getRequest("/api/member/id/{id}",paramList, userMemberCookieList)
+                super.getRequest("/api/member/id/{id}",paramList, cookieList)
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
@@ -152,11 +162,15 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("멤버 개별 조회(해당 아이디로 데이터 x) by id")
     public void getMemberById_emptyResult() throws Exception {
+        MockHttpServletResponse response = super.execLogin("testUser","testUser",true).andReturn().getResponse();
+
+        MockCookie[] cookieList = super.convertCookieToMockCookie(response.getCookies());
+
         String[] paramList = new String[]{"testUser1234"};
-        MockCookie[] userMemberCookieList = super.getMemberCookieList(userMember, AUTOLOGIN_TRUE);
+
         // request
         ResultActions result = mockMvc.perform(
-                super.getRequest("/api/member/id/{id}",paramList, userMemberCookieList)
+                super.getRequest("/api/member/id/{id}",paramList, cookieList)
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
@@ -282,17 +296,8 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("수동 로그인")
     public void loginMember_isAutoLogin_false() throws Exception {
-        MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
-                .id("testUser")
-                .pwd("testUser")
-                .isAutoLogin(false)
-                .build();
-        // request
-        ResultActions result = mockMvc.perform(
-                super.postRequest("/api/member/login",loginRequest)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .accept(MediaTypes.HAL_JSON)
-        );
+
+        ResultActions result = super.execLogin("testUser","testUser",false);
         // result
         result.andExpect(status().isOk())
                 .andDo(print())
@@ -314,17 +319,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("수동 로그인 아이디 오류")
     public void loginMember_general_isAutoLogin_false_badRequest_invalidId() throws Exception {
-        MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
-                .id("testUser1235")
-                .pwd("testUser")
-                .isAutoLogin(false)
-                .build();
-        // request
-        ResultActions result = mockMvc.perform(
-                super.postRequest("/api/member/login",loginRequest)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .accept(MediaTypes.HAL_JSON)
-        );
+        ResultActions result = super.execLogin("testUser1235","testUser",false);
         // result
         result.andExpect(status().isBadRequest())
                 .andDo(print())
@@ -341,17 +336,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("수동 로그인 비밀번호 오류")
     public void loginMember_general_isAutoLogin_false_badRequest_invalidPwd() throws Exception {
-        MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
-                .id("testUser")
-                .pwd("wrongPwd")
-                .isAutoLogin(false)
-                .build();
-        // request
-        ResultActions result = mockMvc.perform(
-                super.postRequest("/api/member/login",loginRequest)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .accept(MediaTypes.HAL_JSON)
-        );
+        ResultActions result = super.execLogin("testUser","wrongPwd",false);
         // result
         result.andExpect(status().isBadRequest())
                 .andDo(print())
@@ -368,17 +353,9 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("자동 로그인")
     public void loginMember_isAutoLogin_true() throws Exception {
-        MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
-                .id("testUser")
-                .pwd("testUser")
-                .isAutoLogin(true)
-                .build();
         // request
-        ResultActions result = mockMvc.perform(
-                super.postRequest("/api/member/login",loginRequest)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .accept(MediaTypes.HAL_JSON)
-        );
+        ResultActions result = super.execLogin("testUser","testUser",true);
+
         // result
         result.andExpect(status().isOk())
                 .andDo(print())
@@ -406,17 +383,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("자동 로그인 아이디 오류")
     public void loginMember_autoLogin_true_badRequest_invalidId() throws Exception {
-        MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
-                .id("invalidId")
-                .pwd("testUser")
-                .isAutoLogin(true)
-                .build();
-        // request
-        ResultActions result = mockMvc.perform(
-                super.postRequest("/api/member/login",loginRequest)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .accept(MediaTypes.HAL_JSON)
-        );
+        ResultActions result = super.execLogin("invalidId","testUser",true);
         // result
         result.andExpect(status().isBadRequest())
                 .andDo(print())
@@ -433,17 +400,7 @@ public class MemberControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("자동 로그인 비밀번호 오류")
     public void loginMember_autoLogin_true_badRequest_invalidPwd() throws Exception {
-        MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
-                .id("testUser")
-                .pwd("invalidPwd")
-                .isAutoLogin(true)
-                .build();
-        // request
-        ResultActions result = mockMvc.perform(
-                super.postRequest("/api/member/login",loginRequest)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .accept(MediaTypes.HAL_JSON)
-        );
+        ResultActions result = super.execLogin("testUser","invalidPwd",true);
         // result
         result.andExpect(status().isBadRequest())
                 .andDo(print())
@@ -459,9 +416,69 @@ public class MemberControllerTests extends BaseControllerTest {
 
     @Test
     @Transactional
+    @TestDescription("자동 로그인 유효 검사_true")
+    public void checkAutoLogin_true() throws Exception{
+        // auto login request and response
+        MockHttpServletResponse response = super.execLogin("testUser","testUser",true).andReturn().getResponse();
+
+        MockCookie[] cookieList = super.convertCookieToMockCookie(response.getCookies());
+
+        // request
+        ResultActions result = mockMvc.perform(
+                super.getRequest("/api/member/checkAutoLogin", cookieList)
+                        .accept(MediaType.APPLICATION_JSON_UTF8)
+        );
+
+        // result
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("isAutoLogin").value("true"))
+                .andDo(document("checkAutoLogin",
+                        responseFields(
+                                fieldWithPath("isAutoLogin").description("자동 로그인 여부").type(JsonFieldType.BOOLEAN)
+                        )
+                ));
+    }
+
+
+    @Test
+    @Transactional
+    @TestDescription("자동 로그인 유효 검사_false")
+    public void checkAutoLogin_false() throws Exception{
+        // auto login request and response
+        MockHttpServletResponse response = super.execLogin("testUser","testUser",false).andReturn().getResponse();
+
+        Cookie[] autoLoginCookie = response.getCookies();
+
+        MockCookie[] cookieList = new MockCookie[autoLoginCookie.length];
+        for (int i=0;i<autoLoginCookie.length;i++) {
+            cookieList[i] = new MockCookie(autoLoginCookie[i].getName(),autoLoginCookie[i].getValue());
+        }
+
+        // request
+        ResultActions result = mockMvc.perform(
+                super.getRequest("/api/member/checkAutoLogin", cookieList)
+                        .accept(MediaType.APPLICATION_JSON_UTF8)
+        );
+
+        // result
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("isAutoLogin").value("false"))
+                .andDo(document("checkAutoLogin",
+                        responseFields(
+                                fieldWithPath("isAutoLogin").description("자동 로그인 여부").type(JsonFieldType.BOOLEAN)
+                        )
+                ));
+    }
+
+    @Test
+    @Transactional
     @TestDescription("비밀번호 체크 테스트")
     public void checkPwd_when_usingFor_updateProfile() throws Exception {
-        MockCookie[] adminMemberCookieList = super.getAdminMemberCookieList(AUTOLOGIN_FALSE);
+        MockHttpServletResponse response = super.execLogin("testAdmin","testAdmin",false).andReturn().getResponse();
+
+        MockCookie[] cookieList = super.convertCookieToMockCookie(response.getCookies());
 
         Map<String, String> request = new HashMap<>();
         request.put("id", "testUser");
@@ -469,7 +486,7 @@ public class MemberControllerTests extends BaseControllerTest {
 
         // request
         ResultActions result = mockMvc.perform(
-                super.postRequest("/api/member/checkPwd", request, adminMemberCookieList)
+                super.postRequest("/api/member/checkPwd", request, cookieList)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         );
         // result

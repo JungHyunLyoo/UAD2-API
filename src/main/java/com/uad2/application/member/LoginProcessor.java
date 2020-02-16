@@ -55,9 +55,10 @@ public class LoginProcessor {
                     !member.getPwd().equals(EncryptUtil.encryptMD5(loginRequest.getPwd()))){
                 throw new ClientException("Pwd is not correct");
             }
-
+            boolean isAutoLogin = loginRequest.getIsAutoLogin();
+            logger.debug("isAutoLogin = {}",isAutoLogin);
             //타입 구분 후 로그인 실행
-            if(loginRequest.getIsAutoLogin()){
+            if(isAutoLogin){
                 this.autoLogin(session,response,member);
             }
             else {
@@ -133,7 +134,18 @@ public class LoginProcessor {
         SessionUtil.removeAttribute(session,"member");
     }
 
-    public boolean isDifferentLoginStatusBetWeenCookieAndDB(List<Cookie> cookieList){
+    public void checkAutoLogin(List<Cookie> cookieList){
+        boolean isAutoLogin = Boolean.parseBoolean(
+                Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue())
+                        .orElse("false")
+        );
+        logger.debug("isAutoLogin = {} ",isAutoLogin);
+        if(isAutoLogin && this.isDifferentLoginStatusBetWeenCookieAndDB(cookieList)){
+            throw new ClientException("Cookie session is not valid");
+        }
+    }
+
+    private boolean isDifferentLoginStatusBetWeenCookieAndDB(List<Cookie> cookieList){
         //쿠키 내 로그인 데이터로 db 내 로그인 데이터 일치 확인
         String idInCookie = Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.ID).getValue())
                 .orElseThrow(() -> new ClientException("Id in cookie is empty"));
@@ -141,7 +153,9 @@ public class LoginProcessor {
                 .orElseThrow(() -> new ClientException("SessionId in cookie is empty"));
 
         //쿠키 내 로그인 데이터가 db 내 로그인 데이터와 일치하지 않을 경우
+        logger.debug("idInCookie = {}, sessionIdInCookie = {}",idInCookie,sessionIdInCookie);
         Member member = memberService.getMemberByIdAndSessionId(idInCookie,sessionIdInCookie);
+        logger.debug("member = {} ",member);
         return !(Objects.nonNull(member) && this.isValidSessionLimit(member));
     }
     /**
@@ -150,8 +164,8 @@ public class LoginProcessor {
     private void autoLogin(HttpSession session, HttpServletResponse response,Member member) {
         //세션 저장 및 자동 로그인 처리
         String sessionId = session.getId();
-        this.setLoginCookie(response, member, sessionId, CookieUtil.A_YEAR_EXPIRATION);
-        this.setLoginInDB(member,sessionId);
+        this.setLoginCookie(response, member, sessionId, true);
+        this.setLoginInDB(member,sessionId,true);
         SessionUtil.setAttribute(session, "member", member);
     }
 
@@ -160,24 +174,31 @@ public class LoginProcessor {
      */
     private void onceLogin(HttpSession session, HttpServletResponse response,Member member) {
         String sessionId = session.getId();
-        this.setLoginCookie(response, member, sessionId, CookieUtil.ONCE_EXPIRATION);
+        this.setLoginCookie(response, member, sessionId, false);
+        this.setLoginInDB(member,sessionId,false);
         SessionUtil.setAttribute(session, "member", member);
     }
 
-    private void setLoginInDB(Member member, String sessionId) {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        calendar.add(Calendar.YEAR, 1);
-        memberService.updateSessionInfo(member, sessionId, calendar.getTime());
+    private void setLoginInDB(Member member, String sessionId,boolean isAutoLogin) {
+        if (isAutoLogin){
+            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            calendar.add(Calendar.YEAR, 1);
+            memberService.updateSessionInfo(member, sessionId, calendar.getTime());
+        }
+        else {
+            memberService.updateSessionInfo(member, null, null);
+        }
     }
 
-    private void setLoginCookie(HttpServletResponse response, Member member, String sessionId,int cookieExpiration) {
+    private void setLoginCookie(HttpServletResponse response, Member member, String sessionId, boolean isAutoLogin) {
+        int cookieExpiration = isAutoLogin ? CookieUtil.A_YEAR_EXPIRATION : CookieUtil.ONCE_EXPIRATION;
         response.addCookie(CookieUtil.setCookie(CookieName.ID, member.getId(), cookieExpiration));
         response.addCookie(CookieUtil.setCookie(CookieName.NAME, member.getName(), cookieExpiration));
         response.addCookie(CookieUtil.setCookie(CookieName.PHONE_NUM, member.getPhoneNumber(), cookieExpiration));
         response.addCookie(CookieUtil.setCookie(CookieName.IS_WORKER, Integer.toString(member.getIsWorker()), cookieExpiration));
         response.addCookie(CookieUtil.setCookie(CookieName.SESSION_ID, sessionId, cookieExpiration));
         response.addCookie(CookieUtil.setCookie(CookieName.IS_ADMIN, Integer.toString(member.getIsAdmin()), cookieExpiration));
-        response.addCookie(CookieUtil.setCookie(CookieName.IS_AUTO_LOGIN, "true", cookieExpiration));
+        response.addCookie(CookieUtil.setCookie(CookieName.IS_AUTO_LOGIN, String.valueOf(isAutoLogin), cookieExpiration));
     }
 
     private void removeLoginCookie(HttpServletResponse response){

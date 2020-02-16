@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockCookie;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -37,10 +38,12 @@ public class MatchingControllerTests extends BaseControllerTest {
     @TestDescription("월별 매칭 내역 조회")
     public void getMatching_monthly() throws Exception {
         String[] paramList = new String[]{"2019-12"};
-        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
+        MockHttpServletResponse response = super.execLogin("testUser","testUser",false).andReturn().getResponse();
+
+        MockCookie[] cookieList = super.convertCookieToMockCookie(response.getCookies());
         // request
         ResultActions result = mockMvc.perform(
-                super.getRequest("/api/matching/date/{date}",paramList, userMemberCookieList)
+                super.getRequest("/api/matching/date/{date}",paramList, cookieList)
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
@@ -71,11 +74,13 @@ public class MatchingControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("월별 매칭 내역 조회_에러(파라미터 미입력)")
     public void getMatching_error_emptyParam() throws Exception {
+        MockHttpServletResponse response = super.execLogin("testUser","testUser",false).andReturn().getResponse();
+
+        MockCookie[] cookieList = super.convertCookieToMockCookie(response.getCookies());
         String[] paramList = new String[]{""};
-        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
         // request
         ResultActions result = mockMvc.perform(
-                super.getRequest("/api/matching/date/{date}",paramList, userMemberCookieList)
+                super.getRequest("/api/matching/date/{date}",paramList, cookieList)
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
@@ -87,10 +92,12 @@ public class MatchingControllerTests extends BaseControllerTest {
     @TestDescription("일별 매칭 내역 조회")
     public void getMatching_daily() throws Exception {
         String[] paramList = new String[]{"2019-11-02"};
-        MockCookie[] userMemberCookieList = super.getUserMemberCookieList(AUTOLOGIN_FALSE);
+        MockHttpServletResponse response = super.execLogin("testUser","testUser",false).andReturn().getResponse();
+
+        MockCookie[] cookieList = super.convertCookieToMockCookie(response.getCookies());
         // request
         ResultActions result = mockMvc.perform(
-                super.getRequest("/api/matching/date/{date}",paramList, userMemberCookieList)
+                super.getRequest("/api/matching/date/{date}",paramList, cookieList)
                         .accept(MediaTypes.HAL_JSON)
         );
         // result
@@ -121,7 +128,9 @@ public class MatchingControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("매칭 생성")
     public void createMatching() throws Exception{
-        MockCookie[] adminMemberCookieList = super.getAdminMemberCookieList(AUTOLOGIN_FALSE);
+        MockHttpServletResponse response = super.execLogin("testAdmin","testAdmin",false).andReturn().getResponse();
+
+        MockCookie[] cookieList = super.convertCookieToMockCookie(response.getCookies());
         MatchingDto.Request matchingRequest = MatchingDto.Request.builder()
                 .matchingDate("2019-11-09")
                 .matchingTime("1,2")
@@ -132,7 +141,7 @@ public class MatchingControllerTests extends BaseControllerTest {
                 .build();
         // request
         ResultActions result = mockMvc.perform(
-                super.postRequest("/api/matching",matchingRequest,adminMemberCookieList)
+                super.postRequest("/api/matching",matchingRequest,cookieList)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaTypes.HAL_JSON)
         );
@@ -169,7 +178,9 @@ public class MatchingControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("매칭 생성 에러(파라미터 미입력)")
     public void createMatching_error_emptyParam() throws Exception{
-        MockCookie[] adminMemberCookieList = super.getAdminMemberCookieList(AUTOLOGIN_FALSE);
+        MockHttpServletResponse response = super.execLogin("testAdmin","testAdmin",false).andReturn().getResponse();
+
+        MockCookie[] cookieList = super.convertCookieToMockCookie(response.getCookies());
         MatchingDto.Request matchingRequest = MatchingDto.Request.builder()
                 .matchingTime("1,2")
                 .matchingPlace("test place")
@@ -179,7 +190,7 @@ public class MatchingControllerTests extends BaseControllerTest {
                 .build();
         // request
         ResultActions result = mockMvc.perform(
-                super.postRequest("/api/matching",matchingRequest,adminMemberCookieList)
+                super.postRequest("/api/matching",matchingRequest,cookieList)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaTypes.HAL_JSON)
         );
@@ -191,7 +202,9 @@ public class MatchingControllerTests extends BaseControllerTest {
     @Transactional
     @TestDescription("매칭 수정")
     public void updateMatching() throws Exception{
-        MockCookie[] adminMemberCookieList = super.getAdminMemberCookieList(AUTOLOGIN_FALSE);
+        MockHttpServletResponse response = super.execLogin("testAdmin","testAdmin",false).andReturn().getResponse();
+
+        MockCookie[] cookieList = super.convertCookieToMockCookie(response.getCookies());
         MatchingDto.Request matchingRequest = MatchingDto.Request.builder()
                 .matchingDate("2019-11-09")
                 .matchingTime("1,2")
@@ -202,7 +215,7 @@ public class MatchingControllerTests extends BaseControllerTest {
                 .build();
         // request
         ResultActions result = mockMvc.perform(
-                super.postRequest("/api/matching",matchingRequest,adminMemberCookieList)
+                super.postRequest("/api/matching",matchingRequest,cookieList)
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaTypes.HAL_JSON)
         );

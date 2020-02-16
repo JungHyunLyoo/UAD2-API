@@ -1,6 +1,7 @@
 package com.uad2.application.member.controller;
 
 import com.uad2.application.common.annotation.Auth;
+import com.uad2.application.common.enumData.CookieName;
 import com.uad2.application.common.enumData.Role;
 import com.uad2.application.config.PropertiesBundle;
 import com.uad2.application.exception.ClientException;
@@ -10,25 +11,26 @@ import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
 import com.uad2.application.member.resource.MemberResponseUtil;
 import com.uad2.application.member.service.MemberService;
+import com.uad2.application.utils.CookieUtil;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
@@ -148,6 +150,35 @@ public class MemberController {
             HttpServletResponse response) {
         loginProcessor.logout(request, response, session);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 자동 로그인 체크
+     */
+    @GetMapping(value = "/api/member/checkAutoLogin", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity checkAutoLogin(
+            HttpServletRequest request) {
+        //쿠키 획득
+        List<Cookie> cookieList = Optional.ofNullable(request.getCookies())
+                .map(Arrays::asList)
+                .orElseThrow(() -> new ClientException("Cookies are not exist"));
+
+        logger.debug("cookie list = {}",cookieList);
+
+        boolean isAutoLogin = Boolean.parseBoolean(
+                Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue())
+                        .orElse("false")
+        );
+
+        if(isAutoLogin){
+            //자동로그인 체크
+            loginProcessor.checkAutoLogin(cookieList);
+        }
+
+        Map<String,Object> returnMap = new HashMap<>();
+        returnMap.put("isAutoLogin",isAutoLogin);
+
+        return ResponseEntity.ok().body(returnMap);
     }
 
 }

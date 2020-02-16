@@ -33,7 +33,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(commonInterceptor)
-                .excludePathPatterns("/api/member/login");  // 핸들러 인터셉터에서 로그인 URI 제외
+                .excludePathPatterns("/api/member/login");
         WebMvcConfigurer.super.addInterceptors(registry);
     }
 

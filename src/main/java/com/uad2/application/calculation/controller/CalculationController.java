@@ -62,17 +62,14 @@ public class CalculationController {
 
 
     @Auth(role = Role.USER)
-    @GetMapping(value = "/api/calculation/year/{year}/month/{month}/memberSeq/{memberSeq}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/api/calculation/year/{year}/month/{month}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getCalculation(HttpSession httpSession,
                                          @PathVariable int year,
-                                         @PathVariable int month,
-                                         @PathVariable int memberSeq){
+                                         @PathVariable int month){
 
         Member member = (Member)httpSession.getAttribute("member");
-        if(memberSeq != member.getSeq()){
-            throw new ClientException("Member is not valid");
-            //비정상 회원
-        }
+        int memberSeq = member.getSeq();
+
         LocalDateTime strDts = LocalDateTime.of(year, month, 1, 0, 0, 0);
         LocalDateTime endDts = LocalDateTime.of(year, month+1, 1, 0, 0, 0);
         //년 넘어갈때 경우 체크
@@ -91,7 +88,6 @@ public class CalculationController {
                 int weekAttdCntSum = 0;//각 매칭별 카운트 sum , 변수명 적잘하게 바꿔야함
                 for(int i = 0; i < memberList.size(); i++) {
                     if(memberList.get(i).getSeq() == memberSeq) {
-                        System.out.println("count++");
                         count++;
                     }
                     //회비납부대상자만 횟수 계산
