@@ -63,8 +63,8 @@ public class LoginProcessor {
             List<Cookie> cookieList = Arrays.asList(request.getCookies());
 
             //계정 존재 유무 체크
-            String idFromCookie = CookieUtil.getCookie(cookieList, CookieName.ID).getValue();
-            member = Optional.ofNullable(memberService.getMemberById(idFromCookie))
+            String idInCookie = CookieUtil.getCookie(cookieList, CookieName.ID).getValue();
+            member = Optional.ofNullable(memberService.getMemberById(idInCookie))
                     .orElseThrow(() -> new ClientException("Id is not exist"));
 
             isAutoLogin = Boolean.parseBoolean(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue());
@@ -90,19 +90,10 @@ public class LoginProcessor {
     public void logout(HttpServletRequest request,
                        HttpServletResponse response,
                        HttpSession session) {
-        //로그인 쿠키 존재 체크
-        if (isEmptyLoginCookie(request.getCookies())) {
-            throw new ClientException("login cookie is empty");
-        }
 
-        //로그인 쿠키 획득
         List<Cookie> cookieList = Arrays.asList(request.getCookies());
 
-        //자동 로그인 체크
-        boolean isAutoLogin = Boolean.parseBoolean(
-                Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue())
-                        .orElse("false")
-        );
+        boolean isAutoLogin = Boolean.parseBoolean(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue());
         if (isAutoLogin) {
             //로그인 쿠키와 db 로그인 일치 체크
             String sessionIdInCookie = Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.SESSION_ID))
@@ -111,18 +102,16 @@ public class LoginProcessor {
             String idInCookie = Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.ID))
                     .map(Cookie::getValue)
                     .orElse(null);
-            Member member = memberService.getMemberByIdAndSessionId(sessionIdInCookie, idInCookie);
 
-            //db 로그인 초기화
-            if (Objects.nonNull(member)) {
-                memberService.updateSessionInfo(member, null, null);
-            }
+            Member member = Optional.ofNullable(memberService.getMemberByIdAndSessionId(idInCookie, sessionIdInCookie))
+                    .orElseThrow(() -> new ClientException("Member is not exist"));
+
+            memberService.updateSessionInfo(member, null, null);
+
         }
 
-        //쿠키 제거
         removeLoginCookie(response);
 
-        //세션 제거
         SessionUtil.removeAttribute(session, "member");
     }
 
