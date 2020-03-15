@@ -43,9 +43,9 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     public CommonInterceptor(LoginProcessor loginProcessor,
-                             MemberService memberService){
-        this. loginProcessor = loginProcessor;
-        this. memberService = memberService;
+                             MemberService memberService) {
+        this.loginProcessor = loginProcessor;
+        this.memberService = memberService;
     }
 
     @Override
@@ -64,32 +64,33 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
 
-        HttpSession session = request.getSession();
+        if (loginProcessor.isEmptyLoginCookie(request.getCookies())) {
+            throw new ClientException("Cookie is not exist");
+        }
 
-        //쿠키 획득
-        List<Cookie> cookieList = Optional.ofNullable(request.getCookies())
-                                    .map(Arrays::asList)
-                                    .orElseThrow(() -> new ClientException("Cookies are not exist"));
+        List<Cookie> cookieList = Arrays.asList(request.getCookies());
 
-        //자동로그인 체크
-        loginProcessor.checkAutoLogin(cookieList);
+        boolean isAutoLogin = Boolean.parseBoolean(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue());
+        if (isAutoLogin) {
+            loginProcessor.checkAutoLogin(cookieList);
+        }
 
-        //계정 존재 여부 체크
         Member member = Optional.ofNullable(memberService.getMemberById(CookieUtil.getCookie(cookieList, CookieName.ID).getValue()))
                 .orElseThrow(() -> new ClientException("Id is not exist"));
 
         //계정 열람 권한 체크
-        if(auth.role() == Role.ADMIN && member.getIsAdmin() == 0){
+        if (auth.role() == Role.ADMIN && member.getIsAdmin() == 0) {
             throw new ForbiddenException("Member auth is not valid");
         }
 
-        //로그인 실행
+        //로그인 재실행하여 관련 데이터 갱신
         MemberDto.LoginRequest loginRequest = MemberDto.LoginRequest.builder()
-                                                .id(member.getId())
-                                                .pwd(member.getPwd())
-                                                .isAutoLogin(Objects.nonNull(member.getSessionId()))
-                                                .build();
-        loginProcessor.login(request,response,session,loginRequest);
+                .id(member.getId())
+                .pwd(member.getPwd())
+                .isAutoLogin(Objects.nonNull(member.getSessionId()))
+                .build();
+
+        loginProcessor.login(request, response, loginRequest);
         return true;
     }
 }

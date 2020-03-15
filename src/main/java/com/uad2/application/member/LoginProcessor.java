@@ -41,18 +41,17 @@ public class LoginProcessor {
      */
     public void login(HttpServletRequest request,
                       HttpServletResponse response,
-                      HttpSession session,
                       MemberDto.LoginRequest loginRequest) {
+        HttpSession session = request.getSession();
         boolean isAutoLogin = false;
         Member member = null;
 
         //쿠키 존재 여부
         if (isEmptyLoginCookie(request.getCookies())) {
-            //계정 존재 유무 체크
-            member = Optional.ofNullable(memberService.getMemberById(loginRequest.getId()))
-                    .orElseThrow(() -> new ClientException("Id is not exist"));
 
-            //비밀번호 일치 체크
+            member = Optional.ofNullable(memberService.getMemberById(loginRequest.getId()))
+                    .orElseThrow(() -> new ClientException("Member is not exist"));
+
             if (Objects.nonNull(member.getPwd()) &&
                     !member.getPwd().equals(EncryptUtil.encryptMD5(loginRequest.getPwd()))) {
                 throw new ClientException("Pwd is not correct");
@@ -62,10 +61,9 @@ public class LoginProcessor {
         } else {
             List<Cookie> cookieList = Arrays.asList(request.getCookies());
 
-            //계정 존재 유무 체크
             String idInCookie = CookieUtil.getCookie(cookieList, CookieName.ID).getValue();
             member = Optional.ofNullable(memberService.getMemberById(idInCookie))
-                    .orElseThrow(() -> new ClientException("Id is not exist"));
+                    .orElseThrow(() -> new ClientException("Member is not exist"));
 
             isAutoLogin = Boolean.parseBoolean(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue());
 
@@ -77,9 +75,6 @@ public class LoginProcessor {
             }
         }
 
-        logger.debug("isAutoLogin = {}", isAutoLogin);
-
-        //타입 구분 후 로그인 실행
         if (isAutoLogin) {
             this.autoLogin(session, response, member);
         } else {
@@ -192,7 +187,7 @@ public class LoginProcessor {
         response.addCookie(CookieUtil.setCookie(CookieName.IS_AUTO_LOGIN, null, 0));
     }
 
-    private boolean isEmptyLoginCookie(Cookie[] cookieArray) {
+    public boolean isEmptyLoginCookie(Cookie[] cookieArray) {
         return !(cookieArray != null &&
                 CookieUtil.getCookie(Arrays.asList(cookieArray), CookieName.ID) != null &&
                 CookieUtil.getCookie(Arrays.asList(cookieArray), CookieName.NAME) != null &&

@@ -42,11 +42,12 @@ public class MemberController {
     private final MemberService memberService;
     private final LoginProcessor loginProcessor;
     private final ModelMapper modelMapper;
+
     @Autowired
     public MemberController(MemberValidator memberValidator,
                             MemberService memberService,
                             LoginProcessor loginProcessor,
-                            ModelMapper modelMapper){
+                            ModelMapper modelMapper) {
         this.memberValidator = memberValidator;
         this.memberService = memberService;
         this.loginProcessor = loginProcessor;
@@ -87,7 +88,7 @@ public class MemberController {
      */
     @PostMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity createMember(MemberDto.Request requestMember,
-        @RequestParam(value = "profileImg") MultipartFile profileImg) throws Exception {
+                                       @RequestParam(value = "profileImg") MultipartFile profileImg) throws Exception {
 
         //파라미터 체크
         memberValidator.validateCreateMember(requestMember);
@@ -123,20 +124,18 @@ public class MemberController {
      */
     @PostMapping("/api/member/login")
     public ResponseEntity login(
-            HttpSession session,
             HttpServletRequest request,
             HttpServletResponse response,
             @RequestBody MemberDto.LoginRequest loginRequest) {
-        loginProcessor.login(request, response, session, loginRequest);
+        loginProcessor.login(request, response, loginRequest);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/api/member/autoLogin")
     public ResponseEntity autoLogin(
-            HttpSession session,
             HttpServletRequest request,
             HttpServletResponse response) {
-        loginProcessor.login(request, response, session, null);
+        loginProcessor.login(request, response, null);
         return ResponseEntity.ok().build();
     }
 
@@ -163,20 +162,20 @@ public class MemberController {
                 .map(Arrays::asList)
                 .orElseThrow(() -> new ClientException("Cookies are not exist"));
 
-        logger.debug("cookie list = {}",cookieList);
+        logger.debug("cookie list = {}", cookieList);
 
         boolean isAutoLogin = Boolean.parseBoolean(
                 Optional.ofNullable(CookieUtil.getCookie(cookieList, CookieName.IS_AUTO_LOGIN).getValue())
                         .orElse("false")
         );
 
-        if(isAutoLogin){
+        if (isAutoLogin) {
             //자동로그인 체크
             loginProcessor.checkAutoLogin(cookieList);
         }
 
-        Map<String,Object> returnMap = new HashMap<>();
-        returnMap.put("isAutoLogin",isAutoLogin);
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("isAutoLogin", isAutoLogin);
 
         return ResponseEntity.ok().body(returnMap);
     }

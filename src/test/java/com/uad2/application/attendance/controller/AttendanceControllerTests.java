@@ -78,7 +78,7 @@ public class AttendanceControllerTests extends BaseControllerTest {
         );
         // result
         result.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value("Cookies are not exist"))
+                .andExpect(jsonPath("message").value("Cookie is not exist"))
                 .andDo(print());
     }
     @Test

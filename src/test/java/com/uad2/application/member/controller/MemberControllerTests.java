@@ -110,7 +110,7 @@ public class MemberControllerTests extends BaseControllerTest {
         // result
         result.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("message").exists())
-                .andExpect(jsonPath("message").value("Cookies are not exist"))
+                .andExpect(jsonPath("message").value("Cookie is not exist"))
                 .andDo(print());
     }
     @Test
@@ -204,7 +204,7 @@ public class MemberControllerTests extends BaseControllerTest {
         // result
         result.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("message").exists())
-                .andExpect(jsonPath("message").value("Cookies are not exist"))
+                .andExpect(jsonPath("message").value("Cookie is not exist"))
                 .andDo(print());
     }
     @Test
@@ -324,7 +324,7 @@ public class MemberControllerTests extends BaseControllerTest {
         result.andExpect(status().isBadRequest())
                 .andDo(print())
                 .andExpect(jsonPath("message").exists())
-                .andExpect(jsonPath("message").value("Id is not exist"))
+                .andExpect(jsonPath("message").value("Member is not exist"))
                 .andExpect(cookie().doesNotExist(CookieName.ID.getName()))
                 .andExpect(cookie().doesNotExist(CookieName.NAME.getName()))
                 .andExpect(cookie().doesNotExist(CookieName.PHONE_NUM.getName()))
@@ -388,7 +388,7 @@ public class MemberControllerTests extends BaseControllerTest {
         result.andExpect(status().isBadRequest())
                 .andDo(print())
                 .andExpect(jsonPath("message").exists())
-                .andExpect(jsonPath("message").value("Id is not exist"))
+                .andExpect(jsonPath("message").value("Member is not exist"))
                 .andExpect(cookie().doesNotExist(CookieName.ID.getName()))
                 .andExpect(cookie().doesNotExist(CookieName.NAME.getName()))
                 .andExpect(cookie().doesNotExist(CookieName.PHONE_NUM.getName()))
