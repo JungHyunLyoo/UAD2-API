@@ -7,6 +7,7 @@ package com.uad2.application.member;
 import com.uad2.application.exception.ClientException;
 import com.uad2.application.member.dto.MemberDto;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.Objects;
@@ -18,8 +19,7 @@ public class MemberValidator {
             //private 필드에 접근 허용
             declaredField.setAccessible(true);
             try {
-                Object value = declaredField.get(requestMember);
-                if(value == null || value.toString().isEmpty()){
+                if (StringUtils.isEmpty(declaredField.get(requestMember))) {
                     throw new ClientException(declaredField.getName() + " is empty");
                 }
             } catch (IllegalAccessException e) {
@@ -29,10 +29,9 @@ public class MemberValidator {
     }
 
     public void validateCheckPwd(MemberDto.Request requestMember) {
-        if(Objects.isNull(requestMember.getId())){
+        if (Objects.isNull(requestMember.getId())) {
             throw new ClientException("Id is empty");
-        }
-        else if(Objects.isNull(requestMember.getPwd())){
+        } else if (Objects.isNull(requestMember.getPwd())) {
             throw new ClientException("Pwd is empty");
         }
     }
