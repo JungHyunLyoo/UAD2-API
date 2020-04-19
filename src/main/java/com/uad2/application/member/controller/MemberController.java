@@ -9,6 +9,8 @@ import com.uad2.application.member.LoginProcessor;
 import com.uad2.application.member.MemberValidator;
 import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.member.entity.Member;
+import com.uad2.application.member.resource.MemberExternalResource;
+import com.uad2.application.member.resource.MemberListExternalResource;
 import com.uad2.application.member.resource.MemberResponseUtil;
 import com.uad2.application.member.service.MemberService;
 import com.uad2.application.utils.CookieUtil;
@@ -17,12 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -56,7 +55,7 @@ public class MemberController {
 
 
     @GetMapping(value = "/")
-    public ResponseEntity index() {
+    public ResponseEntity<String> index() {
         return ResponseEntity.ok().body("index");
     }
 
@@ -68,7 +67,7 @@ public class MemberController {
      */
     @Auth(role = Role.ADMIN)
     @GetMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
-    public ResponseEntity getAllMember() {
+    public ResponseEntity<MemberListExternalResource> getAllMember() {
         List<Member> memberList = memberService.getAllMember();
         return ResponseEntity.ok(MemberResponseUtil.makeListResponseResource(memberList));
     }
@@ -78,7 +77,7 @@ public class MemberController {
      */
     @Auth(role = Role.USER)
     @GetMapping(value = "/api/member/id/{id}", produces = MediaTypes.HAL_JSON_UTF8_VALUE)
-    public ResponseEntity getMemberById(@PathVariable String id) {
+    public ResponseEntity<MemberExternalResource> getMemberById(@PathVariable String id) {
         Member member = memberService.getMemberById(id);
         return ResponseEntity.ok(MemberResponseUtil.makeResponseResource(member));
     }
@@ -87,22 +86,26 @@ public class MemberController {
      * 회원 생성 API
      */
     @PostMapping(value = "/api/member", produces = MediaTypes.HAL_JSON_UTF8_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity createMember(MemberDto.Request requestMember,
-                                       @RequestParam(value = "profileImg") MultipartFile profileImg) throws Exception {
+    public ResponseEntity<MemberExternalResource> createMember(
+            @ModelAttribute MemberDto.Request requestMember
+    ) throws Exception {
 
         //파라미터 체크
         memberValidator.validateCreateMember(requestMember);
 
         //폰번호로 유일성 체크
         String phoneNumber = requestMember.getPhoneNumber();
-        if (!ObjectUtils.isEmpty(memberService.findByPhoneNumber(phoneNumber))) {
+        if (Objects.nonNull(memberService.findByPhoneNumber(phoneNumber))) {
             throw new ClientException(String.format("PhoneNumber(%s) already exist", phoneNumber));
         }
 
         //프로필 이미지 저장
-        profileImg.transferTo(new File(PropertiesBundle.PROFILE_IMAGE_DIRECTORY + requestMember.getName() + "_profile.png"));
+        String profileImagePath = PropertiesBundle.PROFILE_IMAGE_DIRECTORY + requestMember.getName() + "_profile.png";
+        requestMember.getProfileImg().transferTo(new File(profileImagePath));
 
-        Member savedMember = memberService.createMember(modelMapper.map(requestMember, Member.class));
+
+        Member savedMember = memberService.createMember(Member.createMember(requestMember, profileImagePath));
+
         URI createdUri = linkTo(MemberController.class).slash("id").slash(requestMember.getId()).toUri();
         return ResponseEntity.created(createdUri).body(MemberResponseUtil.makeResponseResource(savedMember));
     }
@@ -112,7 +115,7 @@ public class MemberController {
      */
     @Auth(role = Role.USER)
     @PostMapping(value = "/api/member/checkPwd", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity checkPwd(@RequestBody MemberDto.Request requestMember) {
+    public ResponseEntity<Map<String, Object>> checkPwd(@RequestBody MemberDto.Request requestMember) {
         memberValidator.validateCheckPwd(requestMember);
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("isSamePwd", memberService.isSamePwd(requestMember));
@@ -123,7 +126,7 @@ public class MemberController {
      * 로그인 API
      */
     @PostMapping("/api/member/login")
-    public ResponseEntity login(
+    public ResponseEntity<?> login(
             HttpServletRequest request,
             HttpServletResponse response,
             @RequestBody MemberDto.LoginRequest loginRequest) {
@@ -132,7 +135,7 @@ public class MemberController {
     }
 
     @PostMapping("/api/member/autoLogin")
-    public ResponseEntity autoLogin(
+    public ResponseEntity<?> autoLogin(
             HttpServletRequest request,
             HttpServletResponse response) {
         loginProcessor.login(request, response, null);
@@ -143,7 +146,7 @@ public class MemberController {
      * 로그아웃 API
      */
     @GetMapping("/api/member/logout")
-    public ResponseEntity logout(
+    public ResponseEntity<?> logout(
             HttpSession session,
             HttpServletRequest request,
             HttpServletResponse response) {
@@ -155,7 +158,7 @@ public class MemberController {
      * 자동 로그인 체크
      */
     @GetMapping(value = "/api/member/checkAutoLogin", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity checkAutoLogin(
+    public ResponseEntity<Map<String, Object>> checkAutoLogin(
             HttpServletRequest request) {
         //쿠키 획득
         List<Cookie> cookieList = Optional.ofNullable(request.getCookies())

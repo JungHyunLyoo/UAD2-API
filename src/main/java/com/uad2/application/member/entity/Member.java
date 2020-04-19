@@ -1,21 +1,26 @@
 package com.uad2.application.member.entity;
 
 
+import com.uad2.application.member.dto.MemberDto;
 import com.uad2.application.utils.EncryptUtil;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.text.DateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @ToString
 @Builder
-@AllArgsConstructor @NoArgsConstructor
-@EqualsAndHashCode(of="id")
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class Member {
     @Id
     @Column
@@ -31,22 +36,22 @@ public class Member {
     @Column(length = 20)
     private String name;
 
-    @Column(name = "phone_number" ,length = 15, unique = true)
+    @Column(name = "phone_number", length = 15, unique = true)
     private String phoneNumber;
 
     @Column(name = "student_id", nullable = false)
     private int studentId;
 
     @Column(name = "birth_day")
-    private Date birthDay;
+    private LocalDate birthDay;
 
     @Column(name = "attd_cnt", nullable = false, columnDefinition = "int default 0")
     private int attdCnt;
 
-    @Column(name = "profile_img",length = 30)
+    @Column(name = "profile_img", length = 30)
     private String profileImg;
 
-    @Column(name = "session_id",length = 40)
+    @Column(name = "session_id", length = 40)
     private String sessionId;
 
 
@@ -71,7 +76,20 @@ public class Member {
     private LocalDateTime updatedAt;
 
     @PrePersist
-    public void encryptPassword(){
+    public void encryptPassword() {
         this.pwd = EncryptUtil.encryptMD5(pwd);
+    }
+
+    public static Member createMember(MemberDto.Request request, String profileImg) {
+        return Member.builder()
+                .id(request.getId())
+                .pwd(request.getPwd())
+                .name(request.getName())
+                .phoneNumber(request.getPhoneNumber())
+                .studentId(request.getStudentId())
+                .birthDay(LocalDate.parse(request.getBirthDay()))
+                .isWorker(request.getIsWorker())
+                .profileImg(profileImg)
+                .build();
     }
 }

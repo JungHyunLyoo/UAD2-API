@@ -6,19 +6,21 @@ package com.uad2.application.member.dto;
  * @DESCRIPTION 회원 도메인에 대한 request, response 처리하는 커맨드 객체
  */
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class MemberDto {
 
     @Getter
     @Setter
-    public static class Request {   // 프로퍼티 공통 사용여부에 따라 Create, Update로 분리해도 괜찮을 것 같다.
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Request {
+        // 프로퍼티 공통 사용여부에 따라 Create, Update로 분리해도 괜찮을 것 같다.
         private String id;
 
         private String pwd;
@@ -33,15 +35,7 @@ public class MemberDto {
 
         private String phoneNumber;
 
-        public Request(String id,String pwd,String name,String birthDay,int studentId,int isWorker,String phoneNumber) throws Exception{
-            this.id = id;
-            this.pwd = pwd;
-            this.name = name;
-            this.birthDay = birthDay;
-            this.studentId = studentId;
-            this.isWorker = isWorker;
-            this.phoneNumber = phoneNumber;
-        }
+        MultipartFile profileImg;
     }
 
     @Getter
@@ -68,7 +62,7 @@ public class MemberDto {
     public static class EditRequest {
         private String pwd;
 
-        private Date birthDay;
+        private LocalDate birthDay;
 
         private int studentId;
 
@@ -88,7 +82,7 @@ public class MemberDto {
 
         private int attdCnt;
 
-        private Date birthDay;
+        private LocalDate birthDay;
 
         private int studentId;
 
