@@ -222,6 +222,66 @@ public class MemberControllerTests extends BaseControllerTest {
                 .andDo(print());
     }
     @Test
+    @TestDescription("아이디 중복조회_false")
+    public void isAlreadyExistId_false() throws Exception {
+        String[] paramList = new String[]{"testUserNew"};
+
+        // request
+        ResultActions result = mockMvc.perform(
+                super.getRequest("/api/member/isAlreadyExistId/{id}",paramList)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+        );
+        // result
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("isAlreadyExistId").value("false"))
+                .andDo(document("isAlreadyExistId",
+                        pathParameters(
+                                parameterWithName("id").description("아이디")
+                        ),
+                        responseFields(
+                                fieldWithPath("isAlreadyExistId").description("아이디 중복여부").type(JsonFieldType.BOOLEAN)
+                        )
+                ));
+    }
+    @Test
+    @TestDescription("아이디 중복조회_true")
+    public void isAlreadyExistId_true() throws Exception {
+        String[] paramList = new String[]{"testUser"};
+
+        // request
+        ResultActions result = mockMvc.perform(
+                super.getRequest("/api/member/isAlreadyExistId/{id}",paramList)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+        );
+        // result
+        result.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("isAlreadyExistId").value("true"))
+                .andDo(document("isAlreadyExistId",
+                        pathParameters(
+                                parameterWithName("id").description("아이디")
+                        ),
+                        responseFields(
+                                fieldWithPath("isAlreadyExistId").description("아이디 중복여부").type(JsonFieldType.BOOLEAN)
+                        )
+                ));
+    }
+    @Test
+    @TestDescription("아이디 중복조회 실패(필수 파리미터 미기입)")
+    public void isAlreadyExistId_badRequest_emptyRequest() throws Exception {
+        String[] paramList = new String[]{""};
+
+        // request
+        ResultActions result = mockMvc.perform(
+                super.getRequest("/api/member/isAlreadyExistId/{id}",paramList)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+        );
+        // result
+        result.andExpect(status().isNotFound())
+                .andDo(print());
+    }
+    @Test
     @Transactional
     @TestDescription("회원 생성")
     public void createMember() throws Exception {

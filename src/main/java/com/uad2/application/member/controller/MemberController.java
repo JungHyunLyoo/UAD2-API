@@ -14,6 +14,7 @@ import com.uad2.application.member.resource.MemberListExternalResource;
 import com.uad2.application.member.resource.MemberResponseUtil;
 import com.uad2.application.member.service.MemberService;
 import com.uad2.application.utils.CookieUtil;
+import org.apache.logging.log4j.util.Strings;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +81,20 @@ public class MemberController {
     public ResponseEntity<MemberExternalResource> getMemberById(@PathVariable String id) {
         Member member = memberService.getMemberById(id);
         return ResponseEntity.ok(MemberResponseUtil.makeResponseResource(member));
+    }
+
+    /**
+     * 회원 id 중복 체크
+     */
+    @GetMapping(value = "/api/member/isAlreadyExistId/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Object>> isAlreadyExistId(@PathVariable String id) {
+        if (Strings.isEmpty(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        Member member = memberService.getMemberById(id);
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("isAlreadyExistId", Objects.nonNull(member));
+        return ResponseEntity.ok().body(returnMap);
     }
 
     /**
