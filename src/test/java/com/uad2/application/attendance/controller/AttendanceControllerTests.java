@@ -32,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureRestDocs(outputDir = "target/generated-snippets/attendance")
 public class AttendanceControllerTests extends BaseControllerTest {
-    /*
     @Test
     @Transactional
     @TestDescription("특정일 참가 내역 조회 성공")
@@ -356,5 +355,4 @@ public class AttendanceControllerTests extends BaseControllerTest {
                         )
                 ));
     }
-*/
 }
